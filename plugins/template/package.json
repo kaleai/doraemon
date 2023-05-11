@@ -1,0 +1,35 @@
+{
+  "id": "kale",
+  "name": "plugin",
+  "version": "0.0.1",
+  "description": "这是一个示例插件，src文件中的index.ts是入口",
+  "icon": "",
+  "homepage": "",
+  "bugs": {
+    "url": "https://bugReport.kale.com",
+    "email": "demo@kale.com"
+  },
+  "main": "index.ts",
+  "keywords": [],
+  "author": "kale",
+  "license": "MIT",
+  "scripts": {
+    "build": "npx webpack",
+    "dev": "webpack-dev-server --config ../webpack.dev.config.js --open --progress"
+  },
+  "dependencies": {
+    "antd": "^4.6.3",
+    "axios": "^1.4.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@types/react-dom": "^18.2.4",
+    "babel-loader": "^9.1.2",
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.0.4",
+    "webpack": "^5.82.0",
+    "webpack-cli": "^5.0.2",
+    "webpack-dev-server": "^4.15.0"
+  }
+}
