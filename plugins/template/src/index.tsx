@@ -4,17 +4,17 @@ import View from './View'
 import { MicroAppStateActions } from 'qiankun'
 import controller from './Controller'
 
-let sendResult
+let sendProcessedData
 
 export default {
 
   bootstrap: async (props: any) => {
-    sendResult = props.setGlobalState
+    sendProcessedData = props['onReceiveData']
     return Promise.resolve()
   },
 
   async unmount(props) {
-    sendResult = undefined
+    sendProcessedData = undefined
     ReactDOM.unmountComponentAtNode(
       props.container ? props.container.querySelector('#root') : document.getElementById('root'),
     )
@@ -27,7 +27,7 @@ export default {
     setTimeout(() => {
       controller.handleAction({
         action: 'INITIALIZATION', expectation: 'init plugin view',
-      }).then(res => sendResult(res))
+      }).then(res => sendProcessedData(res))
     }, 300)
   },
 
@@ -39,7 +39,7 @@ export default {
         data={data}
         expectation={expectation}
         onSendAction={(params) => {
-          controller.handleAction(params).then(res => sendResult(res))
+          controller.handleAction(params).then(res => sendProcessedData(res))
         }}
       />
       ,
