@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react'
-import logo from './logo.svg'
 import './App.css'
 import { loadMicroApp } from 'qiankun'
 import { MicroApp } from 'qiankun/es/interfaces'
@@ -24,7 +23,6 @@ const App = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
 
         <Button onClick={() => {
           let microApp: any = null

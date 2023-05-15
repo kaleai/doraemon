@@ -1,6 +1,6 @@
 const webpack = require('webpack')
-const config = require('./webpack.base.config')
-const pkgInfo = require('./package.json')
+const config = require('./webpack.config')
+const pkgInfo = require('../package.json')
 
 config.mode = 'development'
 config.output.library = 'DebugPlugin'
