@@ -10,6 +10,7 @@ export default {
 
   bootstrap: async (props: any) => {
     sendProcessedData = props['onReceiveData']
+    console.log('env', props)
     return Promise.resolve()
   },
 

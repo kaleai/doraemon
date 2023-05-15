@@ -60,7 +60,7 @@ const App = () => {
             name: 'DebugPlugin',
             entry: '//localhost:3000/plugin',
             container: '#pluginContainer',
-            props: { onReceiveData: addItemViews },
+            props: { onReceiveData: addItemViews, env:{} },
           })
 
           pRef.current = microApp
