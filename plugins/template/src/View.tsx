@@ -1,6 +1,7 @@
-import { Button, Select, Tag } from 'antd'
+import { Button, Input, Tag } from 'antd'
 import { IViewProps } from '../Interface'
 import { ActionParamsType } from './Controller'
+import React, { useEffect, useRef, useState } from 'react'
 
 export default (
   {
@@ -12,37 +13,28 @@ export default (
 ) => {
   console.log(type, data, expectation)
 
-  if (type === 'button') {
-    return <Button
-      type={'primary'}
-      onClick={() => {
+  const [inputText, setInputText] = useState<string>()
+
+
+  if (type === 'input') {
+    return <div>
+      <span>请在下方输入文本，点击按钮将会产出md5值</span>
+      <Input.TextArea style={{ marginBottom: 8 }} defaultValue={data.text} onChange={event => {
+        setInputText(event.currentTarget.value)
+      }} />
+
+      <Button type={'primary'} onClick={() => {
         sendAction({
-          action: 'tag',
-          values: 'name',
-          expectation: 'exp',
+          action: 'CALCULATE_MD5',
+          values: { text: inputText ?? data.text },
         })
-      }}
-    >{data.text}</Button>
-  } else if (type === 'select') {
-    return <Select
-      defaultValue={data.text}
-      style={{ width: 120 }}
-      onChange={(value) => {
-        console.log('change ', value)
-        sendAction({
-          action: 'button',
-          values: 'name',
-          expectation: 'exp',
-        })
-      }}
-      options={[
-        { value: 'jack', label: 'Jack' },
-        { value: 'lucy', label: 'Lucy' },
-        { value: 'Yiminghe', label: 'yiminghe' },
-        { value: 'disabled', label: 'Disabled', disabled: true },
-      ]}
-    />
+      }}>
+        md5
+      </Button>
+    </div>
+  } else if (type === 'text') {
+    return <span>{data.text}</span>
   }
 
-  return <Tag color="magenta">{data.text}</Tag>
+  return <div />
 }

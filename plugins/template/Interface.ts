@@ -1,15 +1,20 @@
-export type IListItemInfo = {
-  role: 'user' | 'assistant'
-  type: string
-  data: any
-  expectation: string
+export type InstallParams = {
+  onReceiveData: ((data: HandleResultDataType) => void) | undefined
+  envInfo: Record<string, any>
 }
 
-export interface IViewProps extends IListItemInfo {
+export type ListItemInfo = {
+  type: string
+  data: any
+  expectation?: string
+}
+
+export interface IViewProps extends ListItemInfo {
   containerId: string
+  readonly: boolean
 }
 
 export type HandleResultDataType = {
-  listItemInfos: IListItemInfo[]
+  listItemInfos: ListItemInfo[]
   suggestActions?: { action: string, text: string }
 }

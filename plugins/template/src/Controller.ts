@@ -1,5 +1,6 @@
 import { HandleResultDataType } from '../Interface'
-
+import axios from 'axios'
+const md5 = require('js-md5')
 /**
  * @author Jack Tony (jinkai.jk@alibaba-inc.com)
  *
@@ -7,32 +8,34 @@ import { HandleResultDataType } from '../Interface'
  */
 export type ActionParamsType = {
   action: string
-  expectation: string
+  expectation?: string
   values?: any
 }
 
 class Controller {
 
   public async handleAction({ action, expectation, values }: ActionParamsType): Promise<HandleResultDataType> {
+    console.log('handle action:', action, values)
+
     if (action === 'INITIALIZATION') {
       return {
-        listItemInfos: [
-          { role: 'user', type: 'select', data: { text: 'select view' }, expectation: 'select' },
-        ],
+        listItemInfos: [{ type: 'input', data: { text: 'please input some text' }, expectation: 'INPUT_STRING' }],
       }
-    } else if (action === 'button') {
+    } else if (action === 'CALCULATE_MD5') {
+      axios({
+        method: 'get',
+        url: 'http://bit.ly/2mTM3nY',
+        responseType: 'stream'
+      })
+      const md5Str = md5(values.text)
       return {
         listItemInfos: [
-          { role: 'user', type: 'button', data: { text: 'button text111' }, expectation: 'button' },
+          { type: 'text', data: { text: md5Str } },
+          { type: 'input', data: { text: 'please input some text' }, expectation: 'INPUT_STRING' },
         ],
       }
     } else {
-      return {
-        listItemInfos: [
-          { role: 'assistant', type: 'tag', data: { text: 'tag text' }, expectation: 'tag' },
-        ],
-      }
-
+      return { listItemInfos: [] }
     }
   }
 }

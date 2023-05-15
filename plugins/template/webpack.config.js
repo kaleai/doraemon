@@ -21,14 +21,7 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js']
   },
-  devServer: {
-    sockPort: 'location',
-    /*headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "*",
-      "Access-Control-Allow-Headers": "*"
-    }*/
-  },
+  devServer: {},
   module: {
     rules: [
       {

@@ -1,79 +1,88 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './App.css'
+import { Avatar, Card, List } from 'antd'
 import { loadMicroApp } from 'qiankun'
 import { MicroApp } from 'qiankun/es/interfaces'
-import { Button } from 'antd'
-import { IListItemInfo, IViewProps } from '../../plugins/template/Interface'
+import { Layout, Menu, Button, theme } from 'antd'
+import { ListItemInfo, IViewProps } from '../../plugins/template/Interface'
 import { HandleResultDataType } from '../../plugins/template/Interface'
+import ListView from './component/ListView'
+import AppBar from './component/AppBar'
+import SiderContent from './component/SiderContent'
+import {
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UploadOutlined,
+  UserOutlined,
+  VideoCameraOutlined,
+} from '@ant-design/icons'
+
+const { Header, Footer, Sider, Content } = Layout
 
 const App = () => {
 
-  const [curPlugin, setCurPlugin] = useState<MicroApp>()
+  const pluginRef = useRef<MicroApp>()
 
-  const pRef = useRef<MicroApp>()
-
-  const [viewList, setViewList] = useState<any[]>([])
+  const [listData, setListData] = useState<any[]>([])
+  const [collapsed, setCollapsed] = useState(false)
 
   useEffect(() => {
     return () => {
-      curPlugin?.unmount()
+      pluginRef.current?.unmount()
     }
   }, [])
 
+  const addViewToList = (data: HandleResultDataType) => {
+    const viewPropsList: IViewProps[] = []
+
+    data.listItemInfos.forEach((itemInfo: ListItemInfo) => {
+      const containerId = 'CID_' + Math.random()
+
+      listData.push({
+        id: containerId,
+      })
+
+      viewPropsList.push({
+        containerId,
+        readonly: false,
+        ...itemInfo,
+      })
+    })
+
+    // update list data
+    setListData([...listData])
+
+    // bind view to list
+    if (pluginRef.current) {
+      viewPropsList.forEach(props => {
+        setTimeout(() => pluginRef.current?.update?.(props).then(), 100)
+      })
+    }
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
+      <Layout>
+        <Sider trigger={null} collapsible collapsed={collapsed}>
+          <SiderContent />
+        </Sider>
 
-        <Button onClick={() => {
-          let microApp: any = null
-          const addItemViews = (data: HandleResultDataType) => {
-            console.log('addItemViews', data, microApp)
+        <Layout>
+          <Header style={{ padding: 0 }}>
+            <AppBar
+              onPluginChanged={plugin => pluginRef.current = plugin}
+              onReceiveViewData={data => {
+                addViewToList(data)
+              }}
+            />
+          </Header>
+          <Content
+          >
+            <ListView dataSource={listData} />
+          </Content>
+        </Layout>
+      </Layout>
 
-            const viewPropsList: IViewProps[] = []
-            data.listItemInfos.forEach((itemInfo: IListItemInfo) => {
-              const CID = 'Container' + Math.random()
-              viewList.push({
-                id: CID,
-              })
-
-              viewPropsList.push({
-                containerId: CID,
-                ...itemInfo,
-              })
-            })
-
-            // 更新list数据，建立空的div
-            setViewList([...viewList])
-
-            // add view and set props to view
-            if (pRef.current) {
-              viewPropsList.forEach(props => {
-                console.log('view props', props)
-                setTimeout(() => pRef.current?.update?.(props).then(), 100)
-              })
-            }
-          }
-
-          microApp = loadMicroApp({
-            name: 'DebugPlugin',
-            entry: '//localhost:3000/plugin',
-            container: '#pluginContainer',
-            props: { onReceiveData: addItemViews, env:{} },
-          })
-
-          pRef.current = microApp
-          setCurPlugin(microApp)
-        }}>
-          add plugin
-        </Button>
-
-        <br />
-
-        {viewList.map(item => {
-          return <div key={item.id} id={item.id}/>
-        })}
-
-      </header>
     </div>
   )
 }
