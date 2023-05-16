@@ -1,18 +1,22 @@
 {
-  "id": "kale",
-  "name": "plugin",
+  "id": "32a74f98-1aef-473a-bda7-8e2dea9d5b64",
+  "name": "gadget-template",
   "version": "0.0.1",
-  "description": "这是一个示例插件，src文件中的index.ts是入口",
+  "description": "这是一个示例插件，可参考此插件模板开发自己的插件",
   "icon": "",
   "homepage": "",
   "bugs": {
     "url": "https://bugReport.kale.com",
     "email": "demo@kale.com"
   },
-  "main": "index.ts",
-  "keywords": [],
+  "keywords": [
+    "template",
+    "demo",
+    "example"
+  ],
   "author": "kale",
   "license": "MIT",
+  "main": "index.ts",
   "scripts": {
     "build": "npx webpack",
     "dev": "webpack-dev-server --config webpack.dev.config.js --open --progress"
@@ -27,6 +31,8 @@
   "devDependencies": {
     "@types/react-dom": "^18.2.4",
     "babel-loader": "^9.1.2",
+    "copy-webpack-plugin": "^11.0.0",
+    "html-webpack-plugin": "^5.5.1",
     "ts-loader": "^9.4.2",
     "typescript": "^5.0.4",
     "webpack": "^5.82.0",

@@ -1,15 +1,13 @@
-/**
- * @author Jack Tony
- *
- * @date 2023/5/15
- */
 import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
   UploadOutlined,
   UserOutlined,
   VideoCameraOutlined,
 } from '@ant-design/icons';
+
+/**
+ * @author Jack Tony
+ * @date 2023/5/15
+ */
 import { Layout, Menu, Button, theme } from 'antd';
 export default ()=>{
   return <Menu

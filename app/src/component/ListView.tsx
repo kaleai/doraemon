@@ -1,5 +1,5 @@
 import React from 'react'
-import { Avatar, Card, List } from 'antd'
+import { Card, List } from 'antd'
 
 /**
  * @author Jack Tony

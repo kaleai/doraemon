@@ -21,7 +21,7 @@ export default {
     )
   },
 
-  mount: async (props: { container: any } & { name: string }) => {
+  mount: async (props: { container: any, name: string }) => {
     ReactDOM.render(<div />, props.container ? props.container.querySelector('#root') : document.getElementById('root'))
     // message.success(`${props.name} is installed 🎉`)
 

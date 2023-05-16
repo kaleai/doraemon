@@ -1,27 +1,26 @@
 const path = require('path')
 const webpack = require('webpack')
-const pkgInfo = require('../package.json')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const pkgInfo = require('./package.json')
 
-/*const libraryName = (pkgInfo.name).replace(/\-(\w)/g, function (all, letter) {
-  return letter.toUpperCase()
-})*/
+const gadgetName = (pkgInfo.name).replace(/\-(\w)/g, (all, letter) => letter.toUpperCase())
 
 module.exports = {
   entry: './src/index.tsx',
   mode: 'production',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'plugin/bundle.js',
+    filename: 'gadget/bundle.js',
     libraryTarget: 'umd',
     umdNamedDefine: true,
     libraryExport: 'default',
-    library: '',
+    library: gadgetName,
     chunkLoadingGlobal: '',
   },
+  devServer: {},
   resolve: {
     extensions: ['.ts', '.tsx', '.js']
   },
-  devServer: {},
   module: {
     rules: [
       {
@@ -39,4 +38,11 @@ module.exports = {
       }
     ]
   },
+  plugins: [
+    new HtmlWebpackPlugin({
+      filename:'gadget/index.html',
+      title: pkgInfo.name,
+      template: 'index.html',
+    })
+  ]
 }

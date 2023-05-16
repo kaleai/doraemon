@@ -1,9 +1,8 @@
-import { Avatar, Card, List } from 'antd'
-import React, { useEffect, useRef, useState } from 'react'
+import { Avatar } from 'antd'
 import { loadMicroApp } from 'qiankun'
 import { MicroApp } from 'qiankun/es/interfaces'
 import { Button } from 'antd'
-import { InstallParams, ListItemInfo, IViewProps } from '../../../plugins/template/Interface'
+import { InstallParams } from '../../../plugins/template/Interface'
 import { HandleResultDataType } from '../../../plugins/template/Interface'
 
 /**
@@ -34,9 +33,9 @@ export default ({ onPluginChanged, onReceiveViewData }: IProps) => {
       }
 
       const microApp = loadMicroApp({
-        name: 'DebugPlugin',
+        name: 'DebugGadget',
         entry: '//localhost:3000/plugin',
-        container: '#pluginContainer',
+        container: '#gadgetContainer',
         props: params,
       })
 

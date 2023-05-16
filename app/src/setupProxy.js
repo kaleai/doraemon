@@ -2,7 +2,7 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = function(app) {
   app.use(
-    '/plugin',
+    '/gadget',
     createProxyMiddleware({
       target: 'http://localhost:7031',
       changeOrigin: true,

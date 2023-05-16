@@ -2,14 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Plugin</title>
+  <title><%= htmlWebpackPlugin.options.title %></title>
 </head>
+
 <body>
-<script src="http://localhost:3000/plugin/bundle.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.6.3/antd.css">
+
 <script>
 const init = () => {
-  DebugPlugin.bootstrap({
+  const gadget = DebugGadget
+
+  gadget.bootstrap({
     onReceiveData: (data) => {
       data.listItemInfos.forEach((itemInfo) => {
         const div = document.createElement('div')
@@ -19,18 +22,17 @@ const init = () => {
         div.style.padding = '12px'
         document.getElementById('root').append(div)
 
-        DebugPlugin.update({ containerId: div.id, ...itemInfo }).then()
+        gadget.update({ containerId: div.id, ...itemInfo }).then()
       })
     }
   })
-  DebugPlugin.mount({ name: 'DebugPlugin' }).then()
+  gadget.mount({ name: 'DebugGadget', container: null }).then()
 }
-
 </script>
+
 <div id="root">
   <button onclick="init()">init</button>
 </div>
-
 </body>
 </html>
 

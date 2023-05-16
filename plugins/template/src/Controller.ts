@@ -1,5 +1,6 @@
 import { HandleResultDataType } from '../Interface'
 import axios from 'axios'
+
 const md5 = require('js-md5')
 /**
  * @author Jack Tony (jinkai.jk@alibaba-inc.com)
@@ -24,8 +25,10 @@ class Controller {
     } else if (action === 'CALCULATE_MD5') {
       axios({
         method: 'get',
-        url: 'http://bit.ly/2mTM3nY',
-        responseType: 'stream'
+        url: 'http://kale.com/fake/api',
+        responseType: 'stream',
+      }).catch(err => {
+        console.error(err)
       })
       const md5Str = md5(values.text)
       return {
