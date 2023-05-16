@@ -34,9 +34,23 @@ export default ({ onPluginChanged, onReceiveViewData }: IProps) => {
 
       const microApp = loadMicroApp({
         name: 'DebugGadget',
-        entry: '//localhost:3000/plugin',
+        entry: '//localhost:7031/gadget',
         container: '#gadgetContainer',
         props: params,
+      }, {
+        fetch(url, ...args) {
+          if (url.toString().startsWith('http://localhost')) {
+            console.log('dddd', url)
+
+            return window.fetch(url, {
+              ...args,
+              mode: 'no-cors',
+              credentials: 'include',
+            });
+          }
+
+          return window.fetch(url, ...args);
+        },
       })
 
       onPluginChanged(microApp)
