@@ -14,7 +14,7 @@ module.exports = {
     libraryTarget: 'umd',
     umdNamedDefine: true,
     libraryExport: 'default',
-    library: "",
+    library: `${pkgInfo.name}-[name]`,
     chunkLoadingGlobal: '',
   },
   devServer: {},
