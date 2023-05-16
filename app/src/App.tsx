@@ -1,34 +1,25 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './App.css'
-import { Avatar, Card, List } from 'antd'
-import { loadMicroApp } from 'qiankun'
 import { MicroApp } from 'qiankun/es/interfaces'
-import { Layout, Menu, Button, theme } from 'antd'
+import { Layout } from 'antd'
 import { ListItemInfo, IViewProps } from '../../gadgets/template/Interface'
 import { HandleResultDataType } from '../../gadgets/template/Interface'
 import ListView from './component/ListView'
-import AppBar from './component/AppBar'
-import SiderContent from './component/SiderContent'
-import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-} from '@ant-design/icons'
+import AppTopBar from './component/AppTopBar'
+import SidebarContent from './component/SidebarContent'
 
-const { Header, Footer, Sider, Content } = Layout
+const { Header, Sider, Content } = Layout
 
 const App = () => {
 
-  const pluginRef = useRef<MicroApp>()
+  const gadgetRef = useRef<MicroApp>()
 
   const [listData, setListData] = useState<any[]>([])
   const [collapsed, setCollapsed] = useState(false)
 
   useEffect(() => {
     return () => {
-      pluginRef.current?.unmount()
+      gadgetRef.current?.unmount()
     }
   }, [])
 
@@ -53,9 +44,9 @@ const App = () => {
     setListData([...listData])
 
     // bind view to list
-    if (pluginRef.current) {
+    if (gadgetRef.current) {
       viewPropsList.forEach(props => {
-        setTimeout(() => pluginRef.current?.update?.(props).then(), 100)
+        setTimeout(() => gadgetRef.current?.update?.(props).then(), 100)
       })
     }
   }
@@ -64,25 +55,21 @@ const App = () => {
     <div className="App">
       <Layout>
         <Sider trigger={null} collapsible collapsed={collapsed}>
-          <SiderContent />
+          <SidebarContent />
         </Sider>
 
         <Layout>
           <Header style={{ padding: 0 }}>
-            <AppBar
-              onPluginChanged={plugin => pluginRef.current = plugin}
-              onReceiveViewData={data => {
-                addViewToList(data)
-              }}
+            <AppTopBar
+              onGadgetChanged={plugin => gadgetRef.current = plugin}
+              onReceiveViewData={data => addViewToList(data)}
             />
           </Header>
-          <Content
-          >
+          <Content>
             <ListView dataSource={listData} />
           </Content>
         </Layout>
       </Layout>
-
     </div>
   )
 }

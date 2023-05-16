@@ -12,12 +12,12 @@ import { HandleResultDataType } from '../../../gadgets/template/Interface'
  */
 export interface IProps {
 
-  onPluginChanged: (plugin: MicroApp) => void
+  onGadgetChanged: (plugin: MicroApp) => void
 
   onReceiveViewData: (data: HandleResultDataType) => void
 }
 
-export default ({ onPluginChanged, onReceiveViewData }: IProps) => {
+export default ({ onGadgetChanged, onReceiveViewData }: IProps) => {
 
   return <div>
     <Avatar
@@ -44,7 +44,7 @@ export default ({ onPluginChanged, onReceiveViewData }: IProps) => {
         },
       })
 
-      onPluginChanged(microApp)
+      onGadgetChanged(microApp)
     }}>
       add plugin
     </Button>
