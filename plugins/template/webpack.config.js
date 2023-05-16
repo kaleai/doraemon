@@ -10,7 +10,7 @@ module.exports = {
   mode: 'production',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'gadget/bundle.js',
+    filename: 'gadget.js',
     libraryTarget: 'umd',
     umdNamedDefine: true,
     libraryExport: 'default',
@@ -40,8 +40,8 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      filename:'gadget/index.html',
       title: pkgInfo.name,
+      filename:'index.html',
       template: 'index.html',
     })
   ]
