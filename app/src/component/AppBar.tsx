@@ -2,8 +2,8 @@ import { Avatar } from 'antd'
 import { loadMicroApp } from 'qiankun'
 import { MicroApp } from 'qiankun/es/interfaces'
 import { Button } from 'antd'
-import { InstallParams } from '../../../plugins/template/Interface'
-import { HandleResultDataType } from '../../../plugins/template/Interface'
+import { InstallParams } from '../../../gadgets/template/Interface'
+import { HandleResultDataType } from '../../../gadgets/template/Interface'
 
 /**
  * @author Jack Tony
