@@ -39,6 +39,7 @@ export default ({ onPluginChanged, onReceiveViewData }: IProps) => {
         props: params,
       }, {
         fetch(url, args) {
+          // https://blog.csdn.net/sunqiang4/article/details/122014916
           if (url.toString().startsWith('http://localhost')) {
             return window.fetch(url, {
               ...args,
