@@ -36,6 +36,11 @@ class Controller {
           { type: 'text', data: { text: md5Str } },
           { type: 'input', data: { text: 'please input some text' }, expectation: 'INPUT_STRING' },
         ],
+        suggestActions:[
+          {action:'dddd',text:'建议信息01'},
+          {action:'dddd',text:'建议信息02'},
+          {action:'dddd',text:'建议信息03'}
+        ]
       }
     } else {
       return { listItemInfos: [] }

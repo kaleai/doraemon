@@ -1,5 +1,6 @@
 import React from 'react'
-import { Card, Divider, List } from 'antd'
+import { Button, Card, Divider, List } from 'antd'
+import { DownloadOutlined, MessageOutlined } from '@ant-design/icons'
 
 /**
  * @author Jack Tony
@@ -7,7 +8,7 @@ import { Card, Divider, List } from 'antd'
  * @date 2023/5/15
  */
 export interface IProps {
-  dataSource: { id: string, type?: string }[]
+  dataSource: { id: string, type?: string, suggestActions?: { action: string, text: string }[] }[]
 }
 
 export default ({ dataSource }: IProps) => {
@@ -19,6 +20,12 @@ export default ({ dataSource }: IProps) => {
     renderItem={(item, index) => {
       if (item.type === 'DIVIDER') {
         return <div style={{ height: 16 }} />
+      } else if (item.type == 'SUGGEST') {
+        return item.suggestActions?.map(act => {
+          return <Button
+            style={{margin:8}}
+            type={'dashed'} shape="round" icon={<MessageOutlined />}>{act.text}</Button>
+        })
       }
       return (
         <List.Item

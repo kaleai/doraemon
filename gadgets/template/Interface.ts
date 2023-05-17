@@ -16,5 +16,5 @@ export interface IViewProps extends ListItemInfo {
 
 export type HandleResultDataType = {
   listItemInfos: ListItemInfo[]
-  suggestActions?: { action: string, text: string }
+  suggestActions?: { action: string, text: string }[]
 }

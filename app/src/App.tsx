@@ -14,7 +14,7 @@ const App = () => {
 
   const gadgetRef = useRef<MicroApp>()
 
-  const [listData, setListData] = useState<{ id: string, type?: string }[]>([])
+  const [listData, setListData] = useState<{ id: string, type?: string, suggestActions?: { action: string, text: string }[] }[]>([])
   const [collapsed, setCollapsed] = useState<boolean>(false)
 
   useEffect(() => {
@@ -41,7 +41,11 @@ const App = () => {
     })
 
     // update list data
+    if (data.suggestActions) {
+      listData.push({ id: 'SUGGEST:' + Math.random(), type: 'SUGGEST', suggestActions: data.suggestActions })
+    }
     listData.push({ id: 'DIVIDER:' + Math.random(), type: 'DIVIDER' })
+
     setListData([...listData])
 
     // bind view to list
@@ -55,31 +59,31 @@ const App = () => {
   return (
     <div className="App">
       <ConfigProvider prefixCls={'doreamon'}>
-      <Layout prefix={'App'}>
-        <Sider
-          width={230}
-          breakpoint="lg"
-          collapsedWidth="0"
-          trigger={null} collapsible collapsed={collapsed}>
-          <SidebarContent />
-        </Sider>
+        <Layout prefix={'App'}>
+          <Sider
+            width={230}
+            breakpoint="lg"
+            collapsedWidth="0"
+            trigger={null} collapsible collapsed={collapsed}>
+            <SidebarContent />
+          </Sider>
 
-        <Layout className={'layout'}>
-          <AppTopBar
-            isCollapsed={collapsed}
-            onClickCollapse={() => setCollapsed(!collapsed)}
-            onGadgetChanged={plugin => gadgetRef.current = plugin}
-            onReceiveViewData={data => addViewToList(data)}
-          />
+          <Layout className={'layout'}>
+            <AppTopBar
+              isCollapsed={collapsed}
+              onClickCollapse={() => setCollapsed(!collapsed)}
+              onGadgetChanged={plugin => gadgetRef.current = plugin}
+              onReceiveViewData={data => addViewToList(data)}
+            />
 
-          <Divider style={{ margin: 0 }} />
+            <Divider style={{ margin: 0 }} />
 
-          <Content style={{ padding: 12 }}>
-            <ListView dataSource={listData} />
-            <FloatButton.BackTop />
-          </Content>
+            <Content style={{ padding: 12 }}>
+              <ListView dataSource={listData} />
+              <FloatButton.BackTop />
+            </Content>
+          </Layout>
         </Layout>
-      </Layout>
       </ConfigProvider>
     </div>
   )
