@@ -40,13 +40,14 @@ const App = () => {
       })
     })
 
-    // update list data
-    if (data.suggestActions) {
-      listData.push({ id: 'SUGGEST:' + Math.random(), type: 'SUGGEST', suggestActions: data.suggestActions })
-    }
-    listData.push({ id: 'DIVIDER:' + Math.random(), type: 'DIVIDER' })
+    const newList = listData
 
-    setListData([...listData])
+    if (data.suggestActions) {
+      newList.push({ id: 'SUGGEST:' + Math.random(), type: 'SUGGEST', suggestActions: data.suggestActions })
+    }
+    newList.push({ id: 'DIVIDER:' + Math.random(), type: 'DIVIDER' })
+
+    setListData([...newList])
 
     // bind view to list
     if (gadgetRef.current) {
