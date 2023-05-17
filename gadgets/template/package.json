@@ -3,11 +3,11 @@
   "name": "gadget-template",
   "version": "0.0.1",
   "description": "这是一个示例插件，可参考此插件模板开发自己的插件",
-  "icon": "",
-  "homepage": "",
+  "icon": "https://avatars.githubusercontent.com/u/129379744?s=200&v=4",
+  "homepage": "https://github.com/kaleai",
   "bugs": {
-    "url": "https://bugReport.kale.com",
-    "email": "demo@kale.com"
+    "url": "https://github.com/kaleai",
+    "email": "example@kale.com"
   },
   "keywords": [
     "template",

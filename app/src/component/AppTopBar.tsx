@@ -38,9 +38,25 @@ export default ({ onGadgetChanged, onReceiveViewData }: IProps) => {
         container: '#gadgetContainer',
         props: params,
       }, {
-        fetch(url, args) {
-          // https://blog.csdn.net/sunqiang4/article/details/122014916
-          return window.fetch(url, args);
+        fetch(url, args) { // https://blog.csdn.net/sunqiang4/article/details/122014916
+          window.fetch('http://localhost:7031/index.html')
+            .then(response => response.text())
+            .then(htmlString => {
+              // 解析 HTML 字符串
+              const parser = new DOMParser()
+              const doc = parser.parseFromString(htmlString, 'text/html')
+
+              // 获取 meta 标签数组
+              const metaElements = doc.getElementsByTagName('meta')
+
+              // 遍历 meta 标签数组，输出属性名和属性值
+              for (let i = 0; i < metaElements.length; i++) {
+                const meta = metaElements[i]
+                console.log(meta.getAttribute('name') + ': ' + meta.getAttribute('content'))
+              }
+            })
+            .catch(error => console.error(error))
+          return window.fetch(url, args)
         },
       })
 
