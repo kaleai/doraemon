@@ -93,7 +93,6 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveViewDa
           container: '#gadgetContainer',
           props: params,
         }, {
-
           fetch(url, args) { // https://blog.csdn.net/sunqiang4/article/details/122014916
             window.fetch('http://localhost:7031/index.html')
               .then(response => response.text())

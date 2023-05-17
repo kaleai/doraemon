@@ -24,7 +24,7 @@ import React from 'react'
 export default () => {
   return <div style={{ paddingTop: 12, paddingBottom: 12, display: 'flex', flexDirection: 'column', height: '100%' }}>
 
-    <div style={{ marginTop: 8, marginBottom: 8 }}>
+    <div style={{ margin: 8 }}>
       <Avatar shape="square" icon={<UserOutlined />} size={'large'} />
       <span style={{ color: 'white' }}>UserName</span>
     </div>

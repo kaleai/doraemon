@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { MicroApp } from 'qiankun/es/interfaces'
-import { Divider, Layout } from 'antd'
+import { ConfigProvider, Divider, Layout } from 'antd'
 import { ListItemInfo, IViewProps } from '../../gadgets/template/Interface'
 import { HandleResultDataType } from '../../gadgets/template/Interface'
 import ListView from './component/ListView'
@@ -54,6 +54,7 @@ const App = () => {
 
   return (
     <div className="App">
+      <ConfigProvider prefixCls={'doreamon'}>
       <Layout prefix={'App'}>
         <Sider
           width={230}
@@ -78,6 +79,7 @@ const App = () => {
           </Content>
         </Layout>
       </Layout>
+      </ConfigProvider>
     </div>
   )
 }
