@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { MicroApp } from 'qiankun/es/interfaces'
-import { Layout } from 'antd'
+import { Divider, Layout } from 'antd'
 import { ListItemInfo, IViewProps } from '../../gadgets/template/Interface'
 import { HandleResultDataType } from '../../gadgets/template/Interface'
 import ListView from './component/ListView'
@@ -14,8 +14,8 @@ const App = () => {
 
   const gadgetRef = useRef<MicroApp>()
 
-  const [listData, setListData] = useState<any[]>([])
-  const [collapsed, setCollapsed] = useState(false)
+  const [listData, setListData] = useState<{ id: string, type?: string }[]>([])
+  const [collapsed, setCollapsed] = useState<boolean>(false)
 
   useEffect(() => {
     return () => {
@@ -27,7 +27,7 @@ const App = () => {
     const viewPropsList: IViewProps[] = []
 
     data.listItemInfos.forEach((itemInfo: ListItemInfo) => {
-      const containerId = 'CID_' + Math.random()
+      const containerId = 'CID:' + Math.random()
 
       listData.push({
         id: containerId,
@@ -41,31 +41,39 @@ const App = () => {
     })
 
     // update list data
+    listData.push({ id: 'DIVIDER:' + Math.random(), type: 'DIVIDER' })
     setListData([...listData])
 
     // bind view to list
     if (gadgetRef.current) {
       viewPropsList.forEach(props => {
-        setTimeout(() => gadgetRef.current?.update?.(props).then(), 100)
+        setTimeout(() => gadgetRef.current?.update?.(props).then(), 50)
       })
     }
   }
 
   return (
     <div className="App">
-      <Layout>
-        <Sider trigger={null} collapsible collapsed={collapsed}>
+      <Layout prefix={'App'}>
+        <Sider
+          width={230}
+          breakpoint="lg"
+          collapsedWidth="0"
+          trigger={null} collapsible collapsed={collapsed}>
           <SidebarContent />
         </Sider>
 
-        <Layout>
-          <Header style={{ padding: 0 }}>
-            <AppTopBar
-              onGadgetChanged={plugin => gadgetRef.current = plugin}
-              onReceiveViewData={data => addViewToList(data)}
-            />
-          </Header>
-          <Content>
+        <Layout className={'layout'}>
+          <AppTopBar
+            isCollapsed={collapsed}
+            onClickCollapse={() => setCollapsed(!collapsed)}
+            onGadgetChanged={plugin => gadgetRef.current = plugin}
+            onReceiveViewData={data => addViewToList(data)}
+          />
+
+          <Divider style={{ margin: 0 }} />
+
+          <Content style={{ padding: 12 }}>
             <ListView dataSource={listData} />
           </Content>
         </Layout>

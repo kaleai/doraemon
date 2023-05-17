@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, List } from 'antd'
+import { Card, Divider, List } from 'antd'
 
 /**
  * @author Jack Tony
@@ -7,7 +7,7 @@ import { Card, List } from 'antd'
  * @date 2023/5/15
  */
 export interface IProps {
-  dataSource: { id: string }[]
+  dataSource: { id: string, type?: string }[]
 }
 
 export default ({ dataSource }: IProps) => {
@@ -15,14 +15,17 @@ export default ({ dataSource }: IProps) => {
     id={'aladdin-chat-list'}
     itemLayout="vertical"
     dataSource={dataSource}
-    renderItem={(item, index) => (
-      <List.Item
-        style={{ paddingLeft: 12, paddingRight: 12 }}
-      >
-        <Card>
+    rowKey={item => item.id}
+    renderItem={(item, index) => {
+      if (item.type === 'DIVIDER') {
+        return <div style={{ height: 16 }} />
+      }
+      return (
+        <List.Item
+          style={{ paddingLeft: 12, paddingRight: 12, background: 'white' }}
+        >
           <div key={item.id} id={item.id} />
-        </Card>
-      </List.Item>
-
-    )} />
+        </List.Item>
+      )
+    }} />
 }

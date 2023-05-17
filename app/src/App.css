@@ -5,3 +5,7 @@
   display: flex;
   flex-direction: column;
 }
+
+.layout {
+  background-image: linear-gradient(to right, #F8FBFF,#F6F5FF);
+}

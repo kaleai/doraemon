@@ -31,8 +31,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.6.0",
     "@ant-design/icons-svg": "4.2.1",
-    "@ant-design/pro-components": "2.3.57",
-    "@antv/xflow": "1.0.48",
+    "@ant-design/pro-components": "^2.4.15",
     "antd": "^4.6.3",
     "qiankun": "^2.10.6",
     "react": "^17.0.2",
