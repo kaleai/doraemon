@@ -1,4 +1,4 @@
-import { Avatar, Divider, List, Popover } from 'antd'
+import { Avatar, Divider, List, Popover, Space, Tag } from 'antd'
 import { loadMicroApp } from 'qiankun'
 import { MicroApp } from 'qiankun/es/interfaces'
 import { Button, Input } from 'antd'
@@ -70,11 +70,11 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveViewDa
       }}
     />
 
-    <div style={{ display: 'flex' }}>
+    <div style={{ display: 'flex', flex: 1 }}>
       <Avatar style={{ marginRight: 12 }} shape={'square'} />
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <a style={{ fontWeight: 600, fontSize: 15 }} href="https://homepage.com">{'DebugGadget'}</a>
-        <span style={{ fontSize: 12, color: 'gray' }}>Ant Design, a design language for background applications, is refined by Ant UED Teamdfsdfds</span>
+        <span style={{ fontSize: 12, color: 'gray' }}>Debug Plugin</span>
       </div>
     </div>
 
@@ -117,7 +117,7 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveViewDa
 
         onGadgetChanged(microApp)
       }}>
-      init gadget
+      init
     </Button>
 
     <Popover
@@ -125,7 +125,7 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveViewDa
       trigger="click"
       placement="bottomRight"
       content={
-        <div style={{ width: 320 }}>
+        <div style={{ width: 350 }}>
 
           <Divider style={{ margin: 12 }} />
           <Search
@@ -142,8 +142,13 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveViewDa
             renderItem={(item, index) => (
               <List.Item>
                 <List.Item.Meta
+                  title={<div>
+                    <a href="https://ant.design">{item.name}</a>
+                    <Space size={0} style={{marginLeft:8}}>
+                    <Tag color="blue">Ant Design</Tag>
+                    <Tag color="#5BD8A6">TechUI</Tag>
+                  </Space></div>}
                   avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${index}`} shape={'square'} />}
-                  title={<a href="https://ant.design">{item.name}</a>}
                   description={item.description}
                 />
               </List.Item>

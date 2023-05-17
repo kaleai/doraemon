@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { MicroApp } from 'qiankun/es/interfaces'
-import { ConfigProvider, Divider, Layout } from 'antd'
+import { ConfigProvider, Divider, FloatButton, Layout } from 'antd'
 import { ListItemInfo, IViewProps } from '../../gadgets/template/Interface'
 import { HandleResultDataType } from '../../gadgets/template/Interface'
 import ListView from './component/ListView'
@@ -76,6 +76,7 @@ const App = () => {
 
           <Content style={{ padding: 12 }}>
             <ListView dataSource={listData} />
+            <FloatButton.BackTop />
           </Content>
         </Layout>
       </Layout>

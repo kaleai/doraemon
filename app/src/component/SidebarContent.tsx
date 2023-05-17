@@ -58,7 +58,7 @@ export default () => {
     />
 
     <Space style={{ color: 'white', fontSize: '18px', marginLeft: 18 }} size={'middle'}>
-      <span style={{ marginRight: 2 }}>Doraemon</span>
+      <span style={{ marginRight: 2, fontWeight: 'bold' }}>Doraemon</span>
       <InfoCircleFilled key="InfoCircleFilled" />
       <QuestionCircleFilled key="QuestionCircleFilled" />
       <GithubFilled key="GithubFilled" />
