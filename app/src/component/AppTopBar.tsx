@@ -71,7 +71,7 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveViewDa
     />
 
     <div style={{ display: 'flex', flex: 1 }}>
-      <Avatar style={{ marginRight: 12 }} shape={'square'} />
+      <Avatar style={{ marginRight: 12 }} shape={'square'} src={'https://img0.baidu.com/it/u=2224311546,765801345&fm=253&fmt=auto&app=138&f=JPEG'}/>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <a style={{ fontWeight: 600, fontSize: 15 }} href="https://homepage.com">{'DebugGadget'}</a>
         <span style={{ fontSize: 12, color: 'gray' }}>Debug Plugin</span>
@@ -140,16 +140,18 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveViewDa
             itemLayout="horizontal"
             dataSource={data}
             renderItem={(item, index) => (
-              <List.Item>
+              <List.Item actions={[<a key="list-loadmore-edit">install</a>, <a key="list-loadmore-more">more</a>]}>
                 <List.Item.Meta
-                  title={<div>
-                    <a href="https://ant.design">{item.name}</a>
-                    <Space size={0} style={{marginLeft:8}}>
-                    <Tag color="blue">Ant Design</Tag>
-                    <Tag color="#5BD8A6">TechUI</Tag>
-                  </Space></div>}
+                  title={
+                    <a href="https://ant.design">{item.name}</a>}
                   avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${index}`} shape={'square'} />}
-                  description={item.description}
+                  description={<div>
+                    <Space size={[0, 8]} wrap>
+                      <Tag color="blue">Ant Design</Tag>
+                      <Tag color="#5BD8A6">TechUI</Tag>
+                    </Space>
+                    {item.description}
+                </div>}
                 />
               </List.Item>
             )}
