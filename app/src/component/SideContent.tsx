@@ -54,8 +54,24 @@ export default () => {
           label: 'give me help',
         },
         {
-          key: '4',
+          key: '5',
           label: 'open the door in me',
+        },
+        {
+          key: '6',
+          label: 'Outlook Message',
+        },
+        {
+          key: '7',
+          label: 'PowerPoint Document',
+        },
+        {
+          key: '8',
+          label: 'Outlook Message',
+        },
+        {
+          key: '9',
+          label: 'Portable Document Format (PDF)',
         },
       ]}
     />
