@@ -4,7 +4,7 @@ export type InstallParams = {
 }
 
 export type ListItemInfo = {
-  type: string
+  type: string // SYS_CHAT_BOX/SYS_MARKDOWN/...
   data: any
   expectation?: string
 }

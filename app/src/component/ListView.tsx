@@ -10,10 +10,12 @@ import { DownloadOutlined, MessageOutlined } from '@ant-design/icons'
 export type ListItemDataType = { id: string, type: ItemType, conversationId?: string, suggestActions?: { action: string, text: string }[] }
 
 export enum ItemType {
-  FEEDBACK = 0,
-  SUGGESTION = 1,
-  DIVIDER = 2,
-  GADGET = 3,
+  FEEDBACK= 'built-in-feedback',
+  SUGGESTION = 'built-in-suggestion',
+  DIVIDER = 'built-in-divider',
+  GADGET = 'GADGET',
+  SYS_CHAT_BOX = 'built-in-chat-box',
+  SYS_MARKDOWN = 'built-in-markdown'
 }
 
 export interface IProps {
