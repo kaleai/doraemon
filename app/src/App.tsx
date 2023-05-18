@@ -5,7 +5,7 @@ import { ConfigProvider, Divider, FloatButton, Layout } from 'antd'
 import { HandleResultDataType, IViewProps, ListItemInfo } from '../../gadgets/template/Interface'
 import ListView, { ItemType, ListItemDataType } from './component/ListView'
 import AppTopBar from './component/AppTopBar'
-import SidebarContent from './component/SidebarContent'
+import SidebarContent from './component/SideContent'
 import { v4 as uuid } from 'uuid'
 
 const { Header, Sider, Content } = Layout

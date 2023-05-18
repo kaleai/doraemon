@@ -37,7 +37,7 @@ export default ({ dataSource }: IProps) => {
               style={{ margin: 8 }}
               type={'dashed'} shape="round" icon={<MessageOutlined />} onClick={() => {
               console.log(act)
-              // 给子应用发消息
+              // TODO by kale: 2023/5/18 给子应用发消息
             }
             }>
               {act.text}
@@ -46,7 +46,7 @@ export default ({ dataSource }: IProps) => {
         case ItemType.FEEDBACK:
           return <Button onClick={() => {
             console.log(item.conversationId)
-            // 给子应用发消息
+            // TODO by kale: 2023/5/18 给子应用发消息
           }
           }>
             like/unlike
