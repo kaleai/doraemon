@@ -1,3 +1,5 @@
+import { ActionParamsType } from './src/Controller'
+
 export type InstallParams = {
   onReceiveData: ((data: HandleResultDataType) => void) | undefined
   envInfo: Record<string, any>
@@ -14,8 +16,10 @@ export interface IViewProps extends ListItemInfo {
   readonly: boolean
 }
 
+export type SuggestActionType = { label: string, params: ActionParamsType }
+
 export type HandleResultDataType = {
   conversationId: string
   listItemInfos: ListItemInfo[]
-  suggestActions?: { action: string, text: string }[]
+  suggestActions?: SuggestActionType[]
 }

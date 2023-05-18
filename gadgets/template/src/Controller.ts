@@ -20,7 +20,7 @@ class Controller {
 
     if (action === 'INITIALIZATION') {
       return {
-        conversationId: '',
+        conversationId: 'eg:' + Math.random(),
         listItemInfos: [{ type: 'input', data: { text: 'please input some text' }, expectation: 'INPUT_STRING' }],
       }
     } else if (action === 'CALCULATE_MD5') {
@@ -33,19 +33,23 @@ class Controller {
       })
       const md5Str = md5(values.text)
       return {
-        conversationId:'',
+        conversationId: 'eg:' + Math.random(),
         listItemInfos: [
           { type: 'text', data: { text: md5Str } },
           { type: 'input', data: { text: 'please input some text' }, expectation: 'INPUT_STRING' },
         ],
-        suggestActions:[
-          {action:'dddd',text:'建议信息01'},
-          {action:'dddd',text:'建议信息02'},
-          {action:'dddd',text:'建议信息03'}
-        ]
+        suggestActions: [
+          { label: '建议信息01', params: { action: 'dddd' } },
+          { label: '建议信息02', params: { action: 'dddd' } },
+          { label: '建议信息03', params: { action: 'dddd' } },
+          { label: 'action name 03', params: { action: 'dddd' } },
+          { label: 'action name 03', params: { action: 'dddd' } },
+          { label: 'action name 03', params: { action: 'dddd' } },
+          { label: 'action name 03', params: { action: 'dddd' } },
+        ],
       }
     } else {
-      return { conversationId: '', listItemInfos: [] }
+      return { conversationId: 'eg:' + Math.random(), listItemInfos: [] }
     }
   }
 }
