@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button, Card, Divider, List, Space } from 'antd'
 import { DownloadOutlined, MessageOutlined } from '@ant-design/icons'
-import { SuggestActionType } from '../../../gadgets/template/Interface'
+import { SuggestActionType, ActionDataType } from '../../../gadgets/template/Interface'
 
 /**
  * @author Jack Tony
@@ -21,9 +21,13 @@ export enum ItemType {
 
 export interface IProps {
   dataSource: ListItemDataType[]
+
+  onClickSuggestAction: (data: ActionDataType) => void
+
+  onReceiveFeedback: (like: boolean, conversationId?: string) => void
 }
 
-export default ({ dataSource }: IProps) => {
+export default ({ dataSource, onClickSuggestAction, onReceiveFeedback: sendFeedback }: IProps) => {
   return <List
     itemLayout="vertical"
     dataSource={dataSource}
@@ -35,28 +39,27 @@ export default ({ dataSource }: IProps) => {
           return <Space style={{ display: 'flex', marginTop: -10, justifyContent: 'end' }} align={'end'}>
             <Button size={'small'} onClick={() => {
               console.log(item.conversationId)
-              // TODO by kale: 2023/5/18 给子应用发消息
+              sendFeedback(true, item.conversationId)
             }
             }>
               👍
             </Button>
             <Button size={'small'} onClick={() => {
               console.log(item.conversationId)
-              // TODO by kale: 2023/5/18 给子应用发消息
+              sendFeedback(false, item.conversationId)
             }
             }>
               👎
             </Button>
           </Space>
         case ItemType.SUGGESTION:
-          return <Space wrap style={{ marginTop: 6 }}>{item.suggestActions?.map(act => {
+          return <Space wrap style={{ marginTop: 6 }}>{item.suggestActions?.map(info => {
             return <Button
               type={'dashed'} shape="round" icon={<MessageOutlined />} onClick={() => {
-              console.log(act.label, act.params.action)
-              // TODO by kale: 2023/5/18 给子应用发消息
+              onClickSuggestAction(info.data)
             }
             }>
-              {act.label}
+              {info.label}
             </Button>
           })}</Space>
         case ItemType.DIVIDER:

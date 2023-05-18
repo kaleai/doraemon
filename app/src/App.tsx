@@ -7,15 +7,19 @@ import ListView, { ItemType, ListItemDataType } from './component/ListView'
 import AppTopBar from './component/AppTopBar'
 import SidebarContent from './component/SideContent'
 import { v4 as uuid } from 'uuid'
+import { initGlobalState, MicroAppStateActions } from 'qiankun'
 
 const { Header, Sider, Content } = Layout
 
 const App = () => {
 
+  const stateManager: MicroAppStateActions = initGlobalState({})
+
   const gadgetRef = useRef<MicroApp>()
 
   const [listData, setListData] = useState<ListItemDataType[]>([])
   const [collapsed, setCollapsed] = useState<boolean>(false)
+
 
   useEffect(() => {
     return () => {
@@ -84,7 +88,24 @@ const App = () => {
             <Divider style={{ margin: 0 }} />
 
             <Content style={{ padding: 12 }}>
-              <ListView dataSource={listData} />
+              <ListView
+                dataSource={listData}
+                onClickSuggestAction={(params) => {
+                  stateManager.setGlobalState({
+                    type: 'ACTION',
+                    params
+                  })
+                }}
+                onReceiveFeedback={(like, conversationId) => {
+                  stateManager.setGlobalState({
+                    type: 'FEEDBACK',
+                    params:{
+                      like,
+                      conversationId
+                    }
+                  })
+                }}
+              />
               <FloatButton.BackTop />
             </Content>
           </Layout>

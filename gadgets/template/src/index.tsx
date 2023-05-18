@@ -21,7 +21,17 @@ export default {
     )
   },
 
-  mount: async (props: { container: any, name: string }) => {
+  mount: async (props: { container: any, name: string, onGlobalStateChange: (params: any) => void }) => {
+    props.onGlobalStateChange((state: any, prev: any) => {
+      // state: 变更后的状态; prev 变更前的状态
+      console.log(state)
+      if (state.type === 'ACTION') {
+        controller.handleAction(state.params)
+      } else if (state.type === 'FEEDBACK') {
+        console.log(state.params)
+      }
+    })
+
     ReactDOM.render(<div />, props.container ? props.container.querySelector('#root') : document.getElementById('root'))
     // message.success(`${props.name} is installed 🎉`)
 

@@ -1,6 +1,6 @@
 import { Button, Input, Tag } from 'antd'
 import { IViewProps } from '../Interface'
-import { ActionParamsType } from './Controller'
+import { ActionDataType } from './Controller'
 import React, { useEffect, useRef, useState } from 'react'
 
 export default (

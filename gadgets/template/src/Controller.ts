@@ -1,4 +1,4 @@
-import { HandleResultDataType } from '../Interface'
+import { ActionDataType, HandleResultDataType } from '../Interface'
 import axios from 'axios'
 
 const md5 = require('js-md5')
@@ -7,15 +7,9 @@ const md5 = require('js-md5')
  *
  * @date 2023/5/12
  */
-export type ActionParamsType = {
-  action: string
-  expectation?: string
-  values?: any
-}
-
 class Controller {
 
-  public async handleAction({ action, expectation, values }: ActionParamsType): Promise<HandleResultDataType> {
+  public async handleAction({ action, expectation, values }: ActionDataType): Promise<HandleResultDataType> {
     console.log('handle action:', action, values)
 
     if (action === 'INITIALIZATION') {
@@ -39,13 +33,13 @@ class Controller {
           { type: 'input', data: { text: 'please input some text' }, expectation: 'INPUT_STRING' },
         ],
         suggestActions: [
-          { label: '建议信息01', params: { action: 'dddd' } },
-          { label: '建议信息02', params: { action: 'dddd' } },
-          { label: '建议信息03', params: { action: 'dddd' } },
-          { label: 'action name 03', params: { action: 'dddd' } },
-          { label: 'action name 03', params: { action: 'dddd' } },
-          { label: 'action name 03', params: { action: 'dddd' } },
-          { label: 'action name 03', params: { action: 'dddd' } },
+          { label: '建议信息01', data: { action: 'dddd' } },
+          { label: '建议信息02', data: { action: 'dddd' } },
+          { label: '建议信息03', data: { action: 'dddd' } },
+          { label: 'action name 03', data: { action: 'dddd' } },
+          { label: 'action name 03', data: { action: 'dddd' } },
+          { label: 'action name 03', data: { action: 'dddd' } },
+          { label: 'action name 03', data: { action: 'dddd' } },
         ],
       }
     } else {
