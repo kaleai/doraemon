@@ -1,4 +1,5 @@
 import {
+  SettingOutlined,
   ShareAltOutlined,
   StarFilled,
   UploadOutlined,
@@ -15,7 +16,7 @@ import {
   QuestionCircleFilled,
   SearchOutlined,
 } from '@ant-design/icons'
-import { Menu, Avatar, Space, Divider } from 'antd'
+import { Menu, Avatar, Space, Divider, Button } from 'antd'
 import React from 'react'
 
 
@@ -38,26 +39,28 @@ export default () => {
       items={[
         {
           key: '1',
-          icon: <UserOutlined />,
-          label: 'nav 1',
+          label: 'write javascript code',
         },
         {
           key: '2',
-          icon: <VideoCameraOutlined />,
-          label: 'nav 2',
+          label: 'ask for sql helper',
         },
         {
           key: '3',
-          icon: <UploadOutlined />,
-          label: 'nav 3',
+          label: 'write some note or todos',
         },
         {
           key: '4',
-          icon: <PlusCircleFilled />,
-          label: 'nav 4',
+          label: 'give me help',
+        },
+        {
+          key: '4',
+          label: 'open the door in me',
         },
       ]}
     />
+
+    <Button style={{ margin: 12, background: 'transparent', color: 'white' }} type={'default'} icon={<SettingOutlined />}>Settings</Button>
 
     <Space style={{ color: 'white', fontSize: '18px', marginLeft: 18 }} size={'middle'}>
       <span style={{ marginRight: 2, fontWeight: 'bold' }}>Doraemon</span>

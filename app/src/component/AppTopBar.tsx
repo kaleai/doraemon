@@ -26,33 +26,33 @@ export interface IProps {
 const data =
   [
     {
-      'name': 'search',
-      'icon': 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css',
-      'description': 'Search the internet with Google',
+      'name': 'Manorlead',
+      'icon': 'https://aix4u.notion.site/image/https%3A%2F%2Fchatgpt.vipmanor.com%2Flogo.png?id=d2bbbfa3-ae1b-417c-8134-b3006c78ea60&table=block&spaceId=a9c35667-3cbe-48c4-8afd-77c2276cae19&width=600&userId=&cache=v2',
+      'description':  'Search the internet with Google',
     },
     {
-      'name': 'calculator',
-      'icon': 'https://use.fontawesome.com/releases/v5.7.2/svgs/solid/calculator.svg',
+      'name': 'MixerBox OnePlayer',
+      'icon': 'https://aix4u.notion.site/image/https%3A%2F%2Fwww.mbplayer.com%2Ffavicon-app_store_icon.png?id=49634678-4dd4-461b-a50a-492c041681ed&table=block&spaceId=a9c35667-3cbe-48c4-8afd-77c2276cae19&width=600&userId=&cache=v2',
       'description': 'Perform simple calculations',
     },
     {
       'name': 'timer',
-      'icon': 'https://use.fontawesome.com/releases/v5.7.2/svgs/solid/clock.svg',
+      'icon': 'https://aix4u.notion.site/image/https%3A%2F%2Fchat.noteable.io%2Forigami%2Fstatic%2Fimages%2Fnoteable-logo.png?id=dcd44917-03a3-4534-ab2a-9df42355f235&table=block&spaceId=a9c35667-3cbe-48c4-8afd-77c2276cae19&width=600&userId=&cache=v2',
       'description': 'Set timers',
     },
     {
       'name': 'todo',
-      'icon': 'https://use.fontawesome.com/releases/v5.7.2/svgs/solid/check-circle.svg',
+      'icon': 'https://aix4u.notion.site/image/https%3A%2F%2Fplaylistai-plugin.vercel.app%2Ficon.png?id=c177cddb-3c88-4d75-9908-f08de53d8341&table=block&spaceId=a9c35667-3cbe-48c4-8afd-77c2276cae19&width=600&userId=&cache=v2',
       'description': 'Manage tasks and to-do lists',
     },
     {
       'name': 'translate',
-      'icon': 'https://use.fontawesome.com/releases/v5.7.2/svgs/solid/comment-dots.svg',
+      'icon': 'https://aix4u.notion.site/image/https%3A%2F%2Fcdn.otstatic.com%2Fthird-party%2Fimages%2Fopentable-logo-512.png?id=be330ee7-8f0b-42f9-b8c5-8599ec9824a8&table=block&spaceId=a9c35667-3cbe-48c4-8afd-77c2276cae19&width=600&userId=&cache=v2',
       'description': 'Translate text between languages',
     },
     {
       'name': 'weather',
-      'icon': 'https://use.fontawesome.com/releases/v5.7.2/svgs/solid/sun.svg',
+      'icon': 'https://aix4u.notion.site/image/https%3A%2F%2Fpolygon.io%2Fimgs%2Ffavicon.png?id=547707e8-3a82-446e-a1d6-1baefec80205&table=block&spaceId=a9c35667-3cbe-48c4-8afd-77c2276cae19&width=600&userId=&cache=v2',
       'description': 'Check the current weather conditions',
     },
   ]
@@ -144,7 +144,7 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveViewDa
                 <List.Item.Meta
                   title={
                     <a href="https://ant.design">{item.name}</a>}
-                  avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${index}`} shape={'square'} />}
+                  avatar={<Avatar src={item.icon} shape={'square'} />}
                   description={<div>
                     <Space size={[0, 8]} wrap>
                       <Tag color="blue">Ant Design</Tag>
