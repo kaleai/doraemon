@@ -2,11 +2,11 @@ import React, { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { MicroApp } from 'qiankun/es/interfaces'
 import { ConfigProvider, Divider, FloatButton, Layout } from 'antd'
-import { ListItemInfo, IViewProps } from '../../gadgets/template/Interface'
-import { HandleResultDataType } from '../../gadgets/template/Interface'
-import ListView from './component/ListView'
+import { HandleResultDataType, IViewProps, ListItemInfo } from '../../gadgets/template/Interface'
+import ListView, { ItemType, ListItemDataType } from './component/ListView'
 import AppTopBar from './component/AppTopBar'
 import SidebarContent from './component/SidebarContent'
+import { v4 as uuid } from 'uuid'
 
 const { Header, Sider, Content } = Layout
 
@@ -14,7 +14,7 @@ const App = () => {
 
   const gadgetRef = useRef<MicroApp>()
 
-  const [listData, setListData] = useState<{ id: string, type?: string, suggestActions?: { action: string, text: string }[] }[]>([])
+  const [listData, setListData] = useState<ListItemDataType[]>([])
   const [collapsed, setCollapsed] = useState<boolean>(false)
 
   useEffect(() => {
@@ -27,10 +27,11 @@ const App = () => {
     const viewPropsList: IViewProps[] = []
 
     data.listItemInfos.forEach((itemInfo: ListItemInfo) => {
-      const containerId = 'CID:' + Math.random()
+      const containerId = 'CID:' + uuid()
 
       listData.push({
         id: containerId,
+        type: ItemType.GADGET,
       })
 
       viewPropsList.push({
@@ -42,10 +43,13 @@ const App = () => {
 
     const newList = listData
 
+    newList.push({ id: uuid(), type: ItemType.FEEDBACK, conversationId: data.conversationId })
+
     if (data.suggestActions) {
-      newList.push({ id: 'SUGGEST:' + Math.random(), type: 'SUGGEST', suggestActions: data.suggestActions })
+      newList.push({ id: uuid(), type: ItemType.SUGGESTION, suggestActions: data.suggestActions })
     }
-    newList.push({ id: 'DIVIDER:' + Math.random(), type: 'DIVIDER' })
+
+    newList.push({ id: uuid(), type: ItemType.DIVIDER })
 
     setListData([...newList])
 

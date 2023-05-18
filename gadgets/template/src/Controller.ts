@@ -20,6 +20,7 @@ class Controller {
 
     if (action === 'INITIALIZATION') {
       return {
+        conversationId: '',
         listItemInfos: [{ type: 'input', data: { text: 'please input some text' }, expectation: 'INPUT_STRING' }],
       }
     } else if (action === 'CALCULATE_MD5') {
@@ -32,6 +33,7 @@ class Controller {
       })
       const md5Str = md5(values.text)
       return {
+        conversationId:'',
         listItemInfos: [
           { type: 'text', data: { text: md5Str } },
           { type: 'input', data: { text: 'please input some text' }, expectation: 'INPUT_STRING' },
@@ -43,7 +45,7 @@ class Controller {
         ]
       }
     } else {
-      return { listItemInfos: [] }
+      return { conversationId: '', listItemInfos: [] }
     }
   }
 }

@@ -7,25 +7,48 @@ import { DownloadOutlined, MessageOutlined } from '@ant-design/icons'
  *
  * @date 2023/5/15
  */
+export type ListItemDataType = { id: string, type: ItemType, conversationId?: string, suggestActions?: { action: string, text: string }[] }
+
+export enum ItemType {
+  FEEDBACK = 0,
+  SUGGESTION = 1,
+  DIVIDER = 2,
+  GADGET = 3,
+}
+
 export interface IProps {
-  dataSource: { id: string, type?: string, suggestActions?: { action: string, text: string }[] }[]
+  dataSource: ListItemDataType[]
 }
 
 export default ({ dataSource }: IProps) => {
   return <List
-    id={'aladdin-chat-list'}
     itemLayout="vertical"
     dataSource={dataSource}
     rowKey={item => item.id}
-    renderItem={(item, index) => {
-      if (item.type === 'DIVIDER') {
-        return <div style={{ height: 16 }} />
-      } else if (item.type == 'SUGGEST') {
-        return item.suggestActions?.map(act => {
-          return <Button
-            style={{margin:8}}
-            type={'dashed'} shape="round" icon={<MessageOutlined />}>{act.text}</Button>
-        })
+    renderItem={(item: ListItemDataType, index) => {
+      switch (item.type) {
+        case ItemType.DIVIDER:
+          return <div style={{ height: 16 }} />
+        case ItemType.SUGGESTION:
+          return item.suggestActions?.map(act => {
+            return <Button
+              style={{ margin: 8 }}
+              type={'dashed'} shape="round" icon={<MessageOutlined />} onClick={() => {
+              console.log(act)
+              // 给子应用发消息
+            }
+            }>
+              {act.text}
+            </Button>
+          })
+        case ItemType.FEEDBACK:
+          return <Button onClick={() => {
+            console.log(item.conversationId)
+            // 给子应用发消息
+          }
+          }>
+            like/unlike
+          </Button>
       }
       return (
         <List.Item
