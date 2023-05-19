@@ -34,11 +34,12 @@ public class MyWebToolWindowContent {
         // 将 JBCefBrowser 的UI控件设置到Panel中
         this.content.add(jbCefBrowser.getComponent(), BorderLayout.CENTER);
         // 先调接口拿地址
-        String newUrl = HttpUtils.sendGet("https://service-l78wcyp6-1306191308.hk.apigw.tencentcs.com/release/");
+//        String newUrl = HttpUtils.sendGet("https://service-l78wcyp6-1306191308.hk.apigw.tencentcs.com/release/");
+        String newUrl= "";
         System.out.println(newUrl);
         if (StringUtils.isBlank(newUrl)) {
             // 默认地址
-            newUrl = "http://43.154.117.92";
+            newUrl = "http://localhost:3000";
         }
         // 加载URL
         jbCefBrowser.loadURL(newUrl);
