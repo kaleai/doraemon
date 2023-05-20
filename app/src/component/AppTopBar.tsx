@@ -3,7 +3,7 @@ import { loadMicroApp } from 'qiankun'
 import { MicroApp } from 'qiankun/es/interfaces'
 import { Button, Input } from 'antd'
 import { InstallParams } from '../../../gadgets/template/Interface'
-import { HandleResultDataType } from '../../../gadgets/template/Interface'
+import { ConversationDataType } from '../../../gadgets/template/Interface'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 
 const { Search } = Input
@@ -20,7 +20,7 @@ export interface IProps {
 
   onGadgetChanged: (plugin: MicroApp) => void
 
-  onReceiveViewData: (data: HandleResultDataType) => void
+  onReceiveConversationData: (data: ConversationDataType) => void
 }
 
 const data =
@@ -57,7 +57,7 @@ const data =
     },
   ]
 
-export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveViewData }: IProps) => {
+export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveConversationData }: IProps) => {
 
   return <div style={{ background: 'white', height: 50, display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
     <Button
@@ -83,7 +83,7 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveViewDa
       onClick={() => {
         // 初始化插件的参数
         const params: InstallParams = {
-          onReceiveData: onReceiveViewData,
+          onReceiveConversationData,
           envInfo: {}, // 环境信息，比如是否是浏览器、小程序、vscode插件等
         }
 
