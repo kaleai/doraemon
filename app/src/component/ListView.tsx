@@ -33,6 +33,7 @@ export default ({ dataSource, onClickSuggestAction, onReceiveFeedback: sendFeedb
     dataSource={dataSource}
     split={false}
     rowKey={item => item.id}
+    locale={{emptyText:<div>Empty</div>}}
     renderItem={(item: ListItemDataType, index) => {
       switch (item.type) {
         case ItemType.FEEDBACK:

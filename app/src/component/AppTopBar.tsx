@@ -4,7 +4,7 @@ import { MicroApp } from 'qiankun/es/interfaces'
 import { Button, Input } from 'antd'
 import { InstallParams } from '../../../gadgets/template/Interface'
 import { HandleResultDataType } from '../../../gadgets/template/Interface'
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
+import { MenuFoldOutlined, MenuUnfoldOutlined, SwapOutlined } from '@ant-design/icons'
 
 const { Search } = Input
 
@@ -162,7 +162,9 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveViewDa
     >
       <Button
         style={{ marginLeft: 12, marginRight: 12 }}
-        type={'primary'}>
+        type={'primary'}
+        icon={<SwapOutlined />}
+      >
         Switch Gadget
       </Button>
     </Popover>
