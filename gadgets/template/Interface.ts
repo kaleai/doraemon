@@ -28,8 +28,38 @@ export type ConversationDataType = {
   suggestActions?: SuggestActionType[]
 }
 
-export interface IErrorViewElementProps {
+export interface ISysErrorInfo {
   name: string
-  errorMessage: string
-  errorCode: string
+  message?: string
+  code?: string
+}
+
+export interface ISysChatBox {
+  placeholder?: string
+}
+
+export class SysViewElementInfo {
+
+  static ErrorInfo = class cls implements ViewElementInfoType {
+    viewType: 'SYS_ERROR'
+    data: any
+    expectation?: string
+
+    constructor(info: ISysErrorInfo, expectation?: string) {
+      this.data = info
+      this.expectation = expectation
+    }
+  }
+
+  static MarkdownInfo = class cls implements ViewElementInfoType {
+    viewType: 'SYS_CHAT_BOX'
+    data: any
+    expectation?: string
+
+    constructor(info: ISysChatBox, expectation?: string) {
+      this.data = info
+      this.expectation = expectation
+    }
+  }
+
 }

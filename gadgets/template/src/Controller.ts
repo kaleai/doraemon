@@ -1,4 +1,4 @@
-import { ActionInfoType, ConversationDataType } from '../Interface'
+import { ActionInfoType, ConversationDataType,SysViewElementInfo } from '../Interface'
 import axios from 'axios'
 
 const md5 = require('js-md5')

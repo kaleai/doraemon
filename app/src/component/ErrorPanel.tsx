@@ -1,4 +1,6 @@
-import {IErrorViewElementProps} from '../../../gadgets/template/Interface'
-export default (props: IErrorViewElementProps) => {
+import {ISysErrorInfo} from '../../../gadgets/template/Interface'
+
+
+export default (props: ISysErrorInfo) => {
   return null
 }

@@ -5,7 +5,7 @@ import { ConfigProvider, Divider, FloatButton, Layout } from 'antd'
 import { ConversationDataType, IViewElementProps, ViewElementInfoType } from '../../gadgets/template/Interface'
 import ListView, { ItemType, ListItemDataType } from './component/ListView'
 import AppTopBar from './component/AppTopBar'
-import SidebarContent from './component/SideContent'
+import SidebarContent from './component/SideBarContent'
 import { v4 as uuid } from 'uuid'
 import { initGlobalState, MicroAppStateActions } from 'qiankun'
 
@@ -36,24 +36,27 @@ const App = () => {
       listData.push({
         id: containerId,
         type: ItemType.GADGET,
+        data: itemInfo.data,
       })
 
-      viewPropsList.push({
-        containerId,
-        isReadonly: false,
-        ...itemInfo,
-      })
+      if (!itemInfo.viewType.startsWith('SYS')) {
+        viewPropsList.push({
+          containerId,
+          isReadonly: false,
+          ...itemInfo,
+        })
+      }
     })
 
     const newList = listData
 
-    newList.push({ id: uuid(), type: ItemType.FEEDBACK, conversationId: data.conversationId })
+    newList.push({ id: uuid(), type: ItemType.FEEDBACK, data:{conversationId: data.conversationId} })
 
     if (data.suggestActions) {
-      newList.push({ id: uuid(), type: ItemType.SUGGESTION, suggestActions: data.suggestActions })
+      newList.push({ id: uuid(), type: ItemType.SUGGESTION, data:{suggestActions: data.suggestActions} })
     }
 
-    newList.push({ id: uuid(), type: ItemType.DIVIDER })
+    newList.push({ id: uuid(), type: ItemType.DIVIDER, data: {} })
 
     setListData([...newList])
 
