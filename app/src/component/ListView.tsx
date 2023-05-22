@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Button, List, Space } from 'antd'
 import { MessageOutlined } from '@ant-design/icons'
 import { SuggestActionType, ActionInfoType, ISysChatBox, ISysErrorInfo } from '../../../gadgets/template/Interface'
 import ErrorPanel from './ErrorPanel'
+import ChatBox from './ChatBox'
 
 /**
  * @author Jack Tony
@@ -13,8 +14,8 @@ export type ListItemDataType = {
   id: string, type: ItemType, data:
     { conversationId?: string, } |
     { suggestActions?: SuggestActionType[] } |
-    { chatBoxInfo: ISysChatBox } |
-    { errorInfo: ISysErrorInfo };
+    ISysChatBox |
+    ISysErrorInfo;
 }
 
 export enum ItemType {
@@ -30,21 +31,46 @@ export enum ItemType {
 export interface IProps {
   dataSource: ListItemDataType[]
 
-  onClickSuggestAction: (data: ActionInfoType) => void
+  onClickSuggestAction: (actInfo: ActionInfoType) => void
 
   onReceiveFeedback: (like: boolean, conversationId?: string) => void
 }
 
 export default ({ dataSource, onClickSuggestAction, onReceiveFeedback: sendFeedback }: IProps) => {
+
+  const ref = useRef(null);
+
+  const handleResize = () => {
+    window.requestIdleCallback(() => {
+      // 在浏览器空闲时更新样式
+      if (ref.current) {
+      }
+    });
+  };
+
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(handleResize);
+    if (ref.current) {
+      // @ts-ignore
+      resizeObserver.observe(ref.current);
+    }
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
   return <List
     itemLayout="vertical"
     dataSource={dataSource}
     split={false}
-    rowKey={item => item.id}
+    rowKey={item => {
+      console.log('itemId',item.id)
+      return item.id
+    }}
     locale={{ emptyText: <div>Empty</div> }}
     renderItem={(item: ListItemDataType, index) => {
       // @ts-ignore
-      const { conversationId, suggestActions, chatBoxInfo, errorInfo } = item.data
+      const { conversationId, suggestActions, placeholder, errorInfo } = item.data
 
       switch (item.type) {
         case ItemType.FEEDBACK:
@@ -78,6 +104,10 @@ export default ({ dataSource, onClickSuggestAction, onReceiveFeedback: sendFeedb
           return <div style={{ height: 16 }} />
         case ItemType.ERROR:
           return <ErrorPanel name={errorInfo.name} message={errorInfo.message} code={errorInfo.code} />
+        case ItemType.CHAT_BOX:
+          return <ChatBox placeholder={placeholder} onSubmit={(actInfo) => {
+            onClickSuggestAction(actInfo)
+          }} />
         default:
           return (
             <List.Item

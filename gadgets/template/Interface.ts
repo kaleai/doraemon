@@ -1,3 +1,12 @@
+/**
+ * @author Jack Tony
+ * @date 2023/5/20
+ */
+export enum SYS_ACTION_NAME {
+  INITIALIZATION = 'SYS_INITIALIZATION',
+  CHAT_BOX_SUBMIT = 'SYS_CHAT_BOX_SUBMIT'
+}
+
 export type InstallParams = {
   onReceiveConversationData: ((data: ConversationDataType) => void) | undefined
   envInfo: Record<string, any>
@@ -41,22 +50,24 @@ export interface ISysChatBox {
 export class SysViewElementInfo {
 
   static ErrorInfo = class cls implements ViewElementInfoType {
-    viewType: 'SYS_ERROR'
+    viewType: string
     data: any
     expectation?: string
 
     constructor(info: ISysErrorInfo, expectation?: string) {
+      this.viewType = 'SYS_ERROR'
       this.data = info
       this.expectation = expectation
     }
   }
 
-  static MarkdownInfo = class cls implements ViewElementInfoType {
-    viewType: 'SYS_CHAT_BOX'
+  static ChatBoxInfo = class cls implements ViewElementInfoType {
+    viewType: string
     data: any
     expectation?: string
 
     constructor(info: ISysChatBox, expectation?: string) {
+      this.viewType = 'SYS_CHAT_BOX'
       this.data = info
       this.expectation = expectation
     }

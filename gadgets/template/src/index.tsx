@@ -2,7 +2,7 @@ import { message } from 'antd'
 import ReactDOM from 'react-dom'
 import View from './View'
 import controller from './Controller'
-import { InstallParams, ConversationDataType, IViewElementProps } from '../Interface'
+import { InstallParams, ConversationDataType, IViewElementProps, SYS_ACTION_NAME } from '../Interface'
 import React from 'react'
 
 let onReceiveHandleResult: ((data: ConversationDataType) => void) | undefined | null
@@ -24,7 +24,13 @@ export default {
   mount: async (props: { container: any, name: string, onGlobalStateChange: (params: any) => void }) => {
     props.onGlobalStateChange((state: any, prev: any) => { // state: 变更后的状态; prev 变更前的状态
       if (state.type === 'ACTION') {
+        console.log('监听event', state)
+
         controller.handleAction(state.params)
+          .then(res => onReceiveHandleResult?.(res))
+          .catch(err => {
+            console.error(err)
+          })
       } else if (state.type === 'FEEDBACK') {
         console.log(state.params)
       }
@@ -35,8 +41,13 @@ export default {
 
     setTimeout(() => {
       controller.handleAction({
-        action: 'INITIALIZATION', expectation: 'init plugin view',
-      }).then(res => onReceiveHandleResult?.(res))
+        action: SYS_ACTION_NAME.INITIALIZATION,
+        expectation: 'init gadget: ' + props.name,
+      })
+        .then(res => onReceiveHandleResult?.(res))
+        .catch(err => {
+          console.error(err)
+        })
     }, 300)
   },
 

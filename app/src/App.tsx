@@ -8,7 +8,7 @@ import AppTopBar from './component/AppTopBar'
 import SidebarContent from './component/SideBarContent'
 import { v4 as uuid } from 'uuid'
 import { initGlobalState, MicroAppStateActions } from 'qiankun'
-
+import {Markdown} from './component/MarkdownView'
 const { Header, Sider, Content } = Layout
 
 const App = () => {
@@ -29,17 +29,19 @@ const App = () => {
 
   const addViewToList = (data: ConversationDataType) => {
     const viewPropsList: IViewElementProps[] = []
+    console.log('addViewToList', data)
 
     data.viewElementInfos.forEach((itemInfo: ViewElementInfoType) => {
+      const type = itemInfo.viewType.startsWith('SYS') ? itemInfo.viewType as ItemType : ItemType.GADGET
       const containerId = 'CID:' + uuid()
 
       listData.push({
         id: containerId,
-        type: ItemType.GADGET,
+        type: type,
         data: itemInfo.data,
       })
 
-      if (!itemInfo.viewType.startsWith('SYS')) {
+      if (type === ItemType.GADGET) {
         viewPropsList.push({
           containerId,
           isReadonly: false,
@@ -50,15 +52,19 @@ const App = () => {
 
     const newList = listData
 
-    newList.push({ id: uuid(), type: ItemType.FEEDBACK, data:{conversationId: data.conversationId} })
+
+    newList.push({ id: uuid(), type: ItemType.FEEDBACK, data: { conversationId: data.conversationId } })
 
     if (data.suggestActions) {
-      newList.push({ id: uuid(), type: ItemType.SUGGESTION, data:{suggestActions: data.suggestActions} })
+      newList.push({ id: uuid(), type: ItemType.SUGGESTION, data: { suggestActions: data.suggestActions } })
     }
 
     newList.push({ id: uuid(), type: ItemType.DIVIDER, data: {} })
 
     setListData([...newList])
+    console.log('listData',newList)
+
+    console.log('viewPropsList', viewPropsList)
 
     // bind view to list
     if (gadgetRef.current) {
@@ -96,16 +102,16 @@ const App = () => {
                 onClickSuggestAction={(params) => {
                   stateManager.setGlobalState({
                     type: 'ACTION',
-                    params
+                    params,
                   })
                 }}
                 onReceiveFeedback={(like, conversationId) => {
                   stateManager.setGlobalState({
                     type: 'FEEDBACK',
-                    params:{
+                    params: {
                       like,
-                      conversationId
-                    }
+                      conversationId,
+                    },
                   })
                 }}
               />

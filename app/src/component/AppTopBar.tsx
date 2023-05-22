@@ -135,7 +135,8 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveConver
             allowClear
             enterButton="Search"
             onSearch={() => {
-            }} />
+            }}
+          />
 
           <List
             itemLayout="horizontal"
