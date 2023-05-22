@@ -13,8 +13,8 @@ const init = () => {
   const gadget = DebugGadget
 
   gadget.bootstrap({
-    onReceiveData: (data) => {
-      data.listItemInfos.forEach((itemInfo) => {
+    onReceiveConversationData: (data) => {
+      data.viewElementInfos.forEach((itemInfo) => {
         const div = document.createElement('div')
         div.id = 'CID_' + Math.random()
         div.style.marginBottom = '20px'
@@ -26,7 +26,11 @@ const init = () => {
       })
     }
   })
-  gadget.mount({ name: 'DebugGadget', container: null }).then()
+  gadget.mount({
+    name: 'DebugGadget', container: null, onGlobalStateChange: () => {
+
+    }
+  }).then()
 }
 </script>
 

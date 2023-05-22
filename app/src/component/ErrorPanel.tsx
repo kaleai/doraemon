@@ -1,9 +1,4 @@
-export interface IProps {
-  name: string
-  errorMessage: string
-  errorCode: string
-}
-
-export default (props: IProps) => {
+import {IErrorViewElementProps} from '../../../gadgets/template/Interface'
+export default (props: IErrorViewElementProps) => {
   return null
 }

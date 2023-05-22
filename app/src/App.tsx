@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { MicroApp } from 'qiankun/es/interfaces'
 import { ConfigProvider, Divider, FloatButton, Layout } from 'antd'
-import { HandleResultDataType, IViewProps, ListItemInfo } from '../../gadgets/template/Interface'
+import { ConversationDataType, IViewElementProps, ViewElementInfoType } from '../../gadgets/template/Interface'
 import ListView, { ItemType, ListItemDataType } from './component/ListView'
 import AppTopBar from './component/AppTopBar'
 import SidebarContent from './component/SideContent'
@@ -27,10 +27,10 @@ const App = () => {
     }
   }, [])
 
-  const addViewToList = (data: HandleResultDataType) => {
-    const viewPropsList: IViewProps[] = []
+  const addViewToList = (data: ConversationDataType) => {
+    const viewPropsList: IViewElementProps[] = []
 
-    data.listItemInfos.forEach((itemInfo: ListItemInfo) => {
+    data.viewElementInfos.forEach((itemInfo: ViewElementInfoType) => {
       const containerId = 'CID:' + uuid()
 
       listData.push({
@@ -40,7 +40,7 @@ const App = () => {
 
       viewPropsList.push({
         containerId,
-        readonly: false,
+        isReadonly: false,
         ...itemInfo,
       })
     })
@@ -82,7 +82,7 @@ const App = () => {
               isCollapsed={collapsed}
               onClickCollapse={() => setCollapsed(!collapsed)}
               onGadgetChanged={plugin => gadgetRef.current = plugin}
-              onReceiveViewData={data => addViewToList(data)}
+              onReceiveConversationData={data => addViewToList(data)}
             />
 
             <Divider style={{ margin: 0 }} />
