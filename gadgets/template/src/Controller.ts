@@ -1,7 +1,6 @@
 import { ActionInfoType, ConversationDataType, SYS_ACTION_NAME, SysViewElementInfo } from '../Interface'
 
 const md5 = require('js-md5')
-import axios from 'axios'
 
 class Controller {
 

@@ -42,6 +42,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: pkgInfo.name,
       meta: {
+        id: pkgInfo.id,
         name:pkgInfo.name,
         icon:pkgInfo.icon,
         version:pkgInfo.version,

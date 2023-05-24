@@ -67,7 +67,7 @@ export default ({ dataSource, onClickSuggestAction, onReceiveFeedback: sendFeedb
       console.log('itemId',item.id)
       return item.id
     }}
-    locale={{ emptyText: <div>Empty</div> }}
+    locale={{ emptyText: <div>Empty! Please select the item you need in the top right corner </div> }}
     renderItem={(item: ListItemDataType, index) => {
       // @ts-ignore
       const { conversationId, suggestActions, placeholder, errorInfo } = item.data
