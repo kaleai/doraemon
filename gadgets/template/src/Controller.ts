@@ -11,7 +11,7 @@ class Controller {
     if (action === SYS_ACTION_NAME.INITIALIZATION || action === 'RE_INPUT') {
       return {
         conversationId: 'id:' + Math.random(),
-        viewElementInfos: [new SysViewElementInfo.ChatBoxInfo({ placeholder: 'please input some text' }, 'exp')],
+        viewElementInfos: [new SysViewElementInfo.ChatBox({ placeholder: 'please input some text' }, 'exp')],
       }
     }
 
@@ -23,6 +23,7 @@ class Controller {
       }
     }
 
+    return { conversationId: '', viewElementInfos: [] } // default
   }
 }
 

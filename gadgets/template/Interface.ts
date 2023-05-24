@@ -47,29 +47,29 @@ export interface ISysChatBox {
   placeholder?: string
 }
 
+abstract class AbsViewEleInfo<T> implements ViewElementInfoType {
+  viewType: string
+  data: T
+  expectation?: string
+
+  protected constructor(viewType: string, info: T, expectation?: string) {
+    this.viewType = viewType
+    this.data = info
+    this.expectation = expectation
+  }
+}
+
 export class SysViewElementInfo {
 
-  static ErrorInfo = class cls implements ViewElementInfoType {
-    viewType: string
-    data: any
-    expectation?: string
-
+  static ErrorPanel = class cls extends AbsViewEleInfo<ISysErrorInfo> {
     constructor(info: ISysErrorInfo, expectation?: string) {
-      this.viewType = 'SYS_ERROR'
-      this.data = info
-      this.expectation = expectation
+      super('SYS_ERROR', info, expectation)
     }
   }
 
-  static ChatBoxInfo = class cls implements ViewElementInfoType {
-    viewType: string
-    data: any
-    expectation?: string
-
+  static ChatBox = class cls extends AbsViewEleInfo<ISysChatBox> {
     constructor(info: ISysChatBox, expectation?: string) {
-      this.viewType = 'SYS_CHAT_BOX'
-      this.data = info
-      this.expectation = expectation
+      super('SYS_CHAT_BOX', info, expectation)
     }
   }
 
