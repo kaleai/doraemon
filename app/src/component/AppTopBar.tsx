@@ -138,12 +138,14 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveConver
         <Avatar style={{ marginRight: 12 }} shape={'square'}
                 src={'https://img0.baidu.com/it/u=2224311546,765801345&fm=253&fmt=auto&app=138&f=JPEG'} /></div>}
 
-    <Modal title="Basic Modal" open={isModalOpen}
-           okText={'Install'}
-           onCancel={() => {
-             setIsModalOpen(false)
-             setInstallUrl(null)
-           }} onOk={() => {
+    <Modal
+      title="Install New Gadget" open={isModalOpen}
+      okText={'Install'}
+      zIndex={9999}
+      onCancel={() => {
+        setIsModalOpen(false)
+        setInstallUrl(null)
+      }} onOk={() => {
       setInstallUrl(null)
       // TODO by kale: 2023/5/25 install gadget
     }}>

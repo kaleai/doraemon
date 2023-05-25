@@ -43,7 +43,7 @@ export default ({ entryUrl }: IProps) => {
 
         for (let i = 0; i < metaElements.length; i++) {
           const meta = metaElements[i]
-          console.log(meta.getAttribute('name') + ': ' + meta.getAttribute('content'))
+          // console.log(meta.getAttribute('name') + ': ' + meta.getAttribute('content'))
 
           const name = meta.getAttribute('name')
           if (name) {
