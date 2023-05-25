@@ -1,4 +1,4 @@
-import { Avatar, Divider, List, Popover, Space, Tag } from 'antd'
+import { Avatar, Divider, List, Modal, Popover, Space, Tag } from 'antd'
 import { loadMicroApp } from 'qiankun'
 import { MicroApp } from 'qiankun/es/interfaces'
 import { Button, Input } from 'antd'
@@ -7,6 +7,7 @@ import { InstallParams } from '../../../gadgets/template/Interface'
 import { ConversationDataType } from '../../../gadgets/template/Interface'
 import { MenuFoldOutlined, MenuUnfoldOutlined, SwapOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
+import GadgetDetail, { IGadgetInfo } from './GadgetDetail'
 
 const { Search } = Input
 
@@ -69,25 +70,15 @@ const data: IGadgetInfo[] =
     },
   ]
 
-interface IGadgetInfo {
-  id: string
-  entryUrl: string
-  name: string
-  icon: string
-  version: string
-  description: string
-  homepage?: string
-  author?: string
-  keywords?: string[]
-  email?: string
-  bugReport?: string
-}
-
 export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveConversationData }: IProps) => {
 
   const [curGadget, setCurGadget] = useState<IGadgetInfo>()
 
   const [gadgetList, setGadgetList] = useState<IGadgetInfo[]>(data)
+
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+
+  const [installUrl, setInstallUrl] = useState<string | null>(null)
 
   useEffect(() => {
     const info = localStorage.getItem('currentGadget') as (IGadgetInfo | null)
@@ -122,28 +113,6 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveConver
       },
     })
 
-    microApp.mountPromise.then(() => {
-      window.fetch(entryUrl)
-        .then(response => response.text())
-        .then(htmlString => {
-          // 解析 HTML 字符串
-          const parser = new DOMParser()
-          const doc = parser.parseFromString(htmlString, 'text/html')
-
-          // 获取 meta 标签数组
-          const metaElements = doc.getElementsByTagName('meta')
-
-          // 遍历 meta 标签数组，输出属性名和属性值
-          for (let i = 0; i < metaElements.length; i++) {
-            const meta = metaElements[i]
-            console.log(meta.getAttribute('name') + ': ' + meta.getAttribute('content'))
-          }
-          // gadgetList?.shift({})
-          localStorage.setItem('gadgetList', JSON.stringify(gadgetList))
-        })
-        .catch(error => console.error(error))
-    })
-
     onGadgetChanged(microApp)
   }
 
@@ -169,8 +138,27 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveConver
         <Avatar style={{ marginRight: 12 }} shape={'square'}
                 src={'https://img0.baidu.com/it/u=2224311546,765801345&fm=253&fmt=auto&app=138&f=JPEG'} /></div>}
 
+    <Modal title="Basic Modal" open={isModalOpen}
+           okText={'Install'}
+           onCancel={() => {
+             setIsModalOpen(false)
+             setInstallUrl(null)
+           }} onOk={() => {
+      setInstallUrl(null)
+      // TODO by kale: 2023/5/25 install gadget
+    }}>
+      <Input.Search style={{ marginBottom: 12 }} defaultValue={'http://localhost:7031'} onSearch={url => {
+        setInstallUrl(url)
+      }} />
+
+      {installUrl && <GadgetDetail entryUrl={installUrl} />}
+    </Modal>
+
     <Popover
-      title={<div><span>4th Dimensional Pocket</span><Button type={'link'}>Install More</Button> </div>}
+      title={<div><span>4th Dimensional Pocket</span><Button type={'link'} onClick={() => {
+        setIsModalOpen(true)
+      }
+      }>Install More</Button></div>}
       trigger="click"
       placement="bottomRight"
       content={
@@ -193,7 +181,8 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveConver
               <List.Item actions={[<a key="list-loadmore-edit" onClick={() => {
                 loadGadget(item.name, item.entryUrl)
                 setCurGadget(item)
-              }}>select</a>, <a key="list-loadmore-more">remove</a>]}>
+              }}>select</a>,
+              ]}>
                 <List.Item.Meta
                   title={<a href={item.homepage}>{item.name}</a>}
                   avatar={<Avatar src={item.icon} shape={'square'} />}
