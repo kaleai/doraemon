@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from 'react'
-import { Button, List, Space } from 'antd'
+import { Avatar, Button, List, Space } from 'antd'
 import { MessageOutlined } from '@ant-design/icons'
 import { SuggestActionType, ActionInfoType, ISysChatBox, ISysErrorInfo } from '../../../gadgets/template/Interface'
 import ErrorPanel from './ErrorPanel'
 import ChatBox from './ChatBox'
+import EmptyImg from '../image/empty.png'
 
 /**
  * @author Jack Tony
@@ -67,7 +68,9 @@ export default ({ dataSource, onClickSuggestAction, onReceiveFeedback: sendFeedb
       console.log('itemId',item.id)
       return item.id
     }}
-    locale={{ emptyText: <div>Empty! Please select the item you need in the top right corner </div> }}
+    locale={{ emptyText: <Space style={{marginTop:100}} direction={'vertical'} size={'large'}>
+        <Avatar size={100} src={EmptyImg}/>
+        Empty! Please select the item you need in the top right corner </Space> }}
     renderItem={(item: ListItemDataType, index) => {
       // @ts-ignore
       const { conversationId, suggestActions, placeholder, errorInfo } = item.data

@@ -164,8 +164,7 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveConver
       trigger="click"
       placement="bottomRight"
       content={
-        <div style={{ width: 350 }}>
-
+        <div style={{ width: 325 }}>
           <Divider style={{ margin: 12 }} />
           <Search
             style={{ marginBottom: 14, marginTop: 4 }}
