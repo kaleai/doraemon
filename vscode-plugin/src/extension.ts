@@ -103,7 +103,7 @@ export function activate(context: vscode.ExtensionContext) {
       // console.log(editor);
       vscode.window
         .showInputBox({
-          prompt: "主人，您有何吩咐?",
+          prompt: "主人，您有何吩咐?啊啊啊啊啊",
           placeHolder: "请帮我生成/优化/审查...",
         })
         .then((value) => {
@@ -128,7 +128,7 @@ export function activate(context: vscode.ExtensionContext) {
       // console.log(editor);
       vscode.window
         .showInputBox({
-          prompt: "主人，您有什么问题吗?",
+          prompt: "主人，您有什么问题吗？？？？？?",
           placeHolder: "帮我解释一下这段代码...",
         })
         .then((value) => {
@@ -700,7 +700,7 @@ class CursorWebviewViewProvider implements vscode.WebviewViewProvider {
     <body>
       <div id="read-box">
         <p style="font-size: 1.6em">欢迎使用CursorCode</p>
-        <p>对话会话：在下方输入框中输入问题</p>
+        <p>对话会话：在下方输入框中输入问题111111</p>
         <p>代码生成：右键代码框,在菜单中点击CourseCode选项输入需求</p>
         <p>代码优化：在代码框中选中代码,右键在菜单中点击CourseCode选项，在上方弹出的输入框中输入需求</p>
         <p>代码优化：在代码框中选中代码，在下方输入框中输入需求</p>
