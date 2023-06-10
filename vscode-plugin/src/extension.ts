@@ -4,7 +4,7 @@ import * as vscode from "vscode";
 const axios = require("axios").default;
 const path = require("path");
 const fs = require("fs");
-import { v4 as uuidv4 } from "uuid"; 
+import { v4 as uuidv4 } from "uuid";
 
 import { loginCursor } from "./auth";
 
@@ -73,9 +73,11 @@ interface BotMessage {
   useDiagnostics?: boolean | number;
 }
 
+
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export function activate01(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "cursorcode" is now active!');

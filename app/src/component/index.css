@@ -1,0 +1,35 @@
+.sideBarContent {
+    height: calc(100vh - 200px); /* 中间部分高度计算，减去上下部分的高度 */
+    overflow: auto;
+}
+
+.transparentBtn {
+    margin: 12px;
+    background: transparent;
+    color: white;
+}
+
+.transparentBtn:hover {
+    color: #1b6ffe;
+}
+
+.dynamicIcon {
+    padding: 4px;
+}
+
+.dynamicIcon:hover {
+    background: #092244;
+    border-radius: 3px;
+}
+
+.fullHeight {
+    height: 100%;
+}
+
+.fullWidth{
+    width: 100%;
+}
+
+.userAvatar{
+    border: 1.5px solid #ebdb45;
+}
