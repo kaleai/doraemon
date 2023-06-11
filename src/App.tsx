@@ -7,7 +7,7 @@ import {
   ActionHandleResultType,
   IViewElementProps,
   ViewElementInfoType, FeedbackInfoType,
-} from '../../gadgets/template/Interface'
+} from '../gadget-template/Interface'
 import ListView, { ItemType, ListItemDataType } from './component/ListView'
 import AppTopBar from './component/AppTopBar'
 import SidebarContent from './component/SideBarContent'

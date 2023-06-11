@@ -2,9 +2,7 @@ import { Avatar, Divider, List, Modal, Popover, Space, Tag, Typography } from 'a
 import { loadMicroApp } from 'qiankun'
 import { MicroApp } from 'qiankun/es/interfaces'
 import { Button, Input } from 'antd'
-import { InstallProps } from '../../../gadgets/template/Interface'
-
-import { ActionHandleResultType } from '../../../gadgets/template/Interface'
+import { InstallProps,ActionHandleResultType } from '../../gadget-template/Interface'
 import { MenuFoldOutlined, MenuUnfoldOutlined, SwapOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
 import GadgetDetail, { IGadgetInfo } from './GadgetDetail'
