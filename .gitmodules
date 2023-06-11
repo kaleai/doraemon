@@ -1,0 +1,3 @@
+[submodule "gadget-template"]
+	path = gadget-template
+	url = https://github.com/doraemon-ai/gadget-template.git
