@@ -72,9 +72,12 @@ export default ({ dataSource, onClickSuggestAction, onReceiveFeedback: sendFeedb
       return item.id
     }}
     locale={{
-      emptyText: <Space style={{ marginTop: 100 }} direction={'vertical'} size={'large'}>
-        <Avatar size={100} src={EmptyImg} />
-        Empty! Please select the item you need in the top right corner </Space>,
+      emptyText:
+        <Space className={'fullHeight'} style={{ marginTop: 100 }} direction={'vertical'} size={'large'}>
+          <Avatar size={100} src={EmptyImg} shape={'square'} />
+          <span style={{ color: 'gray', fontWeight: 'bold' }}>空空如也~ 您可以在右上角切换你需要的功能</span>
+        </Space>
+      ,
     }}
     renderItem={(item: ListItemDataType, index) => {
       // @ts-ignore
@@ -82,10 +85,10 @@ export default ({ dataSource, onClickSuggestAction, onReceiveFeedback: sendFeedb
 
       switch (item.type) {
         case ItemType.FEEDBACK:
-          return <Space style={{ display: 'flex', marginTop: -10,marginRight:4, justifyContent: 'end' }} align={'end'}>
+          return <Space style={{ display: 'flex', marginTop: -10, marginRight: 4, justifyContent: 'end' }} align={'end'}>
             <Button
               size={'small'}
-              icon={<LikeTwoTone twoToneColor={'#f9be55'}/>}
+              icon={<LikeTwoTone twoToneColor={'#f9be55'} />}
               onClick={() => {
                 sendFeedback(true, sessionUUId)
               }} />

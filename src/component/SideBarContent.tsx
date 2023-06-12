@@ -12,6 +12,7 @@ import {
 } from '@ant-design/icons'
 import { Menu, Avatar, Space, Divider, Button } from 'antd'
 import React from 'react'
+import { KEY } from '../constant'
 import './index.css'
 
 
@@ -34,9 +35,9 @@ export default (props: IProps) => {
           className={'userAvatar'}
           icon={<UserOutlined />}
           size={'large'}
-          src={localStorage.getItem('doraemon_user_avatar')}
+          src={localStorage.getItem(KEY.USER_AVATAR)}
         />
-        <span style={{ color: 'white' }}>{localStorage.getItem('doraemon_user_name')??'游客用户'}</span>
+        <span style={{ color: 'white' }}>{localStorage.getItem(KEY.USER_NAME) ?? '游客用户'}</span>
       </Space>
 
       <Button
