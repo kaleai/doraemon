@@ -15,11 +15,13 @@
 
 .dynamicIcon {
     padding: 4px;
+    color: white;
 }
 
 .dynamicIcon:hover {
-    background: #092244;
-    border-radius: 3px;
+    background: white;
+    border-radius: 6px;
+    color: #001528;
 }
 
 .fullHeight {
