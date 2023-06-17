@@ -29,7 +29,7 @@ const App = () => {
 
   const [listData, setListData] = useState<ListItemDataType[]>([])
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
-  const [isShowSettings, setIsShowSettings] = useState<boolean>(true)
+  const [isShowSettings, setIsShowSettings] = useState<boolean>(false)
   const [isGlobalLoading, setIsGlobalLoading] = useState<boolean>(false)
 
 
