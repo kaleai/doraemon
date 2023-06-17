@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { MicroApp } from 'qiankun/es/interfaces'
-import { ConfigProvider, Divider, FloatButton, Layout, Spin } from 'antd'
+import { ConfigProvider, Divider, Layout, Spin } from 'antd'
 import {
   ActionInfoType,
   ActionHandleResultType,
@@ -14,6 +14,8 @@ import SidebarContent from './component/SideBarContent'
 import { v4 as uuid } from 'uuid'
 import { initGlobalState, MicroAppStateActions } from 'qiankun'
 import Settings from './pages/Settings'
+import axios from 'axios'
+import { IGlobalConfig } from './interface'
 
 const { Header, Sider, Content } = Layout
 
@@ -23,13 +25,21 @@ const App = () => {
 
   const gadgetRef = useRef<MicroApp>()
 
+  const [globalConfig, setGlobalConfig] = useState<IGlobalConfig>()
+
   const [listData, setListData] = useState<ListItemDataType[]>([])
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
-  const [isShowSettings, setIsShowSettings] = useState<boolean>(false)
+  const [isShowSettings, setIsShowSettings] = useState<boolean>(true)
   const [isGlobalLoading, setIsGlobalLoading] = useState<boolean>(false)
 
 
   useEffect(() => {
+    axios('https://raw.githubusercontent.com/doraemon-ai/4th-dimensional-pocket/main/config.json').then(res => {
+      if (res.status === 200) {
+        setGlobalConfig(res.data)
+      }
+    })
+
     return () => {
       gadgetRef.current?.unmount()
     }
@@ -77,6 +87,10 @@ const App = () => {
     viewPropsList.forEach(props => setTimeout(() => gadgetRef.current?.update?.(props), 50))
   }
 
+  if (!globalConfig) {
+    return <Spin spinning />
+  }
+
   return (
     <div className="App">
       <ConfigProvider prefixCls={'doraemon'}>
@@ -85,21 +99,30 @@ const App = () => {
             width={230}
             breakpoint="lg"
             collapsedWidth="0"
-            trigger={null} collapsible collapsed={isCollapsed}>
-            <SidebarContent onClickSettings={() => {
-              setIsShowSettings(true)
+            trigger={null}
+            collapsible
+            collapsed={isCollapsed}
+          >
+            <SidebarContent
+              globalConfig={globalConfig}
+              onClickSettings={() => {
+                setIsShowSettings(true)
 
-              setTimeout(() => {
-                setIsCollapsed(true)
-
-              }, 450)
-            }} />
+                setTimeout(() => {
+                  setIsCollapsed(true)
+                }, 450)
+              }}
+            />
           </Sider>
 
-          <Settings isHide={!isShowSettings} onClickClose={() => {
-            setIsCollapsed(false)
-            setIsShowSettings(false)
-          }} />
+          <Settings
+            globalConfig={globalConfig}
+            isHide={!isShowSettings}
+            onClickClose={() => {
+              setIsCollapsed(false)
+              setIsShowSettings(false)
+            }}
+          />
 
           <Layout className={'layout'} style={{ display: isShowSettings ? 'none' : undefined }}>
             <AppTopBar
@@ -124,7 +147,6 @@ const App = () => {
 
             <Divider style={{ margin: 0 }} />
 
-
             <Content>
               <Spin spinning={isGlobalLoading}>
                 <div
@@ -134,26 +156,25 @@ const App = () => {
                     padding: 12,
                   }}
                 >
-                <ListView
-                  dataSource={listData}
-                  onClickSuggestAction={(params) => {
-                    eventManager.setGlobalState({
-                      category: 'ACTION',
-                      params,
-                    })
-                  }}
-                  onReceiveFeedback={(like, sessionUUId) => {
-                    eventManager.setGlobalState({
-                      category: 'FEEDBACK',
-                      params: {
-                        like,
-                        sessionUUId,
-                      } as FeedbackInfoType,
-                    })
-                  }}
-                />
+                  <ListView
+                    dataSource={listData}
+                    onClickSuggestAction={(params) => {
+                      eventManager.setGlobalState({
+                        category: 'ACTION',
+                        params,
+                      })
+                    }}
+                    onReceiveFeedback={(like, sessionUUId) => {
+                      eventManager.setGlobalState({
+                        category: 'FEEDBACK',
+                        params: {
+                          like,
+                          sessionUUId,
+                        } as FeedbackInfoType,
+                      })
+                    }}
+                  />
                 </div>
-                {/*<FloatButton.BackTop />*/}
               </Spin>
             </Content>
           </Layout>

@@ -7,18 +7,19 @@ import {
 } from '@ant-design/icons'
 import {
   GithubFilled,
-  InfoCircleFilled,
   PlusCircleFilled,
 } from '@ant-design/icons'
-import { Menu, Avatar, Space, Divider, Button } from 'antd'
+import { Menu, Avatar, Space, Button, Tooltip } from 'antd'
 import React from 'react'
 import { KEY } from '../constant'
 import './index.css'
+import { IConfigEntry, IGlobalConfig } from '../interface'
 
 
 // import InfiniteScroll from 'react-infinite-scroll-component';
 
 interface IProps {
+  globalConfig: IGlobalConfig
   onClickSettings: () => void
 }
 
@@ -27,7 +28,35 @@ interface IProps {
  * @date 2023/5/15
  */
 export default (props: IProps) => {
-  const { onClickSettings } = props
+  const { globalConfig, onClickSettings } = props
+
+  /**
+   * 渲染外部跳转网站的ICON
+   */
+  const renderEntranceIcon = (icon: any, cfgInfo?: IConfigEntry) => {
+    if (!cfgInfo) {
+      return null
+    }
+    return <Tooltip title={cfgInfo.label}>
+      <div className={'dynamicIcon'} onClick={() => {
+        window.open(cfgInfo.url)
+      }}>
+        {icon}
+      </div>
+    </Tooltip>
+  }
+
+  const mockMenuListData = () => {
+    const list = []
+    for (let i = 0; i < 10; i++) {
+      list.push({
+        key: 'key_' + i,
+        label: 'write javascript code',
+      })
+    }
+    return list
+  }
+
   return <div>
     <div style={{ height: 110, paddingTop: 12, display: 'flex', flexDirection: 'column' }}>
       <Space style={{ marginLeft: 10 }}>
@@ -53,53 +82,8 @@ export default (props: IProps) => {
       <Menu
         style={{ flex: 1 }}
         theme="dark"
-        defaultSelectedKeys={['1']}
-        items={[
-          {
-            key: '1',
-            label: 'write javascript code',
-          },
-          {
-            key: '2',
-            label: 'ask for sql helper',
-          },
-          {
-            key: '3',
-            label: 'write some note or todos',
-          },
-          {
-            key: '4',
-            label: 'give me help',
-          },
-          {
-            key: '5',
-            label: 'open the door in me',
-          },
-          {
-            key: '6',
-            label: 'Outlook Message',
-          },
-          {
-            key: '7',
-            label: 'PowerPoint Document',
-          },
-          {
-            key: '8',
-            label: 'Outlook Message',
-          },
-          {
-            key: '9',
-            label: 'Portable Document Format (PDF)',
-          },
-          {
-            key: '10',
-            label: 'Portable Document Format (PDF)',
-          },
-          {
-            key: '11',
-            label: 'Portable Document Format (PDF)',
-          },
-        ]}
+        defaultSelectedKeys={['key_1']}
+        items={mockMenuListData()}
       />
     </div>
 
@@ -115,11 +99,9 @@ export default (props: IProps) => {
 
       <Space style={{ color: 'white', fontSize: 17, marginLeft: 16 }} size={'small'}>
         <span style={{ marginRight: 2, fontWeight: 'bold' }}>Doraemon</span>
-        <CompassFilled className={'dynamicIcon'} />
-        <MessageFilled className={'dynamicIcon'} />
-        <GithubFilled className={'dynamicIcon'} onClick={() => {
-          window.open('https://github.com/kaleai/doraemon')
-        }} />
+        {renderEntranceIcon(<CompassFilled />, globalConfig.website.home)}
+        {renderEntranceIcon(<MessageFilled />, globalConfig.website.discuss)}
+        {renderEntranceIcon(<GithubFilled />, globalConfig.website.github)}
       </Space>
     </div>
   </div>

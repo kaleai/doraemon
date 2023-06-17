@@ -1,14 +1,36 @@
 import { Button, Card, Tabs, TabsProps } from 'antd'
+
+import { RollbackOutlined } from '@ant-design/icons'
+import { IGlobalConfig } from '../interface'
+import { loadMicroApp } from 'qiankun'
+
 import '../App.css'
-import { MenuFoldOutlined, MenuUnfoldOutlined, RollbackOutlined } from '@ant-design/icons'
 
 interface IProps {
-  onClickClose: () => void
   isHide: boolean
+  globalConfig: IGlobalConfig
+  onClickClose: () => void
 }
 
+const settingsContainerName = 'settingsContainer'
+
 export default (props: IProps) => {
-  const { onClickClose, isHide } = props
+  const { isHide, globalConfig, onClickClose } = props
+
+  const loadSettingMicroApp = () => {
+    loadMicroApp({
+      name: 'doraemon-settings',
+      entry: 'http://localhost:7031',
+      container: '#' + settingsContainerName,
+      props: {},
+    }, {
+      /*fetch(url, args) { // https://blog.csdn.net/sunqiang4/article/details/122014916
+        return window.fetch(url, args)
+      },*/
+      sandbox: false,
+    })
+    return true
+  }
 
   if (isHide) {
     return <></>
@@ -22,8 +44,8 @@ export default (props: IProps) => {
         <Card title={'基础'}>
           通用
         </Card>
-        <Card style={{ marginTop: 22 }} title={'自定义'}>
-          账户
+        <Card style={{ marginTop: 22 }} title={globalConfig.settings.label}>
+          {loadSettingMicroApp() && <div id={settingsContainerName} />}
         </Card>
       </div>,
     },
@@ -41,9 +63,6 @@ export default (props: IProps) => {
       animated={true}
       tabBarGutter={12}
       items={items}
-      onChange={(key: string) => {
-        console.log('key', key)
-      }
-      } />
+    />
   </div>
 }
