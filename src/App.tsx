@@ -16,7 +16,7 @@ import { initGlobalState, MicroAppStateActions } from 'qiankun'
 import Settings from './pages/Settings'
 import axios from 'axios'
 import { IGlobalConfig } from './interface'
-import { KEY } from './constant'
+import { DEF_CONFIG_URL, KEY } from './constant'
 
 const { Header, Sider, Content } = Layout
 
@@ -37,6 +37,14 @@ const App = () => {
     axios(localStorage.getItem(KEY.GLOBAL_CONFIG) as string).then(res => {
       if (res.status === 200) {
         setGlobalConfig(res.data)
+      }
+    }).catch(err => {
+      console.error(err)
+      if (window.confirm('配置文件下载异常，是否切换回默认的配置文件')) {
+        localStorage.setItem(KEY.GLOBAL_CONFIG, DEF_CONFIG_URL)
+        window.location.replace(window.location.origin)
+      } else {
+        alert(err.toString())
       }
     })
 
