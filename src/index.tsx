@@ -7,10 +7,17 @@ import App from './App'
 
 const queries = new URLSearchParams(window.location.search)
 
-// 持久化access_token
-const accessToken = queries.get('access_token')
-if (accessToken && accessToken !== 'undefined') {
-  localStorage.setItem(KEY.ACCESS_TOKEN, accessToken)
+// 持久化配置文件
+const configUrl = queries.get('config')
+
+if (configUrl && configUrl !== 'undefined') {
+  const oldCfgUrl = localStorage.getItem(KEY.GLOBAL_CONFIG)
+  if (configUrl !== oldCfgUrl) {
+    alert('新配置将会覆盖老的，会触发应用重新初始化，是否确认')
+    localStorage.setItem(KEY.GLOBAL_CONFIG, configUrl)
+  } else {
+    localStorage.setItem(KEY.GLOBAL_CONFIG, configUrl)
+  }
 }
 
 ReactDOM.render(
