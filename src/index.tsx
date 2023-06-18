@@ -7,6 +7,13 @@ import App from './App'
 
 const queries = new URLSearchParams(window.location.search)
 
+const callback = queries.get('callback')
+if (callback && callback !== 'undefined') {
+  const broadcast = new BroadcastChannel('Doraemon')
+  broadcast.postMessage({ category: 'callback', gid: '', queryStr: queries.toString() })
+  window.close()
+}
+
 // 持久化配置文件
 const configUrl = queries.get('config')
 

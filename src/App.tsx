@@ -32,7 +32,6 @@ const App = () => {
   const [isShowSettings, setIsShowSettings] = useState<boolean>(false)
   const [isGlobalLoading, setIsGlobalLoading] = useState<boolean>(false)
 
-
   useEffect(() => {
     axios('https://raw.githubusercontent.com/doraemon-ai/4th-dimensional-pocket/main/config.json').then(res => {
       if (res.status === 200) {
