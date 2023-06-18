@@ -16,6 +16,7 @@ import { initGlobalState, MicroAppStateActions } from 'qiankun'
 import Settings from './pages/Settings'
 import axios from 'axios'
 import { IGlobalConfig } from './interface'
+import { KEY } from './constant'
 
 const { Header, Sider, Content } = Layout
 
@@ -33,7 +34,7 @@ const App = () => {
   const [isGlobalLoading, setIsGlobalLoading] = useState<boolean>(false)
 
   useEffect(() => {
-    axios('https://raw.githubusercontent.com/doraemon-ai/4th-dimensional-pocket/main/config.json').then(res => {
+    axios(localStorage.getItem(KEY.GLOBAL_CONFIG) as string).then(res => {
       if (res.status === 200) {
         setGlobalConfig(res.data)
       }
@@ -109,7 +110,7 @@ const App = () => {
 
                 setTimeout(() => {
                   setIsCollapsed(true)
-                }, 450)
+                }, 300)
               }}
             />
           </Sider>

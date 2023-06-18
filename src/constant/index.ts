@@ -9,3 +9,5 @@ export enum KEY {
   ACCESS_TOKEN = 'doraemon_access_token',
   GLOBAL_CONFIG = 'doraemon_global_config'
 }
+
+export const DEF_CONFIG_URL = 'https://raw.githubusercontent.com/doraemon-ai/4th-dimensional-pocket/main/config.json'
