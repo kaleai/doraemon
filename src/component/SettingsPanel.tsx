@@ -1,10 +1,11 @@
-import { Button, Card, Tabs, TabsProps } from 'antd'
+import { Button, Card, Spin, Tabs, TabsProps } from 'antd'
 
 import { RollbackOutlined } from '@ant-design/icons'
 import { IGlobalConfig } from '../interface'
 import { loadMicroApp } from 'qiankun'
 
 import '../App.css'
+import React, { useState, useEffect } from 'react'
 
 interface IProps {
   isHide: boolean
@@ -17,6 +18,14 @@ const settingsContainerName = 'settingsContainer'
 export default (props: IProps) => {
   const { isHide, globalConfig, onClickClose } = props
 
+  const [loading, setLoading] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (globalConfig.settings) {
+      setLoading(true)
+    }
+  }, [])
+
   const loadSettingMicroApp = () => {
     if (!globalConfig.settings) {
       return false
@@ -28,11 +37,13 @@ export default (props: IProps) => {
       container: '#' + settingsContainerName,
       props: {},
     }, {
-      /*fetch(url, args) { // https://blog.csdn.net/sunqiang4/article/details/122014916
-        return window.fetch(url, args)
-      },*/
+      fetch(url, args) {
+        return fetch(url, { ...args, mode: 'cors' })
+      },
       sandbox: false,
-    })
+    }).loadPromise.then(() => setLoading(false))
+
+
     return true
   }
 
@@ -50,9 +61,11 @@ export default (props: IProps) => {
         </Card>
         {
           loadSettingMicroApp() &&
-          <Card style={{ marginTop: 22 }} title={globalConfig.settings.label}>
-            <div id={settingsContainerName} />
-          </Card>
+          <Spin spinning={loading}>
+            <Card style={{ marginTop: 22 }} title={globalConfig.settings.label}>
+              <div id={settingsContainerName} />
+            </Card>
+          </Spin>
         }
       </div>,
     },
