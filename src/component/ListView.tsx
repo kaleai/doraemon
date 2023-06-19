@@ -2,10 +2,10 @@ import React, { useEffect, useRef } from 'react'
 import { Avatar, Button, List, Space } from 'antd'
 import { DislikeTwoTone, LikeTwoTone, MessageOutlined } from '@ant-design/icons'
 import { SuggestActionType, ActionInfoType, ISysChatBox, ISysErrorInfo, ISysMarkdown } from '../../gadget-template/Interface'
-import ErrorPanel from './ErrorPanel'
-import ChatBox from './ChatBox'
+import ErrorPanel from './common/ErrorPanel'
+import ChatBox from './common/ChatBox'
 import EmptyImg from '../image/empty.png'
-import MarkdownView from './MarkdownView'
+import MarkdownView from './common/MarkdownView'
 import './index.css'
 
 /**

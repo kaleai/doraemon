@@ -1,5 +1,5 @@
 import { Button, Form, Mentions } from 'antd'
-import { ActionInfoType } from '../../gadget-template/Interface'
+import { ActionInfoType } from '../../../gadget-template/Interface'
 
 interface IProps {
   placeholder: string

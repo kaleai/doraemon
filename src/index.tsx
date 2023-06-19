@@ -11,9 +11,7 @@ const queries = new URLSearchParams(window.location.search)
 const callback = queries.get('callback')
 if (callback && callback !== 'undefined') {
   const broadcast = new BroadcastChannel('Doraemon')
-  broadcast.postMessage(
-    { category: 'callback', gid: '', queryStr: queries.toString() },
-  )
+  broadcast.postMessage({ category: 'callback', queriesString: queries.toString() })
   window.close()
 }
 
