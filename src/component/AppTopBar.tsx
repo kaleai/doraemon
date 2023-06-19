@@ -37,7 +37,7 @@ const data: IGadgetInfo[] =
       'icon': 'https://www.codercrunch.com/content/tool/images/hash-md5-f.png',
       'description': 'small tools for md5',
       version: '1',
-      entryUrl: 'https://md5-gadget.vercel.app',
+      entryUrl: 'https://gadget-template-yoro7rwt-doraemon-ai.4everland.app',
     },
     {
       id: 'dfsddfasdfsdafdsafasfsdaf',
