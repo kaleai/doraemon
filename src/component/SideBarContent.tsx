@@ -1,6 +1,8 @@
 import {
   CommentOutlined, CompassFilled, CompassOutlined,
+  DownloadOutlined,
   GlobalOutlined, MessageFilled,
+  MoneyCollectOutlined,
   SettingOutlined,
   StarFilled,
   UserOutlined,
@@ -66,7 +68,17 @@ export default (props: IProps) => {
           size={'large'}
           src={localStorage.getItem(KEY.USER_AVATAR)}
         />
+
         <span style={{ color: 'white' }}>{localStorage.getItem(KEY.USER_NAME) ?? '游客用户'}</span>
+
+        <Button
+          className={'transparentBtn'}
+          style={{ opacity: '0.8', width: 25 }}
+          type={'default'}
+          size={'small'}
+          icon={<SettingOutlined />}
+          onClick={onClickSettings}
+        />
       </Space>
 
       <Button
@@ -87,17 +99,36 @@ export default (props: IProps) => {
       />
     </div>
 
-    <div style={{ height: 90, display: 'flex', flexDirection: 'column' }}>
-      <Button
-        className={'transparentBtn'}
-        style={{ opacity: '0.8' }}
-        type={'default'}
-        icon={<SettingOutlined />}
-        onClick={onClickSettings}>
-        设置
-      </Button>
+    <div style={{ height: 90, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <Space>
+        {globalConfig.download &&
+          <Button
+            type={'primary'}
+            style={{ backgroundColor: '#52c41a', fontWeight: 'bold' }}
+            icon={<DownloadOutlined />}
+            onClick={() => {
+              window.open(globalConfig.download.url)
+            }}
+          >
+            {globalConfig.download.label}
+          </Button>
+        }
 
-      <Space style={{ color: 'white', fontSize: 17, marginLeft: 16 }} size={'small'}>
+        {globalConfig.donate &&
+          <Button
+            type={'primary'}
+            style={{ backgroundColor: '#eb2f96', fontWeight: 'bold' }}
+            icon={<MoneyCollectOutlined />}
+            onClick={() => {
+              window.open(globalConfig.donate.url)
+            }}
+          >
+            {globalConfig.donate.label}
+          </Button>
+        }
+      </Space>
+
+      <Space style={{ color: 'white', fontSize: 17, marginLeft: 16, marginTop: 12 }} size={'small'}>
         <span style={{ marginRight: 2, fontWeight: 'bold' }}>Doraemon</span>
         {renderEntranceIcon(<CompassFilled />, globalConfig.website.home)}
         {renderEntranceIcon(<MessageFilled />, globalConfig.website.discuss)}
