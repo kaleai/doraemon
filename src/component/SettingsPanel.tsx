@@ -18,9 +18,13 @@ export default (props: IProps) => {
   const { isHide, globalConfig, onClickClose } = props
 
   const loadSettingMicroApp = () => {
+    if (!globalConfig.settings) {
+      return false
+    }
+
     loadMicroApp({
       name: 'doraemon-settings',
-      entry: 'http://localhost:7031',
+      entry: globalConfig.settings.url,
       container: '#' + settingsContainerName,
       props: {},
     }, {
@@ -44,9 +48,12 @@ export default (props: IProps) => {
         <Card title={'基础'}>
           通用
         </Card>
-        <Card style={{ marginTop: 22 }} title={globalConfig.settings.label}>
-          {loadSettingMicroApp() && <div id={settingsContainerName} />}
-        </Card>
+        {
+          loadSettingMicroApp() &&
+          <Card style={{ marginTop: 22 }} title={globalConfig.settings.label}>
+            <div id={settingsContainerName} />
+          </Card>
+        }
       </div>,
     },
   ]
