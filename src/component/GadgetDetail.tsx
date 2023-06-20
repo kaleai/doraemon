@@ -19,6 +19,35 @@ interface IProps {
   entryUrl: string
 }
 
+export const queryGadgetInfo = (entryUrl: string): Promise<IGadgetInfo> => {
+  return fetch(entryUrl)
+    .then(response => response.text())
+    .then(htmlString => {
+      // 解析 HTML 字符串
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(htmlString, 'text/html')
+
+      // 获取 meta 标签数组
+      const metaElements = doc.getElementsByTagName('meta')
+
+      // 遍历 meta 标签数组，输出属性名和属性值
+      const obj: any = {}
+
+      for (let i = 0; i < metaElements.length; i++) {
+        const meta = metaElements[i]
+        // console.log(meta.getAttribute('name') + ': ' + meta.getAttribute('content'))
+
+        const name = meta.getAttribute('name')
+        if (name) {
+          obj[name] = meta.getAttribute('content')
+        }
+      }
+
+      obj.entryUrl = entryUrl
+      return obj
+    })
+}
+
 export default ({ entryUrl }: IProps) => {
 
   const [gadgetInfo, setGadgetInfo] = useState<IGadgetInfo>()
@@ -28,31 +57,8 @@ export default ({ entryUrl }: IProps) => {
       return
     }
 
-    window.fetch(entryUrl)
-      .then(response => response.text())
-      .then(htmlString => {
-        // 解析 HTML 字符串
-        const parser = new DOMParser()
-        const doc = parser.parseFromString(htmlString, 'text/html')
-
-        // 获取 meta 标签数组
-        const metaElements = doc.getElementsByTagName('meta')
-
-        // 遍历 meta 标签数组，输出属性名和属性值
-        const obj: any = {}
-
-        for (let i = 0; i < metaElements.length; i++) {
-          const meta = metaElements[i]
-          // console.log(meta.getAttribute('name') + ': ' + meta.getAttribute('content'))
-
-          const name = meta.getAttribute('name')
-          if (name) {
-            obj[name] = meta.getAttribute('content')
-          }
-        }
-
-        setGadgetInfo(obj)
-      })
+    queryGadgetInfo(entryUrl)
+      .then(info => setGadgetInfo(info))
       .catch(error => console.error(error))
   }, [entryUrl])
 

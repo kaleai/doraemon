@@ -1,13 +1,13 @@
 import { Avatar, Divider, List, Modal, Popover, Space, Tag, Typography } from 'antd'
 import { loadMicroApp } from 'qiankun'
 import { MicroApp } from 'qiankun/es/interfaces'
-import { Button, Input } from 'antd'
-import { InstallProps,ActionHandleResultType } from '../../gadget-template/Interface'
+import { Button, Input, message } from 'antd'
+import { InstallProps, ActionHandleResultType } from '../../gadget-template/Interface'
 import { MenuFoldOutlined, MenuUnfoldOutlined, SwapOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
-import GadgetDetail, { IGadgetInfo } from './GadgetDetail'
-import axios from 'axios'
-const { Paragraph, Text } = Typography;
+import GadgetDetail, { IGadgetInfo, queryGadgetInfo } from './GadgetDetail'
+import { IGlobalConfig } from '../interface'
+import { KEY } from '../constant'
 
 const { Search } = Input
 
@@ -20,6 +20,8 @@ export interface IProps {
 
   isCollapsed: boolean,
 
+  globalConfig: IGlobalConfig
+
   setGlobalLoading: (loading: boolean) => void
 
   onClickCollapse: () => void
@@ -29,76 +31,48 @@ export interface IProps {
   onReceiveActionHandleResult: (data: ActionHandleResultType) => void
 }
 
-const data: IGadgetInfo[] =
-  [
-    {
-      id: 'dfsddfasdfsda',
-      'name': 'md5',
-      'icon': 'https://www.codercrunch.com/content/tool/images/hash-md5-f.png',
-      'description': 'small tools for md5',
-      version: '1',
-      entryUrl: 'https://gadget-template-yoro7rwt-doraemon-ai.4everland.app',
-    },
-    {
-      id: 'dfsddfasdfsdafdsafasfsdaf',
-      'name': 'Regular Expression',
-      'icon': 'https://aix4u.notion.site/image/https%3A%2F%2Fchatgpt.vipmanor.com%2Flogo.png?id=d2bbbfa3-ae1b-417c-8134-b3006c78ea60&table=block&spaceId=a9c35667-3cbe-48c4-8afd-77c2276cae19&width=600&userId=&cache=v2',
-      'description': 'tools for regular',
-      version: '0.0.1',
-      entryUrl: 'https://regular-gadget.vercel.app',
-    },
-    {
-      id: 'dfsddfasdfsdaf111fasdfasd',
-      'name': 'Code',
-      'icon': 'https://aix4u.notion.site/image/https%3A%2F%2Fwww.mbplayer.com%2Ffavicon-app_store_icon.png?id=49634678-4dd4-461b-a50a-492c041681ed&table=block&spaceId=a9c35667-3cbe-48c4-8afd-77c2276cae19&width=600&userId=&cache=v2',
-      'description': 'Perform simple calculations',
-      version: '1',
-      entryUrl: '//localhost:7031',
-    },
-    {
-      id: 'dfsddfasdfsr22e423dafsdaf',
-      'name': 'timer',
-      'icon': 'https://aix4u.notion.site/image/https%3A%2F%2Fchat.noteable.io%2Forigami%2Fstatic%2Fimages%2Fnoteable-logo.png?id=dcd44917-03a3-4534-ab2a-9df42355f235&table=block&spaceId=a9c35667-3cbe-48c4-8afd-77c2276cae19&width=600&userId=&cache=v2',
-      'description': 'Set timers',
-      version: '1',
-      entryUrl: '//localhost:7031',
-    },
-    {
-      id: 'df899sdfsdsddfasdfsdafsdaf',
-      'name': 'weather',
-      'icon': 'https://aix4u.notion.site/image/https%3A%2F%2Fpolygon.io%2Fimgs%2Ffavicon.png?id=547707e8-3a82-446e-a1d6-1baefec80205&table=block&spaceId=a9c35667-3cbe-48c4-8afd-77c2276cae19&width=600&userId=&cache=v2',
-      version: '1',
-      'description': 'Check the current weather conditions fdsfdsafad fdsafdsfas fdsafdasfdasf fsdafdsafds fdfdsafdsaf fadsfdsafds fsdafdsafadsf fsdfsadfds',
-      entryUrl: '//localhost:7031',
-    },
-  ]
-
-export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveActionHandleResult, setGlobalLoading }: IProps) => {
+export default ({ isCollapsed, globalConfig, onClickCollapse, onGadgetChanged, onReceiveActionHandleResult, setGlobalLoading }: IProps) => {
 
   const [curGadget, setCurGadget] = useState<IGadgetInfo>()
 
-  const [gadgetList, setGadgetList] = useState<IGadgetInfo[]>(data)
+  const [gadgetList, setGadgetList] = useState<IGadgetInfo[]>([])
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
   const [installUrl, setInstallUrl] = useState<string | null>(null)
 
   useEffect(() => {
-    const info = localStorage.getItem('currentGadget') as (IGadgetInfo | null)
-    if (info) {
-      setCurGadget(info)
-    }
-
-    /*const list = localStorage.getItem('gadgetList') as (IGadgetInfo[] | null)
-    if (list) {
-      setGadgetList(list)
-    } else {
-      localStorage.setItem('gadgetList', JSON.stringify(data))
-      setGadgetList(data)
-    }*/
+    const infoStr = localStorage.getItem(KEY.CURRENT_GADGET)
+    infoStr && setCurGadget(JSON.parse(infoStr))
   }, [])
 
-  const loadGadget = (name: string, entryUrl: string) => {
+  useEffect(() => {
+    localStorage.setItem(KEY.CURRENT_GADGET, JSON.stringify(curGadget))
+  }, [curGadget])
+
+  /**
+   * 加载道具列表
+   */
+  const loadGadgetList = () => {
+    const gadgets = globalConfig.gadgets
+    const promiseList = gadgets.map(gadget => {
+      return queryGadgetInfo(gadget.url)
+    })
+
+    Promise.all(promiseList)
+      .then(infos => {
+        setGadgetList(infos)
+      })
+      .catch(err => {
+        console.error(err)
+        message.error({ content: '道具加载异常' })
+      })
+  }
+
+  /**
+   * 安装道具应用
+   */
+  const installGadgetApp = (name: string, entryUrl: string) => {
     setGlobalLoading(true)
     // 初始化插件的参数
     const initProps: InstallProps = {
@@ -130,15 +104,12 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveAction
   }
 
   return <div style={{ background: 'white', height: 60, display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+    {/* 展开/收起的按钮 */}
     <Button
+      style={{ width: 40, height: 40, margin: 8 }}
       type="text"
       icon={isCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
       onClick={() => onClickCollapse()}
-      style={{
-        width: 40,
-        height: 40,
-        margin: 8,
-      }}
     />
 
     {curGadget ?
@@ -146,19 +117,20 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveAction
         <Avatar
           style={{ minWidth: 30 }}
           size={30}
-
-          shape={'square'} src={curGadget.icon} />
+          shape={'square'} src={curGadget.icon}
+        />
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <a style={{ fontWeight: 600, fontSize: 15 }} href={curGadget.homepage}>{curGadget.name}</a>
           <span style={{ fontSize: 12, color: 'gray' }}>{curGadget.description}</span>
         </div>
       </Space>
-      : <Space style={{ flex: 1 }}>
+      :
+      <Space style={{ flex: 1 }}>
         <Avatar
           style={{ marginRight: 12 }} shape={'square'} size={'default'}
           src={'https://img0.baidu.com/it/u=2224311546,765801345&fm=253&fmt=auto&app=138&f=JPEG'}
           onClick={() => {
-            loadGadget('local', '//localhost:7031')
+            installGadgetApp('local', '//localhost:7031')
           }}
         />
       </Space>
@@ -183,12 +155,24 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveAction
     </Modal>
 
     <Popover
-      title={<div><span>4th Dimensional Pocket</span><Button type={'link'} onClick={() => {
-        setIsModalOpen(true)
+      title={
+        <div>
+          <span>4th Dimensional Pocket</span>
+          <Button type={'link'} onClick={() => {
+            setIsModalOpen(true)
+          }}>
+            Install New Gadget
+          </Button>
+        </div>
       }
-      }>Install More</Button></div>}
       trigger="click"
       placement="bottomRight"
+      onVisibleChange={(visible: boolean) => {
+        if (visible) {
+          setGadgetList([])
+          loadGadgetList()
+        }
+      }}
       content={
         <div style={{ width: 325 }}>
           <Divider style={{ margin: 12 }} />
@@ -204,32 +188,36 @@ export default ({ isCollapsed, onClickCollapse, onGadgetChanged, onReceiveAction
           <List
             itemLayout="horizontal"
             dataSource={gadgetList}
+            loading={gadgetList.length === 0}
             renderItem={(item, index) => (
-              <List.Item actions={[<a key="list-loadmore-edit" onClick={() => {
-                loadGadget(item.name, item.entryUrl)
-                setCurGadget(item)
-              }}>select</a>,
-              ]}>
+              <List.Item actions={[
+                <Button
+                  type={'link'}
+                  key="action-link"
+                  onClick={() => {
+                    console.log('install gadget', item)
+
+                    installGadgetApp(item.name, item.entryUrl)
+                    setCurGadget(item)
+                  }}
+                >
+                  Select
+                </Button>,
+              ]}
+              >
                 <List.Item.Meta
                   title={<a href={item.homepage}>{item.name}</a>}
                   avatar={<Avatar src={item.icon} shape={'square'} />}
-                  description={<div>
-                    <Space size={[0, 8]} wrap>
-                      <Tag color="blue">Ant</Tag>
-                      <Tag color="#5BD8A6">TechUI</Tag>
-                    </Space>
-                    {item.description}
-                  </div>}
+                  description={item.description}
                 />
               </List.Item>
             )}
           />
-
         </div>
       }
     >
       <Button
-        style={{ marginLeft: 12, marginRight: 12 }}
+        style={{ margin: '0 12px' }}
         type={'primary'}
         icon={<SwapOutlined />}
       >

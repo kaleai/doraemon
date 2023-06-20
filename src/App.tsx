@@ -134,6 +134,7 @@ const App = () => {
 
           <Layout className={'layout'} style={{ display: isShowSettings ? 'none' : undefined }}>
             <AppTopBar
+              globalConfig={globalConfig}
               setGlobalLoading={loading => setIsGlobalLoading(loading)}
               isCollapsed={isCollapsed}
               onClickCollapse={() => setIsCollapsed(!isCollapsed)}
