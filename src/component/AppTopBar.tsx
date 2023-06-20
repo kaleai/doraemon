@@ -47,7 +47,9 @@ export default ({ isCollapsed, globalConfig, onClickCollapse, onGadgetChanged, o
   }, [])
 
   useEffect(() => {
-    localStorage.setItem(KEY.CURRENT_GADGET, JSON.stringify(curGadget))
+    if (curGadget !== undefined) {
+      localStorage.setItem(KEY.CURRENT_GADGET, JSON.stringify(curGadget))
+    }
   }, [curGadget])
 
   /**

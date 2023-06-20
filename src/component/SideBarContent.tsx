@@ -103,6 +103,7 @@ export default (props: IProps) => {
       <Space>
         {globalConfig.download &&
           <Button
+            className={'fullWidth'}
             type={'primary'}
             style={{ backgroundColor: '#52c41a', fontWeight: 'bold' }}
             icon={<DownloadOutlined />}
@@ -116,6 +117,7 @@ export default (props: IProps) => {
 
         {globalConfig.donate &&
           <Button
+            className={'fullWidth'}
             type={'primary'}
             style={{ backgroundColor: '#eb2f96', fontWeight: 'bold' }}
             icon={<MoneyCollectOutlined />}
