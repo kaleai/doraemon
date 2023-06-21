@@ -1,4 +1,4 @@
-import { Avatar, Divider, List, Modal, Popover, Space, Tag, Typography } from 'antd'
+import { Avatar, Divider, List, Modal, Popover, Space } from 'antd'
 import { loadMicroApp } from 'qiankun'
 import { MicroApp } from 'qiankun/es/interfaces'
 import { Button, Input, message } from 'antd'
@@ -43,8 +43,6 @@ export default (
   }: IProps) => {
 
   const [curGadgetInfo, setCurGadgetInfo] = useState<IGadgetInfo>()
-
-  const [viewDetailUrl, setViewDetailUrl] = useState<string | null>(null)
 
   const [gadgetInfoList, setGadgetInfoList] = useState<IGadgetInfo[]>([])
 
@@ -173,9 +171,13 @@ export default (
                     <div>
                       {item.description}
                       <Button type={'link'} onClick={() => {
-                        setViewDetailUrl(item.entryUrl)
+                        Modal.info({
+                          title: '道具详情',
+                          width: 800,
+                          content: <GadgetDetail entryUrl={item.entryUrl} />,
+                        })
                       }}>
-                        {'更多信息>'}
+                        {'更多信息 >'}
                       </Button>
                     </div>}
                 />
@@ -254,15 +256,6 @@ export default (
         entryUrl={installUrl}
         onLoadSuccess={(info) => setWillBeInstallGadgetInfo(info)}
       />}
-    </Modal>
-
-    <Modal
-      open={viewDetailUrl !== null}
-      zIndex={1060}
-      onCancel={() => setViewDetailUrl(null)}
-      onOk={() => setViewDetailUrl(null)}
-    >
-      {viewDetailUrl && <GadgetDetail entryUrl={viewDetailUrl} />}
     </Modal>
 
     {renderInfoListView()}
