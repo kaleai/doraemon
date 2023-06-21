@@ -10,7 +10,7 @@ import {
   GithubFilled,
   PlusCircleFilled,
 } from '@ant-design/icons'
-import { Menu, Avatar, Space, Button, Tooltip } from 'antd'
+import { Menu, Avatar, Space, Button, Tooltip, Modal } from 'antd'
 import React from 'react'
 import { KEY } from '../constant'
 import './index.css'
@@ -100,31 +100,43 @@ export default (props: IProps) => {
     <div style={{ height: 90, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <Space>
         {globalConfig.download &&
-          <Button
-            className={'fullWidth'}
-            type={'primary'}
-            style={{ backgroundColor: '#52c41a', fontWeight: 'bold' }}
-            icon={<DownloadOutlined />}
-            onClick={() => {
-              window.open(globalConfig.download.url)
-            }}
-          >
-            {globalConfig.download.label}
-          </Button>
+        <Button
+          className={'fullWidth'}
+          type={'primary'}
+          style={{ backgroundColor: '#52c41a', fontWeight: 'bold' }}
+          icon={<DownloadOutlined />}
+          onClick={() => {
+            window.open(globalConfig.download.url)
+          }}
+        >
+          {globalConfig.download.label}
+        </Button>
         }
 
         {globalConfig.donate &&
-          <Button
-            className={'fullWidth'}
-            type={'primary'}
-            style={{ backgroundColor: '#eb2f96', fontWeight: 'bold' }}
-            icon={<MoneyCollectOutlined />}
-            onClick={() => {
+        <Button
+          className={'fullWidth'}
+          type={'primary'}
+          style={{ backgroundColor: '#eb2f96', fontWeight: 'bold' }}
+          icon={<MoneyCollectOutlined />}
+          onClick={() => {
+            if (globalConfig.donate.url) {
               window.open(globalConfig.donate.url)
-            }}
-          >
-            {globalConfig.donate.label}
-          </Button>
+            } else {
+              Modal.success({
+                title: '向作者投币买个饭团吧 🍙',
+                width: 600,
+                content:
+                  <Space direction={'vertical'}>
+                    <span>如您需要进入项目的鸣谢名单，捐赠后可以发送金额到kaleai@qq.com，十分感谢！</span>
+                    <img width={500} src="/donate.jpg" alt="donate" />
+                  </Space>,
+              })
+            }
+          }}
+        >
+          {globalConfig.donate.label}
+        </Button>
         }
       </Space>
 
