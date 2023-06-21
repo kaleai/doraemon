@@ -4,6 +4,7 @@ import { DEF_CONFIG_URL, KEY } from './constant'
 import 'antd/dist/reset.css'
 import './index.css'
 import App from './App'
+import { Analytics } from '@vercel/analytics/react';
 
 const queries = new URLSearchParams(window.location.search)
 
@@ -37,6 +38,7 @@ if (newCfgUrl && newCfgUrl !== 'undefined') {
 ReactDOM.render(
   <React.StrictMode>
     <App />
+    <Analytics/>
   </React.StrictMode>,
   document.getElementById('root'),
 )
