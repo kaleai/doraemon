@@ -109,7 +109,10 @@ export default (
     })
 
     gadget.mountPromise.then(() => onGadgetChanged(gadget))
-    gadget.loadPromise.then(() => setGlobalLoading(false))
+    gadget.loadPromise.then(() => {
+      setIsInstallModalOpen(false)
+      setGlobalLoading(false)
+    })
   }
 
   const renderInfoListView = () =>
@@ -119,7 +122,7 @@ export default (
           <span>四次元口袋</span>
           <div style={{ flex: 1 }} />
           <Button type={'link'} onClick={() => setIsInstallModalOpen(true)}>
-            ⭐️ 安装新的插件
+            ⭐️ 安装新的道具
           </Button>
         </div>
       }
@@ -229,7 +232,9 @@ export default (
       footer={
         willBeInstallGadgetInfo
           ?
-          <Button onClick={() => installGadgetApp(willBeInstallGadgetInfo.name, willBeInstallGadgetInfo.entryUrl)}>
+          <Button
+            type={'primary'}
+            onClick={() => installGadgetApp(willBeInstallGadgetInfo.name, willBeInstallGadgetInfo.entryUrl)}>
             安装
           </Button>
           :
