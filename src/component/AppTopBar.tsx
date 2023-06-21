@@ -10,6 +10,8 @@ import { IGlobalConfig } from '../interface'
 import { nanoid } from 'nanoid'
 import { KEY } from '../constant'
 
+const md5 = require('js-md5')
+
 const { Search } = Input
 
 /**
@@ -52,16 +54,33 @@ export default (
 
   const [willBeInstallGadgetInfo, setWillBeInstallGadgetInfo] = useState<IGadgetInfo>()
 
+  const [localGadgetInfoList, setLocalGadgetInfoList] = useState<IGadgetInfo[]>([])
+
   useEffect(() => {
+    // get before gadget info
     const gadgetInfoStr = localStorage.getItem(KEY.CURRENT_GADGET)
-    gadgetInfoStr && setCurGadgetInfo(JSON.parse(gadgetInfoStr))
+    if (gadgetInfoStr && gadgetInfoStr !== 'undefined') {
+      setCurGadgetInfo(JSON.parse(gadgetInfoStr))
+    }
+
+    // get local gadgets
+    const localGadgetListStr = localStorage.getItem(KEY.LOCAL_GADGET_LIST)
+    if (localGadgetListStr && localGadgetListStr !== 'undefined') {
+      setLocalGadgetInfoList(JSON.parse(localGadgetListStr))
+    }
   }, [])
 
   useEffect(() => {
-    if (curGadgetInfo !== undefined) {
+    if (curGadgetInfo) {
       localStorage.setItem(KEY.CURRENT_GADGET, JSON.stringify(curGadgetInfo))
     }
   }, [curGadgetInfo])
+
+  useEffect(() => {
+    if (localGadgetInfoList?.length > 0) {
+      localStorage.setItem(KEY.LOCAL_GADGET_LIST, JSON.stringify(localGadgetInfoList))
+    }
+  }, [localGadgetInfoList])
 
   /**
    * 加载道具信息列表
@@ -74,7 +93,9 @@ export default (
 
     Promise.all(promiseList)
       .then(infos => {
-        setGadgetInfoList(infos)
+        // TODO by kale: 2023/6/21 list根据name去重
+        const fullList = infos.concat(localGadgetInfoList)
+        setGadgetInfoList(fullList)
       })
       .catch(err => {
         console.error(err)
@@ -236,7 +257,16 @@ export default (
           ?
           <Button
             type={'primary'}
-            onClick={() => installGadgetApp(willBeInstallGadgetInfo.name, willBeInstallGadgetInfo.entryUrl)}>
+            onClick={() => {
+              if (willBeInstallGadgetInfo.name) {
+                localGadgetInfoList.push(willBeInstallGadgetInfo)
+                setLocalGadgetInfoList([...localGadgetInfoList])
+
+                installGadgetApp(willBeInstallGadgetInfo.name, willBeInstallGadgetInfo.entryUrl)
+              } else {
+                message.error('gadget name is null')
+              }
+            }}>
             安装
           </Button>
           :

@@ -17,6 +17,7 @@ import Settings from './component/SettingsPanel'
 import axios from 'axios'
 import { IGlobalConfig } from './interface'
 import { DEF_CONFIG_URL, KEY } from './constant'
+const md5 = require('js-md5')
 
 const { Header, Sider, Content } = Layout
 
@@ -78,18 +79,20 @@ const App = () => {
       }
     })
 
+    const sessionId = md5(data.sessionUUId)
+
     // add feedback
     if (data.canFeedback !== false) {
-      listData.push({ id: nanoid(), type: ItemType.FEEDBACK, data: { sessionUUId: data.sessionUUId } })
+      listData.push({ id: sessionId + '_feedback', type: ItemType.FEEDBACK, data: { sessionUUId: data.sessionUUId } })
     }
 
     // add suggest
     if (data.suggestActions) {
-      listData.push({ id: nanoid(), type: ItemType.SUGGESTION, data: { suggestActions: data.suggestActions } })
+      listData.push({ id: sessionId + '_suggestion', type: ItemType.SUGGESTION, data: { suggestActions: data.suggestActions } })
     }
 
     // add divider
-    listData.push({ id: nanoid(), type: ItemType.DIVIDER, data: {} })
+    listData.push({ id: sessionId + '_divider', type: ItemType.DIVIDER, data: {} })
 
     setListData([...listData])
 
