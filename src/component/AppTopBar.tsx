@@ -42,24 +42,28 @@ export default (
     onReceiveActionHandleResult,
   }: IProps) => {
 
-  const [curGadget, setCurGadget] = useState<IGadgetInfo>()
+  const [curGadgetInfo, setCurGadgetInfo] = useState<IGadgetInfo>()
+
+  const [viewDetailUrl, setViewDetailUrl] = useState<string | null>(null)
 
   const [gadgetInfoList, setGadgetInfoList] = useState<IGadgetInfo[]>([])
 
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState<boolean>(false)
 
-  const [installUrl, setInstallUrl] = useState<string | null>(null)
+  const [installUrl, setInstallUrl] = useState<string>()
+
+  const [willBeInstallGadgetInfo, setWillBeInstallGadgetInfo] = useState<IGadgetInfo>()
 
   useEffect(() => {
     const gadgetInfoStr = localStorage.getItem(KEY.CURRENT_GADGET)
-    gadgetInfoStr && setCurGadget(JSON.parse(gadgetInfoStr))
+    gadgetInfoStr && setCurGadgetInfo(JSON.parse(gadgetInfoStr))
   }, [])
 
   useEffect(() => {
-    if (curGadget !== undefined) {
-      localStorage.setItem(KEY.CURRENT_GADGET, JSON.stringify(curGadget))
+    if (curGadgetInfo !== undefined) {
+      localStorage.setItem(KEY.CURRENT_GADGET, JSON.stringify(curGadgetInfo))
     }
-  }, [curGadget])
+  }, [curGadgetInfo])
 
   /**
    * 加载道具信息列表
@@ -104,73 +108,18 @@ export default (
       sandbox: false,
     })
 
-    gadget.mountPromise.then(() => {
-      onGadgetChanged(gadget)
-    })
-
-    gadget.loadPromise.then(() => {
-      setGlobalLoading(false)
-    })
+    gadget.mountPromise.then(() => onGadgetChanged(gadget))
+    gadget.loadPromise.then(() => setGlobalLoading(false))
   }
 
-  return <div style={{ background: 'white', height: 60, display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-    {/* 展开/收起的按钮 */}
-    <Button
-      style={{ width: 40, height: 40, margin: 8 }}
-      type="text"
-      icon={isCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-      onClick={() => onClickCollapse()}
-    />
-
-    {/* 道具icon + 名字 + 描述 */}
-    {curGadget ?
-      <Space style={{ flex: 1 }} size={'middle'}>
-        <Avatar size={36} shape={'square'} src={curGadget.icon} />
-        <Space direction={'vertical'} size={3}>
-          <a style={{ fontWeight: 500, fontSize: 15 }} href={curGadget.homepage}>{curGadget.name}</a>
-          <span style={{ fontSize: 12, color: 'gray' }}>{curGadget.description}</span>
-        </Space>
-      </Space>
-      :
-      <Space style={{ flex: 1 }}>
-        <Avatar
-          shape={'square'} size={'default'}
-          src={'https://img0.baidu.com/it/u=2224311546,765801345&fm=253&fmt=auto&app=138&f=JPEG'}
-          onClick={() => {
-            installGadgetApp('local', '//localhost:7031')
-          }}
-        />
-        <span style={{ color: 'gray' }}>请在右侧选择你需要的道具→</span>
-      </Space>
-    }
-
-    <Modal
-      title="Install New Gadget"
-      open={isModalOpen}
-      okText={'Install'}
-      zIndex={9999}
-      onCancel={() => {
-        setIsModalOpen(false)
-        setInstallUrl(null)
-      }} onOk={() => {
-      setInstallUrl(null)
-      // TODO by kale: 2023/5/25 install gadget
-    }}>
-      <Input.Search style={{ marginBottom: 12 }} defaultValue={'http://localhost:7031'} onSearch={url => {
-        setInstallUrl(url)
-      }} />
-
-      {installUrl && <GadgetDetail entryUrl={installUrl} />}
-    </Modal>
-
+  const renderInfoListView = () =>
     <Popover
       title={
-        <div>
-          <span>4th Dimensional Pocket</span>
-          <Button type={'link'} onClick={() => {
-            setIsModalOpen(true)
-          }}>
-            Install New Gadget
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
+          <span>四次元口袋</span>
+          <div style={{ flex: 1 }} />
+          <Button type={'link'} onClick={() => setIsInstallModalOpen(true)}>
+            ⭐️ 安装新的插件
           </Button>
         </div>
       }
@@ -187,10 +136,11 @@ export default (
           <Divider style={{ margin: 12 }} />
           <Search
             style={{ marginBottom: 14, marginTop: 4 }}
-            placeholder="input name of gadget"
+            placeholder="道具名称（支持模糊搜索）"
             allowClear
             enterButton="Search"
             onSearch={() => {
+              // TODO by kale: 2023/6/21 搜索
             }}
           />
 
@@ -205,19 +155,26 @@ export default (
                   key="action-link"
                   onClick={() => {
                     console.log('install gadget', item)
-
                     installGadgetApp(item.name, item.entryUrl)
-                    setCurGadget(item)
+                    setCurGadgetInfo(item)
                   }}
                 >
-                  Select
+                  选用
                 </Button>,
               ]}
               >
                 <List.Item.Meta
                   title={<a href={item.homepage}>{item.name}</a>}
                   avatar={<Avatar src={item.icon} shape={'square'} />}
-                  description={item.description}
+                  description={
+                    <div>
+                      {item.description}
+                      <Button type={'link'} onClick={() => {
+                        setViewDetailUrl(item.entryUrl)
+                      }}>
+                        {'更多信息>'}
+                      </Button>
+                    </div>}
                 />
               </List.Item>
             )}
@@ -230,9 +187,80 @@ export default (
         type={'primary'}
         icon={<SwapOutlined />}
       >
-        Switch Gadget
+        切换道具
       </Button>
     </Popover>
+
+  return <div style={{ background: 'white', height: 60, display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+    {/* 展开/收起的按钮 */}
+    <Button
+      style={{ width: 40, height: 40, margin: 8 }}
+      type="text"
+      icon={isCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+      onClick={() => onClickCollapse()}
+    />
+
+    {/* 道具icon + 名字 + 描述 */}
+    {curGadgetInfo ?
+      <Space style={{ flex: 1 }} size={'middle'}>
+        <Avatar size={36} shape={'square'} src={curGadgetInfo.icon} />
+        <Space direction={'vertical'} size={3}>
+          <a style={{ fontWeight: 500, fontSize: 15 }} href={curGadgetInfo.homepage}>{curGadgetInfo.name}</a>
+          <span style={{ fontSize: 12, color: 'gray' }}>{curGadgetInfo.description}</span>
+        </Space>
+      </Space>
+      :
+      <Space style={{ flex: 1 }}>
+        <Avatar
+          shape={'square'} size={'default'}
+          src={'https://img0.baidu.com/it/u=2224311546,765801345&fm=253&fmt=auto&app=138&f=JPEG'}
+          onClick={() => {
+            installGadgetApp('local', '//localhost:7031')
+          }}
+        />
+        <span style={{ color: 'gray' }}>请在右侧选择你需要的道具→</span>
+      </Space>
+    }
+
+    <Modal
+      title="安装新道具"
+      open={isInstallModalOpen}
+      zIndex={1060}
+      footer={
+        willBeInstallGadgetInfo
+          ?
+          <Button onClick={() => installGadgetApp(willBeInstallGadgetInfo.name, willBeInstallGadgetInfo.entryUrl)}>
+            安装
+          </Button>
+          :
+          null
+      }
+      onCancel={() => setIsInstallModalOpen(false)}
+    >
+      <Input.Search
+        style={{ marginBottom: 12 }}
+        defaultValue={'http://localhost:7031'}
+        placeholder={'请输入道具的网址'}
+        onSearch={url => setInstallUrl(url)}
+      />
+
+      {installUrl &&
+      <GadgetDetail
+        entryUrl={installUrl}
+        onLoadSuccess={(info) => setWillBeInstallGadgetInfo(info)}
+      />}
+    </Modal>
+
+    <Modal
+      open={viewDetailUrl !== null}
+      zIndex={1060}
+      onCancel={() => setViewDetailUrl(null)}
+      onOk={() => setViewDetailUrl(null)}
+    >
+      {viewDetailUrl && <GadgetDetail entryUrl={viewDetailUrl} />}
+    </Modal>
+
+    {renderInfoListView()}
   </div>
 }
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Avatar, Descriptions } from 'antd'
+import { Alert, Avatar, Descriptions } from 'antd'
 
 export interface IGadgetInfo {
   id: string
@@ -17,6 +17,7 @@ export interface IGadgetInfo {
 
 interface IProps {
   entryUrl: string
+  onLoadSuccess?: (info: IGadgetInfo) => void
 }
 
 export const queryGadgetInfo = (entryUrl: string): Promise<IGadgetInfo> => {
@@ -48,25 +49,48 @@ export const queryGadgetInfo = (entryUrl: string): Promise<IGadgetInfo> => {
     })
 }
 
-export default ({ entryUrl }: IProps) => {
+export default ({ entryUrl, onLoadSuccess }: IProps) => {
 
   const [gadgetInfo, setGadgetInfo] = useState<IGadgetInfo>()
+
+  const [errorReason, setErrorReason] = useState<string | null>()
+
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     if (!entryUrl) {
       return
     }
 
+    setLoading(true)
+    setErrorReason(null)
+
     queryGadgetInfo(entryUrl)
-      .then(info => setGadgetInfo(info))
-      .catch(error => console.error(error))
+      .then(info => {
+        setGadgetInfo(info)
+        setLoading(false)
+        onLoadSuccess?.(info)
+      })
+      .catch(error => {
+        console.error(error)
+        setErrorReason(error.toString())
+        setLoading(false)
+      })
   }, [entryUrl])
 
-  if (!gadgetInfo) {
+  if (loading) {
     return <div>loading...</div>
   }
 
-  return <Descriptions title="Gadget Info" bordered>
+  if (errorReason) {
+    return <Alert type={'error'} description={errorReason} />
+  }
+
+  if (!gadgetInfo) {
+    return null
+  }
+
+  return <Descriptions title={gadgetInfo['name']} bordered>
     {Object.entries(gadgetInfo).map(([key, value]) => {
       return <>
         {<Descriptions.Item key={key} label={key} span={3}>{
