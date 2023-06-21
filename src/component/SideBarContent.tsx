@@ -146,7 +146,7 @@ export default (props: IProps) => {
         }
       </div>
 
-      <Space style={{ color: 'white', fontSize: 17, marginLeft: 16, marginTop: 12 }} size={'small'}>
+      <Space style={{ color: 'white', fontSize: 17, marginLeft: 16, marginTop: 10 }} size={'small'}>
         <span style={{ marginRight: 2, fontWeight: 'bold' }}>{globalConfig.title ?? 'Doraemon'}</span>
         {renderEntranceIcon(<CompassFilled />, globalConfig.website.home)}
         {renderEntranceIcon(<MessageFilled />, globalConfig.website.discuss)}
