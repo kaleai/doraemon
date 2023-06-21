@@ -10,11 +10,12 @@ import {
   GithubFilled,
   PlusCircleFilled,
 } from '@ant-design/icons'
-import { Menu, Avatar, Space, Button, Tooltip, Modal } from 'antd'
+import { Menu, Avatar, Space, Button, Tooltip } from 'antd'
 import React from 'react'
 import { KEY } from '../constant'
 import './index.css'
 import { IConfigEntry, IGlobalConfig } from '../interface'
+import { showDonateDialog } from './DonateDialog'
 
 interface IProps {
   globalConfig: IGlobalConfig
@@ -31,6 +32,8 @@ const HEIGHT_BOTTOM_BAR = 84
  */
 export default (props: IProps) => {
   const { globalConfig, onClickSettings } = props
+
+  const [showDonateModal, setShowDonateModal] = React.useState<boolean>(false)
 
   /**
    * 渲染外部跳转网站的ICON
@@ -59,6 +62,17 @@ export default (props: IProps) => {
   }
 
   return <div>
+    {showDonateModal &&
+      <canvas
+        id={'fireworks_canvas'}
+        style={{
+          width: window.innerWidth, height: window.innerHeight,
+          position: 'absolute', top: 0,
+          zIndex: 9999, pointerEvents: 'none',
+        }}
+      />
+    }
+
     <div style={{ height: HEIGHT_TOP_BAR, paddingTop: 12, display: 'flex', flexDirection: 'column' }}>
       <div style={{ marginLeft: 10, display: 'flex', alignItems: 'center' }}>
         <Avatar
@@ -106,7 +120,7 @@ export default (props: IProps) => {
           <Button
             className={'fullWidth'}
             type={'primary'}
-            style={{ backgroundColor: '#52c41a', fontWeight: 'bold' }}
+            style={{ backgroundColor: '#52c41a', fontWeight: 'bold', flex: 1 }}
             icon={<DownloadOutlined />}
             onClick={() => {
               window.open(globalConfig.download.url)
@@ -126,15 +140,8 @@ export default (props: IProps) => {
               if (globalConfig.donate.url) {
                 window.open(globalConfig.donate.url)
               } else {
-                Modal.success({
-                  title: '向作者投币，买个饭团吧 🍙',
-                  width: 600,
-                  content:
-                    <Space direction={'vertical'}>
-                      <span>如您需要进入项目的鸣谢名单，捐赠后可以发送金额到kaleai@qq.com，十分感谢！</span>
-                      <img width={500} src="/donate.jpg" alt="donate" />
-                    </Space>,
-                })
+                setShowDonateModal(true)
+                showDonateDialog(() => setShowDonateModal(false))
               }
             }}
           >
