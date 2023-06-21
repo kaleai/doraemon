@@ -57,10 +57,12 @@ export default (
   const [localGadgetInfoList, setLocalGadgetInfoList] = useState<IGadgetInfo[]>([])
 
   useEffect(() => {
-    // get before gadget info
+    // get before gadget info and install
     const gadgetInfoStr = localStorage.getItem(KEY.CURRENT_GADGET)
     if (gadgetInfoStr && gadgetInfoStr !== 'undefined') {
-      setCurGadgetInfo(JSON.parse(gadgetInfoStr))
+      const info = JSON.parse(gadgetInfoStr) as IGadgetInfo
+      installGadgetApp(info.name, info.entryUrl)
+      setCurGadgetInfo(info)
     }
 
     // get local gadgets

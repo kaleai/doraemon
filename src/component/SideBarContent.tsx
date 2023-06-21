@@ -53,7 +53,7 @@ export default (props: IProps) => {
     for (let i = 0; i < 20; i++) {
       list.push({
         key: 'key_' + i,
-        label: 'Wait for the build to complete',
+        label: '🚧 To be developed and completed',
       })
     }
     return list
@@ -94,6 +94,8 @@ export default (props: IProps) => {
         className={'transparentBtn'}
         type={'default'}
         icon={<PlusCircleFilled />}
+        onClick={()=>{
+          alert('🚧🚧🚧 未完成，施工中 🚧🚧🚧')}}
       >
         新会话
       </Button>
@@ -108,7 +110,7 @@ export default (props: IProps) => {
       />
     </div>
 
-    <div style={{ height: HEIGHT_BOTTOM_BAR, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div style={{ height: HEIGHT_BOTTOM_BAR, display: 'flex', flexDirection: 'column' }}>
       <div className={'fullWidth'} style={{ marginTop: 12, display: 'flex' }}>
         {globalConfig.download &&
           <Button
