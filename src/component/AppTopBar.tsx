@@ -194,14 +194,14 @@ export default (
                     <div>
                       {item.description}
                       <a
-                        style={{ color: '#1677ff', marginLeft: 6}}
+                        style={{ color: '#1677ff', marginLeft: 6 }}
                         onClick={() => {
-                        Modal.info({
-                          title: '道具详情',
-                          width: 800,
-                          content: <GadgetDetail entryUrl={item.entryUrl} />,
-                        })
-                      }}>
+                          Modal.info({
+                            title: '道具详情',
+                            width: 800,
+                            content: <GadgetDetail entryUrl={item.entryUrl} />,
+                          })
+                        }}>
                         {'更多>'}
                       </a>
                     </div>}
@@ -248,7 +248,7 @@ export default (
             installGadgetApp('local', '//localhost:7031')
           }}
         />
-        <span style={{ color: 'gray' }}>请在右侧选择你需要的道具 →</span>
+        <Typography.Text style={{ color: 'gray' }} ellipsis={true}>{'请在右侧选择你需要的道具 →'}</Typography.Text>
       </Space>
     }
 
