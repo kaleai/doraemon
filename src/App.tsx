@@ -11,7 +11,6 @@ import {
 import ListView, { ItemType, ListItemDataType } from './component/ListView'
 import AppTopBar from './component/AppTopBar'
 import SidebarContent from './component/SideBarContent'
-import { nanoid } from 'nanoid'
 import { initGlobalState, MicroAppStateActions } from 'qiankun'
 import Settings from './component/SettingsPanel'
 import axios from 'axios'
@@ -59,10 +58,11 @@ const App = () => {
   const addViewToList = (data: ActionHandleResultType) => {
     const viewPropsList: IViewElementProps[] = []
     const eleInfoList = data.viewElementInfos
+    const sessionId = md5(data.sessionUUId)
 
     eleInfoList.forEach((itemInfo: ViewElementInfoType, index) => {
       const viewType = itemInfo.viewType.startsWith('SYS') ? itemInfo.viewType as ItemType : ItemType.GADGET
-      const containerId = 'CID:' + nanoid()
+      const containerId = sessionId + '_' + index
 
       listData.push({
         id: containerId,
@@ -78,8 +78,6 @@ const App = () => {
         })
       }
     })
-
-    const sessionId = md5(data.sessionUUId)
 
     // add feedback
     if (data.canFeedback !== false) {

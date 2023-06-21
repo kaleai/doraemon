@@ -67,10 +67,7 @@ export default ({ dataSource, onClickSuggestAction, onReceiveFeedback: sendFeedb
     itemLayout="vertical"
     dataSource={dataSource}
     split={false}
-    rowKey={item => {
-      console.log('itemId', item.id)
-      return item.id
-    }}
+    rowKey={item => item.id}
     locale={{
       emptyText:
         <Space className={'fullHeight'} style={{ marginTop: 100 }} direction={'vertical'} size={'large'}>
@@ -103,6 +100,7 @@ export default ({ dataSource, onClickSuggestAction, onReceiveFeedback: sendFeedb
         case ItemType.SUGGESTION:
           return <Space wrap style={{ marginTop: 6 }}>{suggestActions?.map((suggest: SuggestActionType) => {
             return <Button
+              key={suggest.actionInfo.action}
               type={'dashed'} shape="round" icon={<MessageOutlined />} onClick={() => {
               onClickSuggestAction(suggest.actionInfo)
             }

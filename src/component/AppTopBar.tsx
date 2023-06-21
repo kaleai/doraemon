@@ -147,7 +147,7 @@ export default (
       }
       trigger="click"
       placement="bottomRight"
-      onVisibleChange={(visible: boolean) => {
+      onOpenChange={(visible: boolean) => {
         if (visible) {
           setGadgetInfoList([])
           loadGadgetInfoList()
