@@ -85,7 +85,7 @@ export default ({ dataSource, onClickSuggestAction, onReceiveFeedback: sendFeedb
           return <Space style={{ display: 'flex', marginTop: -10, marginRight: 4, justifyContent: 'end' }} align={'end'}>
             <Button
               size={'small'}
-              icon={<LikeTwoTone twoToneColor={'#f9be55'} />}
+              icon={<LikeTwoTone twoToneColor={'#f9b843'} />}
               onClick={() => {
                 sendFeedback(true, sessionUUId)
               }} />
