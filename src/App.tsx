@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { MicroApp } from 'qiankun/es/interfaces'
-import { ConfigProvider, Divider, Layout, Spin } from 'antd'
+import { ConfigProvider, Divider, Layout, Spin, message } from 'antd'
 import {
   ActionInfoType,
   ActionHandleResultType,
   IViewElementProps,
-  ViewElementInfoType, FeedbackInfoType,
+  ViewElementInfoType,
+  FeedbackInfoType,
 } from '../gadget-template/Interface'
 import ListView, { ItemType, ListItemDataType } from './component/ListView'
 import AppTopBar from './component/AppTopBar'
@@ -177,6 +178,8 @@ const App = () => {
                       })
                     }}
                     onReceiveFeedback={(like, sessionUUId) => {
+                      message.success('感谢您的反馈，我会继续努力 💪🏻')
+
                       eventManager.setGlobalState({
                         category: 'FEEDBACK',
                         params: {
