@@ -5,8 +5,6 @@ import {
   MoneyCollectOutlined,
   SettingOutlined,
   UserOutlined,
-} from '@ant-design/icons'
-import {
   GithubFilled,
   PlusCircleFilled,
 } from '@ant-design/icons'
@@ -64,12 +62,8 @@ export default (props: IProps) => {
   return <div>
     {showDonateModal &&
       <canvas
-        id={'fireworks_canvas'}
-        style={{
-          width: window.innerWidth, height: window.innerHeight,
-          position: 'absolute', top: 0,
-          zIndex: 9999, pointerEvents: 'none',
-        }}
+        id={'fireworks_canvas'} className={'fireworksCanvas'}
+        style={{ width: window.innerWidth, height: window.innerHeight }}
       />
     }
 
@@ -115,12 +109,12 @@ export default (props: IProps) => {
     </div>
 
     <div style={{ height: HEIGHT_BOTTOM_BAR, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <Space style={{ marginTop: 12 }}>
+      <div className={'fullWidth'} style={{ marginTop: 12, display: 'flex' }}>
         {globalConfig.download &&
           <Button
-            className={'fullWidth'}
+            className={'fullWidth bottomButton'}
+            style={{ backgroundColor: '#52c41a' }}
             type={'primary'}
-            style={{ backgroundColor: '#52c41a', fontWeight: 'bold', flex: 1 }}
             icon={<DownloadOutlined />}
             onClick={() => {
               window.open(globalConfig.download.url)
@@ -132,9 +126,9 @@ export default (props: IProps) => {
 
         {globalConfig.donate &&
           <Button
-            className={'fullWidth'}
+            className={'fullWidth bottomButton'}
+            style={{ backgroundColor: '#eb2f96' }}
             type={'primary'}
-            style={{ backgroundColor: '#eb2f96', fontWeight: 'bold' }}
             icon={<MoneyCollectOutlined />}
             onClick={() => {
               if (globalConfig.donate.url) {
@@ -148,7 +142,7 @@ export default (props: IProps) => {
             {globalConfig.donate.label}
           </Button>
         }
-      </Space>
+      </div>
 
       <Space style={{ color: 'white', fontSize: 17, marginLeft: 16, marginTop: 12 }} size={'small'}>
         <span style={{ marginRight: 2, fontWeight: 'bold' }}>{globalConfig.title ?? 'Doraemon'}</span>
