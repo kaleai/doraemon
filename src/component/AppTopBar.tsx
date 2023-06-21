@@ -1,7 +1,7 @@
 import { Avatar, Divider, List, Modal, Popover, Space } from 'antd'
 import { loadMicroApp } from 'qiankun'
 import { MicroApp } from 'qiankun/es/interfaces'
-import { Button, Input, message } from 'antd'
+import { Button, Input, message, Typography } from 'antd'
 import { InstallProps, ActionHandleResultType } from '../../gadget-template/Interface'
 import { MenuFoldOutlined, MenuUnfoldOutlined, SwapOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
@@ -137,11 +137,11 @@ export default (
   const renderInfoListView = () =>
     <Popover
       title={
-        <div style={{ display: 'flex', flexDirection: 'row' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginLeft: 4 }}>
           <span>四次元口袋</span>
           <div style={{ flex: 1 }} />
           <Button type={'link'} onClick={() => setIsInstallModalOpen(true)}>
-            ⭐️ 安装新的道具
+            🪄 安装新的道具
           </Button>
         </div>
       }
@@ -173,7 +173,9 @@ export default (
             renderItem={(item, index) => (
               <List.Item actions={[
                 <Button
-                  type={'link'}
+                  type={'primary'}
+                  ghost
+                  size={'small'}
                   key="action-link"
                   onClick={() => {
                     console.log('install gadget', item)
@@ -191,15 +193,17 @@ export default (
                   description={
                     <div>
                       {item.description}
-                      <Button type={'link'} onClick={() => {
+                      <a
+                        style={{ color: '#1677ff', marginLeft: 6}}
+                        onClick={() => {
                         Modal.info({
                           title: '道具详情',
                           width: 800,
                           content: <GadgetDetail entryUrl={item.entryUrl} />,
                         })
                       }}>
-                        {'更多信息 >'}
-                      </Button>
+                        {'更多>'}
+                      </a>
                     </div>}
                 />
               </List.Item>
@@ -244,7 +248,7 @@ export default (
             installGadgetApp('local', '//localhost:7031')
           }}
         />
-        <span style={{ color: 'gray' }}>请在右侧选择你需要的道具→</span>
+        <span style={{ color: 'gray' }}>请在右侧选择你需要的道具 →</span>
       </Space>
     }
 
@@ -282,10 +286,10 @@ export default (
       />
 
       {installUrl &&
-      <GadgetDetail
-        entryUrl={installUrl}
-        onLoadSuccess={(info) => setWillBeInstallGadgetInfo(info)}
-      />}
+        <GadgetDetail
+          entryUrl={installUrl}
+          onLoadSuccess={(info) => setWillBeInstallGadgetInfo(info)}
+        />}
     </Modal>
 
     {renderInfoListView()}
