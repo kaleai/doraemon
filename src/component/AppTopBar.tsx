@@ -7,6 +7,7 @@ import { MenuFoldOutlined, MenuUnfoldOutlined, SwapOutlined } from '@ant-design/
 import { useEffect, useState } from 'react'
 import GadgetDetail, { IGadgetInfo, queryGadgetInfo } from './GadgetDetail'
 import { IGlobalConfig } from '../interface'
+import { nanoid } from 'nanoid'
 import { KEY } from '../constant'
 
 const { Search } = Input
@@ -31,19 +32,27 @@ export interface IProps {
   onReceiveActionHandleResult: (data: ActionHandleResultType) => void
 }
 
-export default ({ isCollapsed, globalConfig, onClickCollapse, onGadgetChanged, onReceiveActionHandleResult, setGlobalLoading }: IProps) => {
+export default (
+  {
+    globalConfig,
+    isCollapsed,
+    setGlobalLoading,
+    onClickCollapse,
+    onGadgetChanged,
+    onReceiveActionHandleResult,
+  }: IProps) => {
 
   const [curGadget, setCurGadget] = useState<IGadgetInfo>()
 
-  const [gadgetList, setGadgetList] = useState<IGadgetInfo[]>([])
+  const [gadgetInfoList, setGadgetInfoList] = useState<IGadgetInfo[]>([])
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
   const [installUrl, setInstallUrl] = useState<string | null>(null)
 
   useEffect(() => {
-    const infoStr = localStorage.getItem(KEY.CURRENT_GADGET)
-    infoStr && setCurGadget(JSON.parse(infoStr))
+    const gadgetInfoStr = localStorage.getItem(KEY.CURRENT_GADGET)
+    gadgetInfoStr && setCurGadget(JSON.parse(gadgetInfoStr))
   }, [])
 
   useEffect(() => {
@@ -53,9 +62,9 @@ export default ({ isCollapsed, globalConfig, onClickCollapse, onGadgetChanged, o
   }, [curGadget])
 
   /**
-   * 加载道具列表
+   * 加载道具信息列表
    */
-  const loadGadgetList = () => {
+  const loadGadgetInfoList = () => {
     const gadgets = globalConfig.gadgets
     const promiseList = gadgets.map(gadget => {
       return queryGadgetInfo(gadget.url)
@@ -63,7 +72,7 @@ export default ({ isCollapsed, globalConfig, onClickCollapse, onGadgetChanged, o
 
     Promise.all(promiseList)
       .then(infos => {
-        setGadgetList(infos)
+        setGadgetInfoList(infos)
       })
       .catch(err => {
         console.error(err)
@@ -78,7 +87,7 @@ export default ({ isCollapsed, globalConfig, onClickCollapse, onGadgetChanged, o
     setGlobalLoading(true)
     // 初始化插件的参数
     const initProps: InstallProps = {
-      gid: '2efefadsfdas',
+      gid: nanoid(24),
       onReceiveActionHandleResult,
       envInfo: {}, // 环境信息，比如是否是浏览器、小程序、vscode插件等
     }
@@ -95,12 +104,11 @@ export default ({ isCollapsed, globalConfig, onClickCollapse, onGadgetChanged, o
       sandbox: false,
     })
 
-    gadget.mountPromise.then(res => {
+    gadget.mountPromise.then(() => {
       onGadgetChanged(gadget)
     })
 
-    gadget.loadPromise.then(res => {
-      console.log('kale- loadPromise', res)
+    gadget.loadPromise.then(() => {
       setGlobalLoading(false)
     })
   }
@@ -114,32 +122,31 @@ export default ({ isCollapsed, globalConfig, onClickCollapse, onGadgetChanged, o
       onClick={() => onClickCollapse()}
     />
 
+    {/* 道具icon + 名字 + 描述 */}
     {curGadget ?
       <Space style={{ flex: 1 }} size={'middle'}>
-        <Avatar
-          style={{ minWidth: 30 }}
-          size={30}
-          shape={'square'} src={curGadget.icon}
-        />
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <a style={{ fontWeight: 600, fontSize: 15 }} href={curGadget.homepage}>{curGadget.name}</a>
+        <Avatar size={36} shape={'square'} src={curGadget.icon} />
+        <Space direction={'vertical'} size={3}>
+          <a style={{ fontWeight: 500, fontSize: 15 }} href={curGadget.homepage}>{curGadget.name}</a>
           <span style={{ fontSize: 12, color: 'gray' }}>{curGadget.description}</span>
-        </div>
+        </Space>
       </Space>
       :
       <Space style={{ flex: 1 }}>
         <Avatar
-          style={{ marginRight: 12 }} shape={'square'} size={'default'}
+          shape={'square'} size={'default'}
           src={'https://img0.baidu.com/it/u=2224311546,765801345&fm=253&fmt=auto&app=138&f=JPEG'}
           onClick={() => {
             installGadgetApp('local', '//localhost:7031')
           }}
         />
+        <span style={{ color: 'gray' }}>请在右侧选择你需要的道具→</span>
       </Space>
     }
 
     <Modal
-      title="Install New Gadget" open={isModalOpen}
+      title="Install New Gadget"
+      open={isModalOpen}
       okText={'Install'}
       zIndex={9999}
       onCancel={() => {
@@ -171,8 +178,8 @@ export default ({ isCollapsed, globalConfig, onClickCollapse, onGadgetChanged, o
       placement="bottomRight"
       onVisibleChange={(visible: boolean) => {
         if (visible) {
-          setGadgetList([])
-          loadGadgetList()
+          setGadgetInfoList([])
+          loadGadgetInfoList()
         }
       }}
       content={
@@ -189,8 +196,8 @@ export default ({ isCollapsed, globalConfig, onClickCollapse, onGadgetChanged, o
 
           <List
             itemLayout="horizontal"
-            dataSource={gadgetList}
-            loading={gadgetList.length === 0}
+            dataSource={gadgetInfoList}
+            loading={gadgetInfoList.length === 0}
             renderItem={(item, index) => (
               <List.Item actions={[
                 <Button

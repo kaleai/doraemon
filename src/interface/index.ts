@@ -9,6 +9,7 @@ export interface IConfigEntry {
 }
 
 export interface IGlobalConfig {
+  title: string
   gadgets: IConfigEntry[],
   settings: IConfigEntry,
   website: {

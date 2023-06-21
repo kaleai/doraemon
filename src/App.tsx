@@ -11,7 +11,7 @@ import {
 import ListView, { ItemType, ListItemDataType } from './component/ListView'
 import AppTopBar from './component/AppTopBar'
 import SidebarContent from './component/SideBarContent'
-import { v4 as uuid } from 'uuid'
+import { nanoid } from 'nanoid'
 import { initGlobalState, MicroAppStateActions } from 'qiankun'
 import Settings from './component/SettingsPanel'
 import axios from 'axios'
@@ -34,8 +34,10 @@ const App = () => {
   const [isGlobalLoading, setIsGlobalLoading] = useState<boolean>(false)
 
   useEffect(() => {
-    axios(localStorage.getItem(KEY.GLOBAL_CONFIG) as string).then(res => {
+    const configStr = localStorage.getItem(KEY.GLOBAL_CONFIG) as string
+    axios(configStr).then(res => {
       if (res.status === 200) {
+        window.document.title = res.data.title
         setGlobalConfig(res.data)
       }
     }).catch(err => {
@@ -59,7 +61,7 @@ const App = () => {
 
     eleInfoList.forEach((itemInfo: ViewElementInfoType, index) => {
       const viewType = itemInfo.viewType.startsWith('SYS') ? itemInfo.viewType as ItemType : ItemType.GADGET
-      const containerId = 'CID:' + uuid()
+      const containerId = 'CID:' + nanoid()
 
       listData.push({
         id: containerId,
@@ -78,16 +80,16 @@ const App = () => {
 
     // add feedback
     if (data.canFeedback !== false) {
-      listData.push({ id: uuid(), type: ItemType.FEEDBACK, data: { sessionUUId: data.sessionUUId } })
+      listData.push({ id: nanoid(), type: ItemType.FEEDBACK, data: { sessionUUId: data.sessionUUId } })
     }
 
     // add suggest
     if (data.suggestActions) {
-      listData.push({ id: uuid(), type: ItemType.SUGGESTION, data: { suggestActions: data.suggestActions } })
+      listData.push({ id: nanoid(), type: ItemType.SUGGESTION, data: { suggestActions: data.suggestActions } })
     }
 
     // add divider
-    listData.push({ id: uuid(), type: ItemType.DIVIDER, data: {} })
+    listData.push({ id: nanoid(), type: ItemType.DIVIDER, data: {} })
 
     setListData([...listData])
 

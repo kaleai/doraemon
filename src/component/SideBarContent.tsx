@@ -1,10 +1,9 @@
 import {
-  CommentOutlined, CompassFilled, CompassOutlined,
+  CompassFilled,
   DownloadOutlined,
-  GlobalOutlined, MessageFilled,
+  MessageFilled,
   MoneyCollectOutlined,
   SettingOutlined,
-  StarFilled,
   UserOutlined,
 } from '@ant-design/icons'
 import {
@@ -39,12 +38,11 @@ export default (props: IProps) => {
     if (!cfgInfo) {
       return null
     }
+
     return <Tooltip title={cfgInfo.label}>
-      <div className={'dynamicIcon'} onClick={() => {
-        window.open(cfgInfo.url)
-      }}>
+      <a className={'dynamicIcon'} href={cfgInfo.url} target={'_blank'}>
         {icon}
-      </div>
+      </a>
     </Tooltip>
   }
 
@@ -131,7 +129,7 @@ export default (props: IProps) => {
       </Space>
 
       <Space style={{ color: 'white', fontSize: 17, marginLeft: 16, marginTop: 12 }} size={'small'}>
-        <span style={{ marginRight: 2, fontWeight: 'bold' }}>Doraemon</span>
+        <span style={{ marginRight: 2, fontWeight: 'bold' }}>{globalConfig.title}</span>
         {renderEntranceIcon(<CompassFilled />, globalConfig.website.home)}
         {renderEntranceIcon(<MessageFilled />, globalConfig.website.discuss)}
         {renderEntranceIcon(<GithubFilled />, globalConfig.website.github)}
