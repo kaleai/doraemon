@@ -17,6 +17,8 @@ import Settings from './component/SettingsPanel'
 import axios from 'axios'
 import { IGlobalConfig } from './interface'
 import { DEF_CONFIG_URL, KEY } from './constant'
+import { addGlobalUncaughtErrorHandler, removeGlobalUncaughtErrorHandler } from 'qiankun'
+
 const md5 = require('js-md5')
 
 const { Header, Sider, Content } = Layout
@@ -35,8 +37,8 @@ const App = () => {
   const [isGlobalLoading, setIsGlobalLoading] = useState<boolean>(false)
 
   useEffect(() => {
-    const configStr = localStorage.getItem(KEY.GLOBAL_CONFIG) as string
-    axios(configStr).then(res => {
+    const configUrl = localStorage.getItem(KEY.GLOBAL_CONFIG) as string
+    axios(configUrl).then(res => {
       if (res.status === 200) {
         window.document.title = res.data.title
         setGlobalConfig(res.data)
@@ -51,7 +53,13 @@ const App = () => {
       }
     })
 
+    const errHandler = (args: any) => {
+      console.error(args)
+    }
+    addGlobalUncaughtErrorHandler(errHandler)
+
     return () => {
+      removeGlobalUncaughtErrorHandler(errHandler)
       gadgetRef.current?.unmount()
     }
   }, [])
@@ -142,7 +150,10 @@ const App = () => {
               setGlobalLoading={loading => setIsGlobalLoading(loading)}
               isCollapsed={isCollapsed}
               onClickCollapse={() => setIsCollapsed(!isCollapsed)}
-              onReceiveActionHandleResult={data => addViewToList(data)}
+              onReceiveActionHandleResult={data => {
+                console.log('receive action', data)
+                addViewToList(data)
+              }}
               onGadgetChanged={gadget => {
                 gadgetRef.current = gadget
 

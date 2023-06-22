@@ -34,6 +34,8 @@ export interface IProps {
   onReceiveActionHandleResult: (data: ActionHandleResultType) => void
 }
 
+let gadget: any
+
 export default (
   {
     globalConfig,
@@ -61,7 +63,6 @@ export default (
     const gadgetInfoStr = localStorage.getItem(KEY.CURRENT_GADGET)
     if (gadgetInfoStr && gadgetInfoStr !== 'undefined') {
       const info = JSON.parse(gadgetInfoStr) as IGadgetInfo
-      installGadgetApp(info.name, info.entryUrl)
       setCurGadgetInfo(info)
     }
 
@@ -73,16 +74,52 @@ export default (
   }, [])
 
   useEffect(() => {
-    if (curGadgetInfo) {
-      localStorage.setItem(KEY.CURRENT_GADGET, JSON.stringify(curGadgetInfo))
-    }
-  }, [curGadgetInfo])
-
-  useEffect(() => {
     if (localGadgetInfoList?.length > 0) {
       localStorage.setItem(KEY.LOCAL_GADGET_LIST, JSON.stringify(localGadgetInfoList))
     }
   }, [localGadgetInfoList])
+
+  useEffect(() => {
+    if (curGadgetInfo) {
+      if (curGadgetInfo.name !== 'DebugGadget') {
+        localStorage.setItem(KEY.CURRENT_GADGET, JSON.stringify(curGadgetInfo))
+      }
+
+      const installGadgetApp = (name: string, entryUrl: string) => {
+        // 初始化插件的参数
+        const initProps: InstallProps = {
+          gid: nanoid(24),
+          onReceiveActionHandleResult,
+          envInfo: {}, // 环境信息，比如是否是浏览器、小程序、vscode插件等
+        }
+
+        gadget = loadMicroApp({
+          name: name,
+          entry: entryUrl,
+          container: '#gadgetContainer',
+          props: initProps,
+        }, {
+          /*fetch(url, args) { // https://blog.csdn.net/sunqiang4/article/details/122014916
+            return window.fetch(url, args)
+          },*/
+          sandbox: false,
+        })
+
+        gadget.mountPromise.then(() => onGadgetChanged(gadget))
+        gadget.loadPromise.then(() => {
+          setIsInstallModalOpen(false)
+          setGlobalLoading(false)
+        })
+      }
+
+      setGlobalLoading(true)
+      // 安装道具应用
+      console.log('install gadget', curGadgetInfo.name)
+      // @ts-ignore
+      gadget?.unmount()
+      installGadgetApp(curGadgetInfo.name, curGadgetInfo.entryUrl)
+    }
+  }, [curGadgetInfo])
 
   /**
    * 加载道具信息列表
@@ -105,37 +142,6 @@ export default (
       })
   }
 
-  /**
-   * 安装道具应用
-   */
-  const installGadgetApp = (name: string, entryUrl: string) => {
-    setGlobalLoading(true)
-    // 初始化插件的参数
-    const initProps: InstallProps = {
-      gid: nanoid(24),
-      onReceiveActionHandleResult,
-      envInfo: {}, // 环境信息，比如是否是浏览器、小程序、vscode插件等
-    }
-
-    const gadget = loadMicroApp({
-      name: name,
-      entry: entryUrl,
-      container: '#gadgetContainer',
-      props: initProps,
-    }, {
-      /*fetch(url, args) { // https://blog.csdn.net/sunqiang4/article/details/122014916
-        return window.fetch(url, args)
-      },*/
-      sandbox: false,
-    })
-
-    gadget.mountPromise.then(() => onGadgetChanged(gadget))
-    gadget.loadPromise.then(() => {
-      setIsInstallModalOpen(false)
-      setGlobalLoading(false)
-    })
-  }
-
   const renderInfoListView = () =>
     <Popover
       title={
@@ -143,7 +149,7 @@ export default (
           <span>四次元口袋</span>
           <div style={{ flex: 1 }} />
           <Button type={'link'} onClick={() => setIsInstallModalOpen(true)}>
-            🪄 安装新的道具
+            ✨ 安装新的道具
           </Button>
         </div>
       }
@@ -180,8 +186,6 @@ export default (
                   size={'small'}
                   key="action-link"
                   onClick={() => {
-                    console.log('install gadget', item)
-                    installGadgetApp(item.name, item.entryUrl)
                     setCurGadgetInfo(item)
                   }}
                 >
@@ -247,7 +251,7 @@ export default (
           shape={'square'} size={'default'}
           src={'https://img0.baidu.com/it/u=2224311546,765801345&fm=253&fmt=auto&app=138&f=JPEG'}
           onClick={() => {
-            installGadgetApp('local', '//localhost:7031')
+            setCurGadgetInfo({ name: 'DebugGadget', entryUrl: '//localhost:7031' } as IGadgetInfo)
           }}
         />
         <Typography.Text style={{ color: 'gray' }} ellipsis={true}>{'请在右侧选择你需要的道具 →'}</Typography.Text>
@@ -268,7 +272,7 @@ export default (
                 localGadgetInfoList.push(willBeInstallGadgetInfo)
                 setLocalGadgetInfoList([...localGadgetInfoList])
 
-                installGadgetApp(willBeInstallGadgetInfo.name, willBeInstallGadgetInfo.entryUrl)
+                setCurGadgetInfo(willBeInstallGadgetInfo)
               } else {
                 message.error('gadget name is null')
               }

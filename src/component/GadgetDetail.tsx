@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { Alert, Avatar, Descriptions } from 'antd'
 
 export interface IGadgetInfo {
-  id: string
   entryUrl: string
   name: string
   icon: string
