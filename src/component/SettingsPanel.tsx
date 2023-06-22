@@ -13,7 +13,7 @@ interface IProps {
   onClickClose: () => void
 }
 
-const settingsContainerName = 'settingsContainer'
+const settingsContainerId = 'settings-container'
 
 export default (props: IProps) => {
   const { isHide, globalConfig, onClickClose } = props
@@ -34,7 +34,7 @@ export default (props: IProps) => {
     loadMicroApp({
       name: 'doraemon-settings',
       entry: globalConfig.settings.url,
-      container: '#' + settingsContainerName,
+      container: '#' + settingsContainerId,
       props: {},
     }, {
       fetch(url, args) {
@@ -63,7 +63,7 @@ export default (props: IProps) => {
           loadSettingMicroApp() &&
           <Spin spinning={loading}>
             <Card style={{ marginTop: 22 }} title={globalConfig.settings.label}>
-              <div id={settingsContainerName} />
+              <div id={settingsContainerId} />
             </Card>
           </Spin>
         }

@@ -96,7 +96,7 @@ export default (
         gadget = loadMicroApp({
           name: name,
           entry: entryUrl,
-          container: '#gadgetContainer',
+          container: '#gadgets-container',
           props: initProps,
         }, {
           /*fetch(url, args) { // https://blog.csdn.net/sunqiang4/article/details/122014916
@@ -114,7 +114,7 @@ export default (
 
       setGlobalLoading(true)
       // 安装道具应用
-      console.log('install gadget', curGadgetInfo.name)
+      console.log('install gadget:', curGadgetInfo.name)
       // @ts-ignore
       gadget?.unmount()
       installGadgetApp(curGadgetInfo.name, curGadgetInfo.entryUrl)
