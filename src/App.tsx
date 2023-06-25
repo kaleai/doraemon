@@ -64,6 +64,13 @@ const App = () => {
     }
   }, [])
 
+  const sendActionToGadget = (actionInfo: ActionInfoType) => {
+    eventManager.setGlobalState({
+      category: 'ACTION',
+      params: actionInfo,
+    })
+  }
+
   const addViewToList = (data: ActionHandleResultType) => {
     const viewPropsList: IViewElementProps[] = []
     const eleInfoList = data.viewElementInfos
@@ -83,6 +90,7 @@ const App = () => {
         viewPropsList.push({
           containerId,
           isReadonly: index < eleInfoList.length - 1,
+          onSendAction: sendActionToGadget,
           ...itemInfo,
         })
       }
@@ -158,12 +166,9 @@ const App = () => {
                 gadgetRef.current = gadget
 
                 setTimeout(() => {
-                  eventManager.setGlobalState({
-                    category: 'ACTION',
-                    params: {
-                      action: 'SYS_INITIALIZATION',
-                      expectation: 'init gadget',
-                    } as ActionInfoType,
+                  sendActionToGadget({
+                    action: 'SYS_INITIALIZATION',
+                    expectation: 'init gadget',
                   })
                 }, 200)
               }}
@@ -182,12 +187,7 @@ const App = () => {
                 >
                   <ListView
                     dataSource={listData}
-                    onClickSuggestAction={(params) => {
-                      eventManager.setGlobalState({
-                        category: 'ACTION',
-                        params,
-                      })
-                    }}
+                    onClickSuggestAction={(params) => sendActionToGadget(params)}
                     onReceiveFeedback={(like, sessionUUId) => {
                       message.success('感谢您的反馈，我会继续努力 💪🏻')
 
