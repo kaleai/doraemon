@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { DEF_CONFIG_URL, KEY } from './constant'
+import { KEY } from './constant'
 import 'antd/dist/reset.css'
 import './index.css'
 import App from './App'
@@ -17,6 +17,10 @@ if (callback && callback !== 'undefined') {
 }
 
 // 持久化配置文件
+// @ts-ignore
+const defGlobalCfgUrl: string = document.getElementsByTagName('meta')['global-config'].content
+localStorage.setItem(KEY.DEF_GLOBAL_CONFIG, defGlobalCfgUrl)
+
 const newCfgUrl = queries.get('config')
 const oldCfgUrl = localStorage.getItem(KEY.GLOBAL_CONFIG)
 
@@ -31,7 +35,7 @@ if (newCfgUrl && newCfgUrl !== 'undefined') {
 } else {
   if (!oldCfgUrl) {
     // 如果之前没有配置文件，则设置默认的配置文件
-    localStorage.setItem(KEY.GLOBAL_CONFIG, DEF_CONFIG_URL)
+    localStorage.setItem(KEY.GLOBAL_CONFIG, defGlobalCfgUrl)
   }
 }
 

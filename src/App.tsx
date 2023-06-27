@@ -16,7 +16,7 @@ import { initGlobalState, MicroAppStateActions } from 'qiankun'
 import Settings from './component/SettingsPanel'
 import axios from 'axios'
 import { IGlobalConfig } from './interface'
-import { DEF_CONFIG_URL, KEY } from './constant'
+import { KEY } from './constant'
 import { addGlobalUncaughtErrorHandler, removeGlobalUncaughtErrorHandler } from 'qiankun'
 
 const md5 = require('js-md5')
@@ -46,7 +46,8 @@ const App = () => {
     }).catch(err => {
       console.error(err)
       if (window.confirm('配置文件下载异常，是否切换回默认的配置文件')) {
-        localStorage.setItem(KEY.GLOBAL_CONFIG, DEF_CONFIG_URL)
+        const defGlobalCfgUrl = localStorage.getItem(KEY.DEF_GLOBAL_CONFIG)
+        defGlobalCfgUrl && localStorage.setItem(KEY.GLOBAL_CONFIG, defGlobalCfgUrl)
         window.location.replace(window.location.origin)
       } else {
         alert(err.toString())
