@@ -4,7 +4,6 @@ import { DislikeTwoTone, LikeTwoTone, MessageOutlined } from '@ant-design/icons'
 import { SuggestActionType, ActionInfoType, ISysChatBox, ISysErrorInfo, ISysMarkdown } from '../../gadget-template/Interface'
 import ErrorPanel from './common/ErrorPanel'
 import ChatBox from './common/ChatBox'
-import EmptyImg from '../image/empty.png'
 import MarkdownView from './common/MarkdownView'
 import './index.css'
 
@@ -71,7 +70,7 @@ export default ({ dataSource, onClickSuggestAction, onReceiveFeedback: sendFeedb
     locale={{
       emptyText:
         <Space className={'fullHeight'} style={{ marginTop: 100 }} direction={'vertical'} size={'large'}>
-          <Avatar size={100} src={EmptyImg} shape={'square'} />
+          <Avatar size={100} src={'https://cdn-icons-png.flaticon.com/512/7486/7486754.png'} shape={'square'} />
           <span style={{ color: 'gray', fontWeight: 'bold' }}>空空如也~ 您可以在右上角切换你需要的功能</span>
         </Space>
       ,
