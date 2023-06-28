@@ -30,19 +30,15 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.6.0",
-    "@ant-design/icons-svg": "4.2.1",
-    "@ant-design/pro-components": "^2.4.15",
     "@vercel/analytics": "^1.0.1",
     "antd": "5.6.0",
     "axios": "^1.4.0",
-    "confetti-ts-canvas": "^1.1.4",
     "js-md5": "^0.7.3",
     "mermaid": "^10.1.0",
     "nanoid": "^4.0.2",
     "qiankun": "^2.10.8",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-infinite-scroll-component": "^6.1.0",
     "react-markdown": "^8.0.7",
     "react-scripts": "5.0.1",
     "react-syntax-highlighter": "^15.5.0",
@@ -51,8 +47,7 @@
     "remark-breaks": "^3.0.2",
     "remark-gfm": "^3.0.1",
     "remark-math": "^5.1.1",
-    "typescript": "^4.9.5",
-    "uuid": "^9.0.0"
+    "typescript": "^4.9.5"
   },
   "devDependencies": {
     "@types/node": "^16.18.28",
@@ -60,6 +55,7 @@
     "@types/react-katex": "^3.0.0",
     "@types/react-syntax-highlighter": "^15.5.7",
     "@types/uuid": "^9.0.1",
-    "http-proxy-middleware": "^2.0.6"
+    "http-proxy-middleware": "^2.0.6",
+    "confetti-ts-canvas": "^1.1.4"
   }
 }
