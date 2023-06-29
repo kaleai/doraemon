@@ -10,5 +10,6 @@ export enum KEY {
   DEF_GLOBAL_CONFIG = 'doraemon_global_def_config',
   GLOBAL_CONFIG = 'doraemon_global_config',
   CURRENT_GADGET = 'doraemon_current_gadget',
-  LOCAL_GADGET_LIST = 'doraemon_local_gadget_list'
+  LOCAL_GADGET_LIST = 'doraemon_local_gadget_list',
+  GADGETS_ID_MAP = 'doraemon_gadgets_gid_map',
 }

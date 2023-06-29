@@ -28,6 +28,7 @@ if (newCfgUrl && newCfgUrl !== 'undefined') {
   if (newCfgUrl !== oldCfgUrl) {
     if (window.confirm('新配置将会覆盖老的，会触发应用重新初始化，是否确认')) {
       localStorage.setItem(KEY.GLOBAL_CONFIG, newCfgUrl)
+      localStorage.removeItem(KEY.GADGETS_ID_MAP)
     }
   } else {
     localStorage.setItem(KEY.GLOBAL_CONFIG, newCfgUrl)

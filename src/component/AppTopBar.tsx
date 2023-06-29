@@ -34,7 +34,7 @@ export interface IProps {
   onReceiveActionHandleResult: (data: ActionHandleResultType) => void
 }
 
-let gadget: any
+let gadget: any, gadgetsIdMap: Record<string, string> = {}
 
 export default (
   {
@@ -59,17 +59,36 @@ export default (
   const [localGadgetInfoList, setLocalGadgetInfoList] = useState<IGadgetInfo[]>([])
 
   useEffect(() => {
-    // get before gadget info and install
+    // 1. Load map of gadget & id firstly
+    const str = localStorage.getItem(KEY.GADGETS_ID_MAP)
+    if (str && str !== 'undefined') {
+      gadgetsIdMap = JSON.parse(str)
+      localStorage.removeItem(KEY.GADGETS_ID_MAP)
+    }
+    const onPageWillBeClosed = (event: any) => {
+      event.preventDefault()
+      console.log('before unload event triggered')
+      // TODO by kale: 2023/6/29 设置map前卸载当前gadget
+      localStorage.setItem(KEY.GADGETS_ID_MAP, JSON.stringify(gadgetsIdMap))
+      return (event.returnValue = 'Are you sure you want to exit?')
+    }
+    window.addEventListener('beforeunload', onPageWillBeClosed)
+
+    // 2. Get the previous gadget information
     const gadgetInfoStr = localStorage.getItem(KEY.CURRENT_GADGET)
     if (gadgetInfoStr && gadgetInfoStr !== 'undefined') {
       const info = JSON.parse(gadgetInfoStr) as IGadgetInfo
       setCurGadgetInfo(info)
     }
 
-    // get local gadgets
+    // 3. get local gadget list
     const localGadgetListStr = localStorage.getItem(KEY.LOCAL_GADGET_LIST)
     if (localGadgetListStr && localGadgetListStr !== 'undefined') {
       setLocalGadgetInfoList(JSON.parse(localGadgetListStr))
+    }
+
+    return () => {
+      window.removeEventListener('beforeunload', onPageWillBeClosed)
     }
   }, [])
 
@@ -86,9 +105,13 @@ export default (
       }
 
       const installGadgetApp = (name: string, entryUrl: string) => {
-        // 初始化插件的参数
+        if (!gadgetsIdMap[name]) {
+          gadgetsIdMap[name] = nanoid(24)
+        }
+
+        // startup parameter for gadget
         const initProps: InstallProps = {
-          gid: nanoid(24),
+          gid: gadgetsIdMap[name],
           onReceiveActionHandleResult,
           envInfo: {}, // 环境信息，比如是否是浏览器、小程序、vscode插件等
         }
@@ -113,10 +136,10 @@ export default (
       }
 
       setGlobalLoading(true)
-      // 安装道具应用
-      console.log('install gadget:', curGadgetInfo.name)
-      // @ts-ignore
+
+      // @ts-ignore unmount pre gadget
       gadget?.unmount()
+      // mount current gadget
       installGadgetApp(curGadgetInfo.name, curGadgetInfo.entryUrl)
     }
   }, [curGadgetInfo])
@@ -292,10 +315,10 @@ export default (
       />
 
       {installUrl &&
-        <GadgetDetail
-          entryUrl={installUrl}
-          onLoadSuccess={(info) => setWillBeInstallGadgetInfo(info)}
-        />}
+      <GadgetDetail
+        entryUrl={installUrl}
+        onLoadSuccess={(info) => setWillBeInstallGadgetInfo(info)}
+      />}
     </Modal>
 
     {renderInfoListView()}
