@@ -62,7 +62,6 @@ export default ({ dataSource, onClickSuggestAction, onReceiveFeedback: sendFeedb
   }, [])
 
   return <List
-    className={'fullHeight'}
     itemLayout="vertical"
     dataSource={dataSource}
     split={false}

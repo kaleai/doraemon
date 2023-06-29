@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { MicroApp } from 'qiankun/es/interfaces'
-import { ConfigProvider, Divider, Layout, Spin, message } from 'antd'
+import { ConfigProvider, Divider, Layout, Spin, message, Button, Space } from 'antd'
 import {
   ActionInfoType,
   ActionHandleResultType,
@@ -18,6 +18,7 @@ import axios from 'axios'
 import { IGlobalConfig } from './interface'
 import { KEY } from './constant'
 import { addGlobalUncaughtErrorHandler, removeGlobalUncaughtErrorHandler } from 'qiankun'
+import { LoadingOutlined } from '@ant-design/icons'
 
 const md5 = require('js-md5')
 
@@ -35,6 +36,7 @@ const App = () => {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
   const [isShowSettings, setIsShowSettings] = useState<boolean>(false)
   const [isGlobalLoading, setIsGlobalLoading] = useState<boolean>(false)
+  const [isGadgetLoading, setIsGadgetLoading] = useState<boolean>(false)
 
   useEffect(() => {
     const configUrl = localStorage.getItem(KEY.GLOBAL_CONFIG) as string
@@ -65,17 +67,27 @@ const App = () => {
     }
   }, [])
 
+  /**
+   * 给gadget发送action，让gadget进行处理
+   */
   const sendActionToGadget = (actionInfo: ActionInfoType) => {
+    setIsGadgetLoading(true)
+
     eventManager.setGlobalState({
       category: 'ACTION',
       params: actionInfo,
     })
   }
 
-  const addViewToList = (data: ActionHandleResultType) => {
+  /**
+   * 得到gadget处理action后的结果
+   */
+  const onReceiveHandleResult = (res: ActionHandleResultType) => {
+    setIsGadgetLoading(false)
+
     const viewPropsList: IViewElementProps[] = []
-    const eleInfoList = data.viewElementInfos
-    const sessionId = md5(data.sessionUUId)
+    const eleInfoList = res.viewElementInfos
+    const sessionId = md5(res.sessionUUId)
 
     eleInfoList.forEach((itemInfo: ViewElementInfoType, index) => {
       const viewType = itemInfo.viewType.startsWith('SYS') ? itemInfo.viewType as ItemType : ItemType.GADGET
@@ -98,13 +110,13 @@ const App = () => {
     })
 
     // add feedback
-    if (data.canFeedback !== false) {
-      listData.push({ id: sessionId + '_feedback', type: ItemType.FEEDBACK, data: { sessionUUId: data.sessionUUId } })
+    if (res.canFeedback !== false) {
+      listData.push({ id: sessionId + '_feedback', type: ItemType.FEEDBACK, data: { sessionUUId: res.sessionUUId } })
     }
 
     // add suggest
-    if (data.suggestActions) {
-      listData.push({ id: sessionId + '_suggestion', type: ItemType.SUGGESTION, data: { suggestActions: data.suggestActions } })
+    if (res.suggestActions) {
+      listData.push({ id: sessionId + '_suggestion', type: ItemType.SUGGESTION, data: { suggestActions: res.suggestActions } })
     }
 
     // add divider
@@ -161,7 +173,7 @@ const App = () => {
               onClickCollapse={() => setIsCollapsed(!isCollapsed)}
               onReceiveActionHandleResult={data => {
                 console.log('receive action', data)
-                addViewToList(data)
+                onReceiveHandleResult(data)
               }}
               onGadgetChanged={gadget => {
                 gadgetRef.current = gadget
@@ -201,6 +213,11 @@ const App = () => {
                       })
                     }}
                   />
+                  {isGadgetLoading && <Space>
+                    <Spin indicator={<LoadingOutlined style={{ fontSize: 18 }} />} />
+                    <div style={{ fontSize: 16 }}>{'正在思考中，请稍后...'}</div>
+                  </Space>
+                  }
                 </div>
               </Spin>
             </Content>
