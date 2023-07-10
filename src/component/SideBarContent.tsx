@@ -9,29 +9,57 @@ import {
   PlusCircleFilled,
 } from '@ant-design/icons'
 import { Menu, Avatar, Space, Button, Tooltip } from 'antd'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { KEY } from '../constant'
 import './index.css'
 import { IConfigEntry, IGlobalConfig } from '../interface'
 import { showDonateDialog } from './DonateDialog'
-
-interface IProps {
-  globalConfig: IGlobalConfig
-  onClickSettings: () => void
-}
+import { loadObjFormLocal, saveObjToLocal } from '../utils'
+import { nanoid } from 'nanoid'
 
 // 下面加起来必须是200
 const HEIGHT_TOP_BAR = 116
 const HEIGHT_BOTTOM_BAR = 84
+
+interface IConversationInfo {
+  id: string,
+  name: string
+}
+
+interface IProps {
+  globalConfig: IGlobalConfig
+  onClickSettings: () => void
+  onMenuClick: (conversationId: string) => void
+}
 
 /**
  * @author Jack Tony
  * @date 2023/5/15
  */
 export default (props: IProps) => {
-  const { globalConfig, onClickSettings } = props
+  const { globalConfig, onMenuClick, onClickSettings } = props
 
-  const [showDonateModal, setShowDonateModal] = React.useState<boolean>(false)
+  const [showDonateModal, setShowDonateModal] = useState<boolean>(false)
+
+  const [conversationList, setConversationList] = useState<IConversationInfo[]>([])
+
+  useEffect(() => {
+    const list = loadObjFormLocal<IConversationInfo[]>(KEY.CONVERSATION_LIST)
+    list && setConversationList(list)
+
+    const id = loadObjFormLocal<string>(KEY.PREV_CONVERSATION_ID)
+    if (id) {
+      onMenuClick(id)
+    } else if (!id && list?.[0].id) {
+      onMenuClick(list?.[0].id)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (conversationList?.length) {
+      saveObjToLocal(KEY.CONVERSATION_LIST, conversationList)
+    }
+  }, [conversationList])
 
   /**
    * 渲染外部跳转网站的ICON
@@ -48,23 +76,12 @@ export default (props: IProps) => {
     </Tooltip>
   }
 
-  const mockMenuListData = () => {
-    const list = []
-    for (let i = 0; i < 20; i++) {
-      list.push({
-        key: 'key_' + i,
-        label: '🚧 To be developed and completed',
-      })
-    }
-    return list
-  }
-
   return <div>
     {showDonateModal &&
-      <canvas
-        id={'fireworks_canvas'} className={'fireworksCanvas'}
-        style={{ width: window.innerWidth, height: window.innerHeight }}
-      />
+    <canvas
+      id={'fireworks_canvas'} className={'fireworksCanvas'}
+      style={{ width: window.innerWidth, height: window.innerHeight }}
+    />
     }
 
     <div style={{ height: HEIGHT_TOP_BAR, paddingTop: 12, display: 'flex', flexDirection: 'column' }}>
@@ -94,8 +111,13 @@ export default (props: IProps) => {
         className={'transparentBtn'}
         type={'default'}
         icon={<PlusCircleFilled />}
-        onClick={()=>{
-          alert('🚧🚧🚧 未完成，施工中 🚧🚧🚧')}}
+        onClick={() => {
+          conversationList.push({
+            id: nanoid(32),
+            name: '🚧🚧🚧 未完成，施工中 🚧🚧🚧',
+          })
+          setConversationList([...conversationList])
+        }}
       >
         新会话
       </Button>
@@ -105,44 +127,48 @@ export default (props: IProps) => {
       <Menu
         style={{ flex: 1 }}
         theme="dark"
-        defaultSelectedKeys={['key_1']}
-        items={mockMenuListData()}
+        // defaultSelectedKeys={['key_1']}
+        items={conversationList.map(item => ({
+          key: item.id,
+          label: item.name,
+        }))}
+        onClick={({ key }) => onMenuClick(key)}
       />
     </div>
 
     <div style={{ height: HEIGHT_BOTTOM_BAR, display: 'flex', flexDirection: 'column' }}>
       <div className={'fullWidth'} style={{ marginTop: 12, display: 'flex' }}>
         {globalConfig.download &&
-          <Button
-            className={'fullWidth bottomButton'}
-            style={{ backgroundColor: '#52c41a' }}
-            type={'primary'}
-            icon={<DownloadOutlined />}
-            onClick={() => {
-              window.open(globalConfig.download.url)
-            }}
-          >
-            {globalConfig.download.label}
-          </Button>
+        <Button
+          className={'fullWidth bottomButton'}
+          style={{ backgroundColor: '#52c41a' }}
+          type={'primary'}
+          icon={<DownloadOutlined />}
+          onClick={() => {
+            window.open(globalConfig.download.url)
+          }}
+        >
+          {globalConfig.download.label}
+        </Button>
         }
 
         {globalConfig.donate &&
-          <Button
-            className={'fullWidth bottomButton'}
-            style={{ backgroundColor: '#eb2f96' }}
-            type={'primary'}
-            icon={<MoneyCollectOutlined />}
-            onClick={() => {
-              if (globalConfig.donate.url) {
-                window.open(globalConfig.donate.url)
-              } else {
-                setShowDonateModal(true)
-                showDonateDialog(() => setShowDonateModal(false))
-              }
-            }}
-          >
-            {globalConfig.donate.label}
-          </Button>
+        <Button
+          className={'fullWidth bottomButton'}
+          style={{ backgroundColor: '#eb2f96' }}
+          type={'primary'}
+          icon={<MoneyCollectOutlined />}
+          onClick={() => {
+            if (globalConfig.donate.url) {
+              window.open(globalConfig.donate.url)
+            } else {
+              setShowDonateModal(true)
+              showDonateDialog(() => setShowDonateModal(false))
+            }
+          }}
+        >
+          {globalConfig.donate.label}
+        </Button>
         }
       </div>
 

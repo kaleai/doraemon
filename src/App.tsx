@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { MicroApp } from 'qiankun/es/interfaces'
-import { ConfigProvider, Divider, Layout, Spin, message, Button, Space } from 'antd'
+import { ConfigProvider, Divider, Layout, Spin, message, Button, Space, Input } from 'antd'
 import {
   ActionInfoType,
   ActionHandleResultType,
@@ -19,6 +19,7 @@ import { IGlobalConfig } from './interface'
 import { KEY } from './constant'
 import { addGlobalUncaughtErrorHandler, removeGlobalUncaughtErrorHandler } from 'qiankun'
 import { LoadingOutlined } from '@ant-design/icons'
+import { dom2json, json2dom } from './utils'
 
 const md5 = require('js-md5')
 
@@ -146,6 +147,9 @@ const App = () => {
           >
             <SidebarContent
               globalConfig={globalConfig}
+              onMenuClick={(id) => {
+
+              }}
               onClickSettings={() => {
                 setIsShowSettings(true)
 
@@ -190,6 +194,14 @@ const App = () => {
             <Divider style={{ margin: 0 }} />
 
             <Content>
+
+              <Button type={'primary'} onClick={() => {
+                const res = dom2json('gadget-content')
+                console.log('json', res)
+
+                // const dom = json2dom(res)
+                // document.getElementById('history-record')?.appendChild(dom)
+              }}>click</Button>
               <Spin spinning={isGlobalLoading}>
                 <div
                   style={{
@@ -198,26 +210,36 @@ const App = () => {
                     padding: 12,
                   }}
                 >
-                  <ListView
-                    dataSource={listData}
-                    onClickSuggestAction={(params) => sendActionToGadget(params)}
-                    onReceiveFeedback={(like, sessionUUId) => {
-                      message.success('感谢您的反馈，我会继续努力 💪🏻')
+                  <div id={'gadget-content'}>
+                    {/* history */}
+                    <div id={'history-record'}>
+                      <Divider plain>以上为历史消息</Divider>
+                    </div>
 
-                      eventManager.setGlobalState({
-                        category: 'FEEDBACK',
-                        params: {
-                          like,
-                          sessionUUId,
-                        } as FeedbackInfoType,
-                      })
-                    }}
-                  />
-                  {isGadgetLoading && <Space>
-                    <Spin indicator={<LoadingOutlined style={{ fontSize: 18 }} />} />
-                    <div style={{ fontSize: 16 }}>{'正在思考中，请稍后...'}</div>
-                  </Space>
-                  }
+                    {/* main list */}
+                    <ListView
+                      dataSource={listData}
+                      onClickSuggestAction={(params) => sendActionToGadget(params)}
+                      onReceiveFeedback={(like, sessionUUId) => {
+                        message.success('感谢您的反馈，我会继续努力 💪🏻')
+
+                        eventManager.setGlobalState({
+                          category: 'FEEDBACK',
+                          params: {
+                            like,
+                            sessionUUId,
+                          } as FeedbackInfoType,
+                        })
+                      }}
+                    />
+
+                    {/* loading */}
+                    {isGadgetLoading && <Space>
+                      <Spin indicator={<LoadingOutlined style={{ fontSize: 18 }} />} />
+                      <div style={{ fontSize: 16 }}>{'正在思考中，请稍后...'}</div>
+                    </Space>
+                    }
+                  </div>
                 </div>
               </Spin>
             </Content>

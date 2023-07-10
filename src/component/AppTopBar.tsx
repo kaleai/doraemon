@@ -9,6 +9,7 @@ import GadgetDetail, { IGadgetInfo, queryGadgetInfo } from './GadgetDetail'
 import { IGlobalConfig } from '../interface'
 import { nanoid } from 'nanoid'
 import { KEY } from '../constant'
+import { dom2json } from '../utils'
 
 const md5 = require('js-md5')
 
@@ -58,6 +59,8 @@ export default (
 
   const [localGadgetInfoList, setLocalGadgetInfoList] = useState<IGadgetInfo[]>([])
 
+  const [curGadget, setCurGadget] = useState<MicroApp>()
+
   useEffect(() => {
     // 1. Load map of gadget & id firstly
     const str = localStorage.getItem(KEY.GADGETS_ID_MAP)
@@ -67,12 +70,17 @@ export default (
     }
     const onPageWillBeClosed = (event: any) => {
       event.preventDefault()
-      console.log('before unload event triggered')
       // TODO by kale: 2023/6/29 设置map前卸载当前gadget
       localStorage.setItem(KEY.GADGETS_ID_MAP, JSON.stringify(gadgetsIdMap))
+
+      const historyRecords = dom2json('gadget-content')
+      localStorage.setItem('haha',JSON.stringify(historyRecords))
+
+      // gadget?.unmount()
+
       return (event.returnValue = 'Are you sure you want to exit?')
     }
-    window.addEventListener('beforeunload', onPageWillBeClosed)
+    // window.addEventListener('beforeunload', onPageWillBeClosed)
 
     // 2. Get the previous gadget information
     const gadgetInfoStr = localStorage.getItem(KEY.CURRENT_GADGET)
