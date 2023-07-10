@@ -14,16 +14,18 @@ import { KEY } from '../constant'
 import './index.css'
 import { IConfigEntry, IGlobalConfig } from '../interface'
 import { showDonateDialog } from './DonateDialog'
-import { loadObjFormLocal, saveObjToLocal } from '../utils'
+import { ConversationDBHelper, loadObjFormLocal, saveObjToLocal } from '../utils'
 import { nanoid } from 'nanoid'
 
+const md5 = require('js-md5')
 // 下面加起来必须是200
 const HEIGHT_TOP_BAR = 116
 const HEIGHT_BOTTOM_BAR = 84
 
-interface IConversationInfo {
+export interface IConversationInfo {
   id: string,
   name: string
+  content: any
 }
 
 interface IProps {
@@ -43,17 +45,24 @@ export default (props: IProps) => {
 
   const [conversationList, setConversationList] = useState<IConversationInfo[]>([])
 
-  useEffect(() => {
-    const list = loadObjFormLocal<IConversationInfo[]>(KEY.CONVERSATION_LIST)
-    list && setConversationList(list)
+  const [defSelectMenuId, setDefSelectMenuId] = useState<string>()
 
-    const id = loadObjFormLocal<string>(KEY.PREV_CONVERSATION_ID)
-    if (id) {
-      onMenuClick(id)
-    } else if (!id && list?.[0].id) {
-      onMenuClick(list?.[0].id)
-    }
+  useEffect(() => {
+    ConversationDBHelper.queryAll().then(list => {
+      list && setConversationList(list)
+
+      const id = loadObjFormLocal<string>(KEY.PREV_CONVERSATION_ID)
+      if (id) {
+        setDefSelectMenuId(id)
+      } else if (!id && list?.[0].id) {
+        setDefSelectMenuId(list?.[0].id)
+      }
+    })
   }, [])
+
+  useEffect(() => {
+    defSelectMenuId && onMenuClick(defSelectMenuId)
+  }, [defSelectMenuId])
 
   useEffect(() => {
     if (conversationList?.length) {
@@ -112,10 +121,14 @@ export default (props: IProps) => {
         type={'default'}
         icon={<PlusCircleFilled />}
         onClick={() => {
-          conversationList.push({
-            id: nanoid(32),
+          const info = {
+            id: md5(nanoid(18)),
             name: '🚧🚧🚧 未完成，施工中 🚧🚧🚧',
-          })
+            content: '',
+          }
+
+          ConversationDBHelper.add(info)
+          conversationList.push(info)
           setConversationList([...conversationList])
         }}
       >
@@ -124,16 +137,20 @@ export default (props: IProps) => {
     </div>
 
     <div className={'sideBarContent'}>
+      {defSelectMenuId &&
       <Menu
         style={{ flex: 1 }}
         theme="dark"
-        // defaultSelectedKeys={['key_1']}
+        defaultSelectedKeys={defSelectMenuId ? [defSelectMenuId] : undefined}
         items={conversationList.map(item => ({
           key: item.id,
           label: item.name,
         }))}
-        onClick={({ key }) => onMenuClick(key)}
-      />
+        onClick={({ key }) => {
+          saveObjToLocal(KEY.PREV_CONVERSATION_ID, key)
+          onMenuClick(key)
+        }}
+      />}
     </div>
 
     <div style={{ height: HEIGHT_BOTTOM_BAR, display: 'flex', flexDirection: 'column' }}>

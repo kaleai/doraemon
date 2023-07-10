@@ -19,7 +19,7 @@ import { IGlobalConfig } from './interface'
 import { KEY } from './constant'
 import { addGlobalUncaughtErrorHandler, removeGlobalUncaughtErrorHandler } from 'qiankun'
 import { LoadingOutlined } from '@ant-design/icons'
-import { dom2json, json2dom } from './utils'
+import { ConversationDBHelper, dom2json, json2dom } from './utils'
 
 const md5 = require('js-md5')
 
@@ -40,6 +40,8 @@ const App = () => {
   const [isGadgetLoading, setIsGadgetLoading] = useState<boolean>(false)
 
   useEffect(() => {
+    ConversationDBHelper.init()
+
     const configUrl = localStorage.getItem(KEY.GLOBAL_CONFIG) as string
     axios(configUrl).then(res => {
       if (res.status === 200) {
@@ -149,6 +151,9 @@ const App = () => {
               globalConfig={globalConfig}
               onMenuClick={(id) => {
 
+                ConversationDBHelper.find(id).then(res => {
+                  console.log('res', res)
+                })
               }}
               onClickSettings={() => {
                 setIsShowSettings(true)

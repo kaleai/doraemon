@@ -1,3 +1,6 @@
+import { openDB } from 'idb'
+import { IConversationInfo } from '../component/SideBarContent'
+
 /**
  * @author kale
  * @date 2023/6/30
@@ -101,4 +104,63 @@ export function json2dom(node: Record<string, any>): HTMLElement {
   }
 
   return dom
+}
+
+export const ConversationDBHelper = {
+
+  name: 'conversation',
+
+  init: () => {
+    openDB(ConversationDBHelper.name, 1, {
+      upgrade(database) {
+        const objectStore = database.createObjectStore(ConversationDBHelper.name, { keyPath: 'id', autoIncrement: false })
+        objectStore.createIndex('time', 'time', { unique: true })
+        objectStore.createIndex('name', 'name', { unique: false })
+        objectStore.createIndex('content', 'content', { unique: false })
+      },
+    })
+      .then(async db => {
+        const dataList = await db.getAll(ConversationDBHelper.name)
+        if (dataList.length === 0) {
+          await db.add(ConversationDBHelper.name, {
+            id: 'doraemon_default_conversation_id',
+            name: '默认会话',
+            content: '',
+            time: new Date(),
+          })
+        }
+        db.close()
+      })
+  },
+
+  add: (data: IConversationInfo): void => {
+    openDB(ConversationDBHelper.name, 1)
+      .then(db => {
+        return db.add(ConversationDBHelper.name, { id: data.id, name: data.name, content: data.content, time: new Date() })
+          .then(() => {
+            return db
+          })
+      })
+      .then(db => db.close())
+  },
+
+  find: async (id: string): Promise<IConversationInfo> => {
+    const db = await openDB(ConversationDBHelper.name, 1)
+    const res = await db.get(ConversationDBHelper.name, id)
+    db.close()
+    return res
+  },
+
+  update: async (id: string, data: IConversationInfo) => {
+    const db = await openDB(ConversationDBHelper.name, 1)
+    await db.put(ConversationDBHelper.name, data, id)
+    db.close()
+  },
+
+  queryAll: async (): Promise<IConversationInfo[]> => {
+    const db = await openDB(ConversationDBHelper.name, 1)
+    const res = await db.getAllFromIndex(ConversationDBHelper.name, 'time')
+    db.close()
+    return res
+  },
 }
