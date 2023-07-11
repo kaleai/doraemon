@@ -20,7 +20,5 @@ export enum KEY {
 
   GADGETS_ID_MAP = 'doraemon_gadgets_gid_map',
 
-  CONVERSATION_LIST = 'doraemon_conversation_list',
-
   PREV_CONVERSATION_ID = 'doraemon_prev_conversation_id'
 }

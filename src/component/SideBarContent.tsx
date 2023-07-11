@@ -11,13 +11,13 @@ import {
 import { Menu, Avatar, Space, Button, Tooltip } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { KEY } from '../constant'
-import './index.css'
 import { IConfigEntry, IGlobalConfig } from '../interface'
+import md5 from 'js-md5'
 import { showDonateDialog } from './DonateDialog'
 import { ConversationDBHelper, loadObjFormLocal, saveObjToLocal } from '../utils'
 import { nanoid } from 'nanoid'
+import './index.css'
 
-const md5 = require('js-md5')
 // 下面加起来必须是200
 const HEIGHT_TOP_BAR = 116
 const HEIGHT_BOTTOM_BAR = 84
@@ -25,7 +25,7 @@ const HEIGHT_BOTTOM_BAR = 84
 export interface IConversationInfo {
   id: string,
   name: string
-  content: any
+  content?: Record<string, string>
 }
 
 interface IProps {
@@ -63,12 +63,6 @@ export default (props: IProps) => {
   useEffect(() => {
     defSelectMenuId && onMenuClick(defSelectMenuId)
   }, [defSelectMenuId])
-
-  useEffect(() => {
-    if (conversationList?.length) {
-      saveObjToLocal(KEY.CONVERSATION_LIST, conversationList)
-    }
-  }, [conversationList])
 
   /**
    * 渲染外部跳转网站的ICON
@@ -121,12 +115,7 @@ export default (props: IProps) => {
         type={'default'}
         icon={<PlusCircleFilled />}
         onClick={() => {
-          const info = {
-            id: md5(nanoid(18)),
-            name: '🚧🚧🚧 未完成，施工中 🚧🚧🚧',
-            content: '',
-          }
-
+          const info = { id: md5(nanoid(18)), name: new Date().toLocaleString() }
           ConversationDBHelper.add(info)
           conversationList.push(info)
           setConversationList([...conversationList])
@@ -141,7 +130,7 @@ export default (props: IProps) => {
       <Menu
         style={{ flex: 1 }}
         theme="dark"
-        defaultSelectedKeys={defSelectMenuId ? [defSelectMenuId] : undefined}
+        defaultSelectedKeys={[defSelectMenuId]}
         items={conversationList.map(item => ({
           key: item.id,
           label: item.name,

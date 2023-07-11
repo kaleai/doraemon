@@ -1,5 +1,6 @@
 import { openDB } from 'idb'
 import { IConversationInfo } from '../component/SideBarContent'
+import { IGadgetInfo } from '../component/GadgetDetail'
 
 /**
  * @author kale
@@ -108,24 +109,26 @@ export function json2dom(node: Record<string, any>): HTMLElement {
 
 export const ConversationDBHelper = {
 
-  name: 'conversation',
+  DB_NAME: 'doraemon',
+
+  TABLE_NAME: 'conversation',
 
   init: () => {
-    openDB(ConversationDBHelper.name, 1, {
+    openDB(ConversationDBHelper.DB_NAME, 1, {
       upgrade(database) {
-        const objectStore = database.createObjectStore(ConversationDBHelper.name, { keyPath: 'id', autoIncrement: false })
-        objectStore.createIndex('time', 'time', { unique: true })
+        const objectStore = database.createObjectStore(ConversationDBHelper.TABLE_NAME, { keyPath: 'id', autoIncrement: false })
         objectStore.createIndex('name', 'name', { unique: false })
         objectStore.createIndex('content', 'content', { unique: false })
+        objectStore.createIndex('gadget', 'gadget', { unique: false })
+        objectStore.createIndex('time', 'time', { unique: true })
       },
     })
       .then(async db => {
-        const dataList = await db.getAll(ConversationDBHelper.name)
+        const dataList = await db.getAll(ConversationDBHelper.TABLE_NAME)
         if (dataList.length === 0) {
-          await db.add(ConversationDBHelper.name, {
+          await db.add(ConversationDBHelper.TABLE_NAME, {
             id: 'doraemon_default_conversation_id',
             name: '默认会话',
-            content: '',
             time: new Date(),
           })
         }
@@ -133,33 +136,35 @@ export const ConversationDBHelper = {
       })
   },
 
-  add: (data: IConversationInfo): void => {
-    openDB(ConversationDBHelper.name, 1)
+  add: (data: IConversationInfo, gadget?: IGadgetInfo): void => {
+    openDB(ConversationDBHelper.DB_NAME, 1)
       .then(db => {
-        return db.add(ConversationDBHelper.name, { id: data.id, name: data.name, content: data.content, time: new Date() })
-          .then(() => {
-            return db
-          })
+        db.add(ConversationDBHelper.TABLE_NAME, {
+          id: data.id,
+          name: data.name,
+          content: data.content,
+          time: new Date(),
+          gadget,
+        }).then(() => db.close())
       })
-      .then(db => db.close())
   },
 
   find: async (id: string): Promise<IConversationInfo> => {
-    const db = await openDB(ConversationDBHelper.name, 1)
-    const res = await db.get(ConversationDBHelper.name, id)
+    const db = await openDB(ConversationDBHelper.DB_NAME, 1)
+    const res = await db.get(ConversationDBHelper.TABLE_NAME, id)
     db.close()
     return res
   },
 
-  update: async (id: string, data: IConversationInfo) => {
-    const db = await openDB(ConversationDBHelper.name, 1)
-    await db.put(ConversationDBHelper.name, data, id)
+  update: async (id: string, conversation: IConversationInfo, gadget?: IGadgetInfo) => {
+    const db = await openDB(ConversationDBHelper.DB_NAME, 1)
+    await db.put(ConversationDBHelper.TABLE_NAME, { ...conversation, gadget }, id)
     db.close()
   },
 
   queryAll: async (): Promise<IConversationInfo[]> => {
-    const db = await openDB(ConversationDBHelper.name, 1)
-    const res = await db.getAllFromIndex(ConversationDBHelper.name, 'time')
+    const db = await openDB(ConversationDBHelper.DB_NAME, 1)
+    const res = await db.getAllFromIndex(ConversationDBHelper.TABLE_NAME, 'time')
     db.close()
     return res
   },
