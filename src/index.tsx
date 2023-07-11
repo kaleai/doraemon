@@ -5,6 +5,8 @@ import 'antd/dist/reset.css'
 import './index.css'
 import App from './App'
 import { Analytics } from '@vercel/analytics/react';
+import axios from 'axios'
+import { ConversationDBHelper } from './utils'
 
 const queries = new URLSearchParams(window.location.search)
 
@@ -40,10 +42,27 @@ if (newCfgUrl && newCfgUrl !== 'undefined') {
   }
 }
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-    <Analytics/>
-  </React.StrictMode>,
-  document.getElementById('root'),
-)
+ConversationDBHelper.init()
+
+const configUrl = localStorage.getItem(KEY.GLOBAL_CONFIG) as string
+axios(configUrl).then(res => {
+  if (res.status === 200) {
+    window.document.title = res.data.title
+    ReactDOM.render(
+      <React.StrictMode>
+        <App globalConfig={res.data}/>
+        <Analytics/>
+      </React.StrictMode>,
+      document.getElementById('root'),
+    )
+  }
+}).catch(err => {
+  console.error(err)
+  if (window.confirm('配置文件下载异常，是否切换回默认的配置文件')) {
+    const defGlobalCfgUrl = localStorage.getItem(KEY.DEF_GLOBAL_CONFIG)
+    defGlobalCfgUrl && localStorage.setItem(KEY.GLOBAL_CONFIG, defGlobalCfgUrl)
+    window.location.replace(window.location.origin)
+  } else {
+    alert(err.toString())
+  }
+})

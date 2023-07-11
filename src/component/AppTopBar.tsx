@@ -1,19 +1,15 @@
-import { Avatar, Divider, List, Modal, Popover, Space } from 'antd'
-import { loadMicroApp } from 'qiankun'
+import { Avatar, Popover, Space } from 'antd'
 import { MicroApp } from 'qiankun/es/interfaces'
-import { Button, Input, message, Typography } from 'antd'
-import { InstallProps, ActionHandleResultType } from '../../gadget-template/Interface'
+import { Button, Typography } from 'antd'
+import { ActionHandleResultType } from '../../gadget-template/Interface'
 import { MenuFoldOutlined, MenuUnfoldOutlined, SwapOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
-import GadgetDetail, { IGadgetInfo, queryGadgetInfo } from './GadgetDetail'
+import { IGadgetInfo } from './GadgetDetail'
 import { IGlobalConfig } from '../interface'
-import { nanoid } from 'nanoid'
-import { KEY } from '../constant'
 import { dom2json } from '../utils'
-
-const md5 = require('js-md5')
-
-const { Search } = Input
+import useGadget from '../hooks/useGadget'
+import GadgetsList from './GadgetsList'
+import InstallGadgetDialog from './InstallGadgetDialog'
 
 /**
  * @author Jack Tony
@@ -26,6 +22,8 @@ export interface IProps {
 
   globalConfig: IGlobalConfig
 
+  gadgetInfo?: IGadgetInfo
+
   setGlobalLoading: (loading: boolean) => void
 
   onClickCollapse: () => void
@@ -35,46 +33,33 @@ export interface IProps {
   onReceiveActionHandleResult: (data: ActionHandleResultType) => void
 }
 
-let gadget: any, gadgetsIdMap: Record<string, string> = {}
-
 export default (
   {
     globalConfig,
     isCollapsed,
-    setGlobalLoading,
+    gadgetInfo,
     onClickCollapse,
     onGadgetChanged,
     onReceiveActionHandleResult,
   }: IProps) => {
 
-  const [curGadgetInfo, setCurGadgetInfo] = useState<IGadgetInfo>()
+  const [curGadgetInfo, setCurGadgetInfo] = useState<IGadgetInfo | undefined>(gadgetInfo)
 
-  const [gadgetInfoList, setGadgetInfoList] = useState<IGadgetInfo[]>([])
+  const [isDlgVisible, setIsDlgVisible] = useState<boolean>(false)
 
-  const [isInstallModalOpen, setIsInstallModalOpen] = useState<boolean>(false)
+  const [localGadgetInfos, setLocalGadgetInfos] = useState<IGadgetInfo[]>([])
 
-  const [installUrl, setInstallUrl] = useState<string>()
-
-  const [willBeInstallGadgetInfo, setWillBeInstallGadgetInfo] = useState<IGadgetInfo>()
-
-  const [localGadgetInfoList, setLocalGadgetInfoList] = useState<IGadgetInfo[]>([])
-
-  const [curGadget, setCurGadget] = useState<MicroApp>()
+  const { loading, queryGadgets, gadgetInfos } = useGadget(
+    globalConfig, curGadgetInfo, localGadgetInfos,
+    onReceiveActionHandleResult, onGadgetChanged)
 
   useEffect(() => {
-    // 1. Load map of gadget & id firstly
-    const str = localStorage.getItem(KEY.GADGETS_ID_MAP)
-    if (str && str !== 'undefined') {
-      gadgetsIdMap = JSON.parse(str)
-      localStorage.removeItem(KEY.GADGETS_ID_MAP)
-    }
     const onPageWillBeClosed = (event: any) => {
       event.preventDefault()
       // TODO by kale: 2023/6/29 设置map前卸载当前gadget
-      localStorage.setItem(KEY.GADGETS_ID_MAP, JSON.stringify(gadgetsIdMap))
 
       const historyRecords = dom2json('gadget-content')
-      localStorage.setItem('haha',JSON.stringify(historyRecords))
+      localStorage.setItem('haha', JSON.stringify(historyRecords))
 
       // gadget?.unmount()
 
@@ -82,181 +67,11 @@ export default (
     }
     // window.addEventListener('beforeunload', onPageWillBeClosed)
 
-    // 2. Get the previous gadget information
-    const gadgetInfoStr = localStorage.getItem(KEY.CURRENT_GADGET)
-    if (gadgetInfoStr && gadgetInfoStr !== 'undefined') {
-      const info = JSON.parse(gadgetInfoStr) as IGadgetInfo
-      setCurGadgetInfo(info)
-    }
-
-    // 3. get local gadget list
-    const localGadgetListStr = localStorage.getItem(KEY.LOCAL_GADGET_LIST)
-    if (localGadgetListStr && localGadgetListStr !== 'undefined') {
-      setLocalGadgetInfoList(JSON.parse(localGadgetListStr))
-    }
-
     return () => {
       window.removeEventListener('beforeunload', onPageWillBeClosed)
     }
   }, [])
 
-  useEffect(() => {
-    if (localGadgetInfoList?.length > 0) {
-      localStorage.setItem(KEY.LOCAL_GADGET_LIST, JSON.stringify(localGadgetInfoList))
-    }
-  }, [localGadgetInfoList])
-
-  useEffect(() => {
-    if (curGadgetInfo) {
-      if (curGadgetInfo.name !== 'DebugGadget') {
-        localStorage.setItem(KEY.CURRENT_GADGET, JSON.stringify(curGadgetInfo))
-      }
-
-      const installGadgetApp = (name: string, entryUrl: string) => {
-        if (!gadgetsIdMap[name]) {
-          gadgetsIdMap[name] = nanoid(24)
-        }
-
-        // startup parameter for gadget
-        const initProps: InstallProps = {
-          gid: gadgetsIdMap[name],
-          onReceiveActionHandleResult,
-          envInfo: {}, // 环境信息，比如是否是浏览器、小程序、vscode插件等
-        }
-
-        gadget = loadMicroApp({
-          name: name,
-          entry: entryUrl,
-          container: '#gadgets-container',
-          props: initProps,
-        }, {
-          /*fetch(url, args) { // https://blog.csdn.net/sunqiang4/article/details/122014916
-            return window.fetch(url, args)
-          },*/
-          sandbox: false,
-        })
-
-        gadget.mountPromise.then(() => onGadgetChanged(gadget))
-        gadget.loadPromise.then(() => {
-          setIsInstallModalOpen(false)
-          setGlobalLoading(false)
-        })
-      }
-
-      setGlobalLoading(true)
-
-      // @ts-ignore unmount pre gadget
-      gadget?.unmount()
-      // mount current gadget
-      installGadgetApp(curGadgetInfo.name, curGadgetInfo.entryUrl)
-    }
-  }, [curGadgetInfo])
-
-  /**
-   * 加载道具信息列表
-   */
-  const loadGadgetInfoList = () => {
-    const gadgets = globalConfig.gadgets
-    const promiseList = gadgets.map(gadget => {
-      return queryGadgetInfo(gadget.url)
-    })
-
-    Promise.all(promiseList)
-      .then(infos => {
-        // TODO by kale: 2023/6/21 list根据name去重
-        const fullList = infos.concat(localGadgetInfoList)
-        setGadgetInfoList(fullList)
-      })
-      .catch(err => {
-        console.error(err)
-        message.error({ content: '道具加载异常' })
-      })
-  }
-
-  const renderInfoListView = () =>
-    <Popover
-      title={
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginLeft: 4 }}>
-          <span>四次元口袋</span>
-          <div style={{ flex: 1 }} />
-          <Button type={'link'} onClick={() => setIsInstallModalOpen(true)}>
-            ✨ 安装新的道具
-          </Button>
-        </div>
-      }
-      trigger="click"
-      placement="bottomRight"
-      onOpenChange={(visible: boolean) => {
-        if (visible) {
-          setGadgetInfoList([])
-          loadGadgetInfoList()
-        }
-      }}
-      content={
-        <div style={{ width: 325 }}>
-          <Divider style={{ margin: 12 }} />
-          <Search
-            style={{ marginBottom: 14, marginTop: 4 }}
-            placeholder="道具名称（支持模糊搜索）"
-            allowClear
-            enterButton="Search"
-            onSearch={() => {
-              // TODO by kale: 2023/6/21 搜索
-            }}
-          />
-
-          <List
-            itemLayout="horizontal"
-            dataSource={gadgetInfoList}
-            loading={gadgetInfoList.length === 0}
-            renderItem={(item, index) => (
-              <List.Item actions={[
-                <Button
-                  type={'primary'}
-                  ghost
-                  size={'small'}
-                  key="action-link"
-                  onClick={() => {
-                    setCurGadgetInfo(item)
-                  }}
-                >
-                  选用
-                </Button>,
-              ]}
-              >
-                <List.Item.Meta
-                  title={<a href={item.homepage}>{item.name}</a>}
-                  avatar={<Avatar src={item.icon} shape={'square'} />}
-                  description={
-                    <div>
-                      {item.description}
-                      <a
-                        style={{ color: '#1677ff', marginLeft: 6 }}
-                        onClick={() => {
-                          Modal.info({
-                            title: '道具详情',
-                            width: 800,
-                            content: <GadgetDetail entryUrl={item.entryUrl} />,
-                          })
-                        }}>
-                        {'更多>'}
-                      </a>
-                    </div>}
-                />
-              </List.Item>
-            )}
-          />
-        </div>
-      }
-    >
-      <Button
-        style={{ margin: '0 12px' }}
-        type={'primary'}
-        icon={<SwapOutlined />}
-      >
-        切换道具
-      </Button>
-    </Popover>
 
   return <div style={{ background: 'white', height: 60, display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
     {/* 展开/收起的按钮 */}
@@ -289,47 +104,36 @@ export default (
       </Space>
     }
 
-    <Modal
-      title="安装新道具"
-      open={isInstallModalOpen}
-      zIndex={1060}
-      footer={
-        willBeInstallGadgetInfo
-          ?
-          <Button
-            type={'primary'}
-            onClick={() => {
-              if (willBeInstallGadgetInfo.name) {
-                localGadgetInfoList.push(willBeInstallGadgetInfo)
-                setLocalGadgetInfoList([...localGadgetInfoList])
+    <InstallGadgetDialog
+      visible={isDlgVisible}
+      onSuccess={info => {
+        localGadgetInfos.push(info)
+        setLocalGadgetInfos([...localGadgetInfos])
+        setCurGadgetInfo(info)
+      }}
+      onCancel={() => {
+        setIsDlgVisible(false)
+      }} />
 
-                setCurGadgetInfo(willBeInstallGadgetInfo)
-              } else {
-                message.error('gadget name is null')
-              }
-            }}>
-            安装
+    <Popover
+      title={
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginLeft: 4 }}>
+          <span>四次元口袋</span>
+          <div style={{ flex: 1 }} />
+          <Button type={'link'} onClick={() => setIsDlgVisible(true)}>
+            ✨ 安装新的道具
           </Button>
-          :
-          null
+        </div>
       }
-      onCancel={() => setIsInstallModalOpen(false)}
+      trigger="click"
+      placement="bottomRight"
+      onOpenChange={(visible: boolean) => visible && queryGadgets()}
+      content={<GadgetsList loading={loading} gadgetInfos={gadgetInfos} onItemSelect={info => setCurGadgetInfo(info)} />}
     >
-      <Input.Search
-        style={{ marginBottom: 12 }}
-        defaultValue={'http://localhost:7031'}
-        placeholder={'请输入道具的网址'}
-        onSearch={url => setInstallUrl(url)}
-      />
-
-      {installUrl &&
-      <GadgetDetail
-        entryUrl={installUrl}
-        onLoadSuccess={(info) => setWillBeInstallGadgetInfo(info)}
-      />}
-    </Modal>
-
-    {renderInfoListView()}
+      <Button style={{ margin: '0 12px' }} type={'primary'} icon={<SwapOutlined />}>
+        切换道具
+      </Button>
+    </Popover>
   </div>
 }
 

@@ -1,5 +1,5 @@
 import { openDB } from 'idb'
-import { IConversationInfo } from '../component/SideBarContent'
+import { IConversationInfo } from '../component/SideBarArea'
 import { IGadgetInfo } from '../component/GadgetDetail'
 
 /**
