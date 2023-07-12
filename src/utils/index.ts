@@ -156,7 +156,7 @@ export const ConversationDBHelper = {
     return res
   },
 
-  update: async (id: string, conversation: IConversationInfo, gadget?: IGadgetInfo) => {
+  update: async (id: string, conversation: any, gadget?: IGadgetInfo) => {
     const db = await openDB(ConversationDBHelper.DB_NAME, 1)
     await db.put(ConversationDBHelper.TABLE_NAME, { ...conversation, gadget }, id)
     db.close()

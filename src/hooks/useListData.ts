@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ItemType, ListItemDataType } from '../component/ListView'
 import { initGlobalState, MicroAppStateActions } from 'qiankun'
 import { ActionHandleResultType, ActionInfoType, IViewElementProps, ViewElementInfoType } from '../../gadget-template/Interface'
@@ -14,13 +14,24 @@ export default (eventManager: MicroAppStateActions, curGadgetRef?: MicroApp) => 
 
   const [listData, setListData] = useState<ListItemDataType[]>([])
 
-  const [isGadgetLoading, setIsGadgetLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
+
+  useEffect(()=>{
+    if (curGadgetRef) {
+      setTimeout(() => {
+        sendActionToGadget({
+          action: 'SYS_INITIALIZATION',
+          expectation: 'init gadget',
+        })
+      }, 200)
+    }
+  },[curGadgetRef])
 
   /**
    * 给gadget发送action，让gadget进行处理
    */
   const sendActionToGadget = (actionInfo: ActionInfoType) => {
-    setIsGadgetLoading(true)
+    setLoading(true)
 
     eventManager.setGlobalState({
       category: 'ACTION',
@@ -32,7 +43,7 @@ export default (eventManager: MicroAppStateActions, curGadgetRef?: MicroApp) => 
    * 得到gadget处理action后的结果
    */
   const onReceiveHandleResult = (res: ActionHandleResultType) => {
-    setIsGadgetLoading(false)
+    setLoading(false)
 
     const viewPropsList: IViewElementProps[] = []
     const eleInfoList = res.viewElementInfos
@@ -79,7 +90,7 @@ export default (eventManager: MicroAppStateActions, curGadgetRef?: MicroApp) => 
 
   return {
     listData,
-    isGadgetLoading,
+    loading,
     sendActionToGadget,
     onReceiveHandleResult,
   }

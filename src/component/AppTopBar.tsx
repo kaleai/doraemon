@@ -10,6 +10,7 @@ import { dom2json } from '../utils'
 import useGadget from '../hooks/useGadget'
 import GadgetsList from './GadgetsList'
 import InstallGadgetDialog from './InstallGadgetDialog'
+import { addGlobalUncaughtErrorHandler, removeGlobalUncaughtErrorHandler } from 'qiankun'
 
 /**
  * @author Jack Tony
@@ -24,11 +25,9 @@ export interface IProps {
 
   gadgetInfo?: IGadgetInfo
 
-  setGlobalLoading: (loading: boolean) => void
-
   onClickCollapse: () => void
 
-  onGadgetChanged: (gadget: MicroApp) => void
+  onGadgetChanged: (info: IGadgetInfo, microApp?: MicroApp) => void
 
   onReceiveActionHandleResult: (data: ActionHandleResultType) => void
 }
@@ -43,35 +42,22 @@ export default (
     onReceiveActionHandleResult,
   }: IProps) => {
 
-  const [curGadgetInfo, setCurGadgetInfo] = useState<IGadgetInfo | undefined>(gadgetInfo)
-
   const [isDlgVisible, setIsDlgVisible] = useState<boolean>(false)
 
   const [localGadgetInfos, setLocalGadgetInfos] = useState<IGadgetInfo[]>([])
 
   const { loading, queryGadgets, gadgetInfos } = useGadget(
-    globalConfig, curGadgetInfo, localGadgetInfos,
+    globalConfig, gadgetInfo, localGadgetInfos,
     onReceiveActionHandleResult, onGadgetChanged)
 
   useEffect(() => {
-    const onPageWillBeClosed = (event: any) => {
-      event.preventDefault()
-      // TODO by kale: 2023/6/29 设置map前卸载当前gadget
-
-      const historyRecords = dom2json('gadget-content')
-      localStorage.setItem('haha', JSON.stringify(historyRecords))
-
-      // gadget?.unmount()
-
-      return (event.returnValue = 'Are you sure you want to exit?')
-    }
-    // window.addEventListener('beforeunload', onPageWillBeClosed)
+    const errHandler = (args: any) => console.error(args)
+    addGlobalUncaughtErrorHandler(errHandler)
 
     return () => {
-      window.removeEventListener('beforeunload', onPageWillBeClosed)
+      removeGlobalUncaughtErrorHandler(errHandler)
     }
   }, [])
-
 
   return <div style={{ background: 'white', height: 60, display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
     {/* 展开/收起的按钮 */}
@@ -83,12 +69,12 @@ export default (
     />
 
     {/* 道具icon + 名字 + 描述 */}
-    {curGadgetInfo ?
+    {gadgetInfo ?
       <Space style={{ flex: 1 }} size={'middle'}>
-        <Avatar size={36} shape={'square'} src={curGadgetInfo.icon} />
+        <Avatar size={36} shape={'square'} src={gadgetInfo.icon} />
         <Space direction={'vertical'} size={3}>
-          <a style={{ fontWeight: 500, fontSize: 15 }} href={curGadgetInfo.homepage}>{curGadgetInfo.name}</a>
-          <span style={{ fontSize: 12, color: 'gray' }}>{curGadgetInfo.description}</span>
+          <a style={{ fontWeight: 500, fontSize: 15 }} href={gadgetInfo.homepage}>{gadgetInfo.name}</a>
+          <span style={{ fontSize: 12, color: 'gray' }}>{gadgetInfo.description}</span>
         </Space>
       </Space>
       :
@@ -97,7 +83,7 @@ export default (
           shape={'square'} size={'default'}
           src={'https://img0.baidu.com/it/u=2224311546,765801345&fm=253&fmt=auto&app=138&f=JPEG'}
           onClick={() => {
-            setCurGadgetInfo({ name: 'DebugGadget', entryUrl: '//localhost:7031' } as IGadgetInfo)
+            onGadgetChanged({ name: 'DebugGadget', entryUrl: '//localhost:7031' } as IGadgetInfo)
           }}
         />
         <Typography.Text style={{ color: 'gray' }} ellipsis={true}>{'请在右侧选择你需要的道具 →'}</Typography.Text>
@@ -109,7 +95,6 @@ export default (
       onSuccess={info => {
         localGadgetInfos.push(info)
         setLocalGadgetInfos([...localGadgetInfos])
-        setCurGadgetInfo(info)
       }}
       onCancel={() => {
         setIsDlgVisible(false)
@@ -128,7 +113,9 @@ export default (
       trigger="click"
       placement="bottomRight"
       onOpenChange={(visible: boolean) => visible && queryGadgets()}
-      content={<GadgetsList loading={loading} gadgetInfos={gadgetInfos} onItemSelect={info => setCurGadgetInfo(info)} />}
+      content={
+        <GadgetsList loading={loading} gadgetInfos={gadgetInfos} onItemSelect={onGadgetChanged} />
+      }
     >
       <Button style={{ margin: '0 12px' }} type={'primary'} icon={<SwapOutlined />}>
         切换道具

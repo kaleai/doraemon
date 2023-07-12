@@ -21,7 +21,7 @@ export default (
   curGadgetInfo: IGadgetInfo | undefined,
   localGadgetInfoList: IGadgetInfo[],
   onReceiveActionHandleResult: (data: ActionHandleResultType) => void,
-  onGadgetChange: (gadget: MicroApp, info: IGadgetInfo) => void) => {
+  onGadgetChange: (info: IGadgetInfo, microApp: MicroApp) => void) => {
 
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -82,7 +82,7 @@ export default (
 
     // 安装新的gadget
     const newGadget = installGadgetApp(curGadgetInfo.name, curGadgetInfo.entryUrl)
-    newGadget.mountPromise.then(() => onGadgetChange(gadget, curGadgetInfo))
+    newGadget.mountPromise.then(() => onGadgetChange(curGadgetInfo, gadget))
     newGadget.loadPromise.then(() => setLoading(false))
   }, [curGadgetInfo])
 

@@ -31,7 +31,7 @@ export interface IConversationInfo {
 interface IProps {
   globalConfig: IGlobalConfig
   onClickSettings: () => void
-  onMenuClick: (conversationId: string) => void
+  onMenuClick: (curConversationId: string, prevId: string | undefined) => void
 }
 
 /**
@@ -47,6 +47,8 @@ export default (props: IProps) => {
 
   const [defSelectMenuId, setDefSelectMenuId] = useState<string>()
 
+  const [curSelectMenuId, setCurSelectMenuId] = useState<string | undefined>()
+
   useEffect(() => {
     ConversationDBHelper.queryAll().then(list => {
       list && setConversationList(list)
@@ -61,7 +63,7 @@ export default (props: IProps) => {
   }, [])
 
   useEffect(() => {
-    defSelectMenuId && onMenuClick(defSelectMenuId)
+    defSelectMenuId && onMenuClick(defSelectMenuId, curSelectMenuId)
   }, [defSelectMenuId])
 
   /**
@@ -135,9 +137,10 @@ export default (props: IProps) => {
           key: item.id,
           label: item.name,
         }))}
-        onClick={({ key }) => {
-          saveObjToLocal(KEY.PREV_CONVERSATION_ID, key)
-          onMenuClick(key)
+        onClick={({ key: id }) => {
+          saveObjToLocal(KEY.PREV_CONVERSATION_ID, id)
+          onMenuClick(id, curSelectMenuId)
+          setCurSelectMenuId(id)
         }}
       />}
     </div>

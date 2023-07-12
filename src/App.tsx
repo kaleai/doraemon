@@ -1,13 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { MicroApp } from 'qiankun/es/interfaces'
 import { ConfigProvider, Divider, Layout } from 'antd'
 import AppTopBar from './component/AppTopBar'
 import SidebarContent from './component/SideBarArea'
-import { initGlobalState, MicroAppStateActions } from 'qiankun'
 import Settings from './component/SettingsOverlay'
 import { IGlobalConfig } from './interface'
-import { addGlobalUncaughtErrorHandler, removeGlobalUncaughtErrorHandler } from 'qiankun'
-import { ConversationDBHelper } from './utils'
+import { initGlobalState, MicroAppStateActions } from 'qiankun'
+import { ConversationDBHelper, dom2json } from './utils'
 import MainContent from './component/MainContent'
 import { IGadgetInfo } from './component/GadgetDetail'
 import './App.css'
@@ -17,29 +16,36 @@ const { Header, Sider, Content } = Layout
 
 const App = ({ globalConfig }: { globalConfig: IGlobalConfig }) => {
 
-  const gadgetRef = useRef<MicroApp>()
+  const eventManager: MicroAppStateActions = initGlobalState({})
 
-  const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
+  const [curMicroApp, setCurMicroApp] = useState<MicroApp>()
 
-  const [isShowSettings, setIsShowSettings] = useState<boolean>(false)
+  const { loading, listData, sendActionToGadget, onReceiveHandleResult } = useListData(eventManager, curMicroApp)
 
-  const [isGlobalLoading, setIsGlobalLoading] = useState<boolean>(false)
+  const [collapsed, setCollapsed] = useState<boolean>(false)
+
+  const [showSettings, setShowSettings] = useState<boolean>(false)
 
   const [curGadgetInfo, setCurGadgetInfo] = useState<IGadgetInfo | undefined>()
 
-  const [domJson, setDomJson] = useState<Record<string, string> | undefined>()
-
-  const eventManager: MicroAppStateActions = initGlobalState({})
-
-  const { sendActionToGadget, onReceiveHandleResult } = useListData(eventManager, gadgetRef?.current)
+  const [historyRecord, setHistoryRecord] = useState<Record<string, string> | undefined>()
 
   useEffect(() => {
-    const errHandler = (args: any) => console.error(args)
-    addGlobalUncaughtErrorHandler(errHandler)
+    const onPageWillBeClosed = (event: any) => {
+      event.preventDefault()
+      // TODO by kale: 2023/6/29 设置map前卸载当前gadget
+
+      const historyRecords = dom2json('gadget-content')
+      localStorage.setItem('haha', JSON.stringify(historyRecords))
+
+      // gadget?.unmount()
+
+      return (event.returnValue = 'Are you sure you want to exit?')
+    }
+    // window.addEventListener('beforeunload', onPageWillBeClosed)
 
     return () => {
-      removeGlobalUncaughtErrorHandler(errHandler)
-      gadgetRef.current?.unmount()
+      window.removeEventListener('beforeunload', onPageWillBeClosed)
     }
   }, [])
 
@@ -49,51 +55,54 @@ const App = ({ globalConfig }: { globalConfig: IGlobalConfig }) => {
         <Layout prefix={'App'}>
           <Settings
             globalConfig={globalConfig}
-            isHide={!isShowSettings}
+            isHide={!showSettings}
             onClickClose={() => {
-              setIsCollapsed(false)
-              setIsShowSettings(false)
+              setCollapsed(false)
+              setShowSettings(false)
             }}
           />
 
-          <Sider width={230} breakpoint="lg" collapsedWidth="0" trigger={null} collapsible collapsed={isCollapsed}>
+          <Sider
+            width={230} breakpoint="lg" collapsedWidth="0"
+            trigger={null} collapsible collapsed={collapsed}
+          >
             <SidebarContent
               globalConfig={globalConfig}
-              onMenuClick={(id) => {
+              onMenuClick={async (curId, prevId) => {
+                if (prevId) {
+                  const jsonObj = dom2json('gadget-content')
+                  await ConversationDBHelper.update(prevId, jsonObj, curGadgetInfo)
+                }
 
-                ConversationDBHelper.find(id).then(res => {
+                ConversationDBHelper.find(curId).then(res => {
                   console.log('res', res)
 
                   setCurGadgetInfo(undefined)
+                  setHistoryRecord(undefined)
                 })
               }}
               onClickSettings={() => {
-                setIsShowSettings(true)
+                setShowSettings(true)
 
                 setTimeout(() => {
-                  setIsCollapsed(true)
+                  setCollapsed(true)
                 }, 300)
               }}
             />
           </Sider>
 
-          <Layout className={'layout'} style={{ display: isShowSettings ? 'none' : undefined }}>
+          <Layout className={'layout'} style={{ display: showSettings ? 'none' : undefined }}>
             <AppTopBar
-              gadgetInfo={curGadgetInfo}
               globalConfig={globalConfig}
-              setGlobalLoading={loading => setIsGlobalLoading(loading)}
-              isCollapsed={isCollapsed}
-              onClickCollapse={() => setIsCollapsed(!isCollapsed)}
-              onReceiveActionHandleResult={res => onReceiveHandleResult(res)}
-              onGadgetChanged={gadget => {
-                gadgetRef.current = gadget
+              onReceiveActionHandleResult={onReceiveHandleResult}
 
-                setTimeout(() => {
-                  sendActionToGadget({
-                    action: 'SYS_INITIALIZATION',
-                    expectation: 'init gadget',
-                  })
-                }, 200)
+              isCollapsed={collapsed}
+              onClickCollapse={() => setCollapsed(!collapsed)}
+
+              gadgetInfo={curGadgetInfo}
+              onGadgetChanged={(info, microApp) => {
+                setCurGadgetInfo(info)
+                setCurMicroApp(microApp)
               }}
             />
 
@@ -101,9 +110,10 @@ const App = ({ globalConfig }: { globalConfig: IGlobalConfig }) => {
 
             <Content>
               <MainContent
-                domJson={domJson}
-                curGadgetRef={gadgetRef?.current}
-                isGlobalLoading={isGlobalLoading}
+                loading={loading}
+                historyRecord={historyRecord}
+                listData={listData}
+                onClickSuggestAction={actInfo => sendActionToGadget(actInfo)}
               />
             </Content>
           </Layout>
