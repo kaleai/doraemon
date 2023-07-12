@@ -30,15 +30,14 @@ const App = ({ globalConfig }: { globalConfig: IGlobalConfig }) => {
 
   const [historyRecord, setHistoryRecord] = useState<Record<string, string> | undefined>()
 
+  const [conversationId, setConversationId] = useState<string | undefined>()
+
   useEffect(() => {
     const onPageWillBeClosed = (event: any) => {
       event.preventDefault()
       // TODO by kale: 2023/6/29 设置map前卸载当前gadget
 
-      const historyRecords = dom2json('gadget-content')
-      localStorage.setItem('haha', JSON.stringify(historyRecords))
-
-      // gadget?.unmount()
+      changeConversation('', conversationId)
 
       return (event.returnValue = 'Are you sure you want to exit?')
     }
@@ -48,6 +47,23 @@ const App = ({ globalConfig }: { globalConfig: IGlobalConfig }) => {
       window.removeEventListener('beforeunload', onPageWillBeClosed)
     }
   }, [])
+
+  const changeConversation = async (curId: string, prevId: string | undefined) => {
+    if (prevId) {
+      const historyRecords = dom2json('gadget-content')
+      await ConversationDBHelper.update(prevId, historyRecords, curGadgetInfo)
+    }
+
+    setConversationId(curId)
+    curMicroApp?.unmount()
+
+    ConversationDBHelper.find(curId ?? '').then(res => {
+      console.log('res', res)
+
+      setCurGadgetInfo(undefined)
+      setHistoryRecord(undefined)
+    })
+  }
 
   return (
     <div className="App">
@@ -68,19 +84,7 @@ const App = ({ globalConfig }: { globalConfig: IGlobalConfig }) => {
           >
             <SidebarContent
               globalConfig={globalConfig}
-              onMenuClick={async (curId, prevId) => {
-                if (prevId) {
-                  const jsonObj = dom2json('gadget-content')
-                  await ConversationDBHelper.update(prevId, jsonObj, curGadgetInfo)
-                }
-
-                ConversationDBHelper.find(curId).then(res => {
-                  console.log('res', res)
-
-                  setCurGadgetInfo(undefined)
-                  setHistoryRecord(undefined)
-                })
-              }}
+              onMenuClick={changeConversation}
               onClickSettings={() => {
                 setShowSettings(true)
 
