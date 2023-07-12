@@ -17,6 +17,7 @@ import { showDonateDialog } from './DonateDialog'
 import { ConversationDBHelper, loadObjFormLocal, saveObjToLocal } from '../utils'
 import { nanoid } from 'nanoid'
 import './index.css'
+import { IGadgetInfo } from './GadgetDetail'
 
 // 下面加起来必须是200
 const HEIGHT_TOP_BAR = 116
@@ -25,13 +26,14 @@ const HEIGHT_BOTTOM_BAR = 84
 export interface IConversationInfo {
   id: string,
   name: string
-  content?: Record<string, string>
+  record?: Record<string, string>
+  gadget?: IGadgetInfo
 }
 
 interface IProps {
   globalConfig: IGlobalConfig
   onClickSettings: () => void
-  onMenuClick: (curConversationId: string, prevId: string | undefined) => void
+  onMenuClick: (curConversationId: string, prevConversationId: string | undefined) => void
 }
 
 /**
@@ -83,10 +85,10 @@ export default (props: IProps) => {
 
   return <div>
     {showDonateModal &&
-    <canvas
-      id={'fireworks_canvas'} className={'fireworksCanvas'}
-      style={{ width: window.innerWidth, height: window.innerHeight }}
-    />
+      <canvas
+        id={'fireworks_canvas'} className={'fireworksCanvas'}
+        style={{ width: window.innerWidth, height: window.innerHeight }}
+      />
     }
 
     <div style={{ height: HEIGHT_TOP_BAR, paddingTop: 12, display: 'flex', flexDirection: 'column' }}>
@@ -129,55 +131,55 @@ export default (props: IProps) => {
 
     <div className={'sideBarContent'}>
       {defSelectMenuId &&
-      <Menu
-        style={{ flex: 1 }}
-        theme="dark"
-        defaultSelectedKeys={[defSelectMenuId]}
-        items={conversationList.map(item => ({
-          key: item.id,
-          label: item.name,
-        }))}
-        onClick={({ key: id }) => {
-          saveObjToLocal(KEY.PREV_CONVERSATION_ID, id)
-          onMenuClick(id, curSelectMenuId)
-          setCurSelectMenuId(id)
-        }}
-      />}
+        <Menu
+          style={{ flex: 1 }}
+          theme="dark"
+          defaultSelectedKeys={[defSelectMenuId]}
+          items={conversationList.map(item => ({
+            key: item.id,
+            label: item.name,
+          }))}
+          onClick={({ key: id }) => {
+            saveObjToLocal(KEY.PREV_CONVERSATION_ID, id)
+            onMenuClick(id, curSelectMenuId)
+            setCurSelectMenuId(id)
+          }}
+        />}
     </div>
 
     <div style={{ height: HEIGHT_BOTTOM_BAR, display: 'flex', flexDirection: 'column' }}>
       <div className={'fullWidth'} style={{ marginTop: 12, display: 'flex' }}>
         {globalConfig.download &&
-        <Button
-          className={'fullWidth bottomButton'}
-          style={{ backgroundColor: '#52c41a' }}
-          type={'primary'}
-          icon={<DownloadOutlined />}
-          onClick={() => {
-            window.open(globalConfig.download.url)
-          }}
-        >
-          {globalConfig.download.label}
-        </Button>
+          <Button
+            className={'fullWidth bottomButton'}
+            style={{ backgroundColor: '#52c41a' }}
+            type={'primary'}
+            icon={<DownloadOutlined />}
+            onClick={() => {
+              window.open(globalConfig.download.url)
+            }}
+          >
+            {globalConfig.download.label}
+          </Button>
         }
 
         {globalConfig.donate &&
-        <Button
-          className={'fullWidth bottomButton'}
-          style={{ backgroundColor: '#eb2f96' }}
-          type={'primary'}
-          icon={<MoneyCollectOutlined />}
-          onClick={() => {
-            if (globalConfig.donate.url) {
-              window.open(globalConfig.donate.url)
-            } else {
-              setShowDonateModal(true)
-              showDonateDialog(() => setShowDonateModal(false))
-            }
-          }}
-        >
-          {globalConfig.donate.label}
-        </Button>
+          <Button
+            className={'fullWidth bottomButton'}
+            style={{ backgroundColor: '#eb2f96' }}
+            type={'primary'}
+            icon={<MoneyCollectOutlined />}
+            onClick={() => {
+              if (globalConfig.donate.url) {
+                window.open(globalConfig.donate.url)
+              } else {
+                setShowDonateModal(true)
+                showDonateDialog(() => setShowDonateModal(false))
+              }
+            }}
+          >
+            {globalConfig.donate.label}
+          </Button>
         }
       </div>
 

@@ -27,7 +27,7 @@ export interface IProps {
 
   onClickCollapse: () => void
 
-  onGadgetChanged: (info: IGadgetInfo, microApp?: MicroApp) => void
+  onGadgetChange: (info: IGadgetInfo, microApp?: MicroApp) => void
 
   onReceiveActionHandleResult: (data: ActionHandleResultType) => void
 }
@@ -38,17 +38,17 @@ export default (
     isCollapsed,
     gadgetInfo,
     onClickCollapse,
-    onGadgetChanged,
+    onGadgetChange,
     onReceiveActionHandleResult,
   }: IProps) => {
 
-  const [isDlgVisible, setIsDlgVisible] = useState<boolean>(false)
+  const [DlgVisible, setDlgVisible] = useState<boolean>(false)
 
   const [localGadgetInfos, setLocalGadgetInfos] = useState<IGadgetInfo[]>([])
 
   const { loading, queryGadgets, gadgetInfos } = useGadget(
     globalConfig, gadgetInfo, localGadgetInfos,
-    onReceiveActionHandleResult, onGadgetChanged)
+    onReceiveActionHandleResult, onGadgetChange)
 
   useEffect(() => {
     const errHandler = (args: any) => console.error(args)
@@ -59,7 +59,8 @@ export default (
     }
   }, [])
 
-  return <div style={{ background: 'white', height: 60, display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+  return <div
+    style={{ height: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
     {/* 展开/收起的按钮 */}
     <Button
       style={{ width: 40, height: 40, margin: 8 }}
@@ -78,26 +79,26 @@ export default (
         </Space>
       </Space>
       :
-      <Space style={{ flex: 1 }}>
+      <Space style={{ flex: 1 }} align="baseline">
         <Avatar
           shape={'square'} size={'default'}
           src={'https://img0.baidu.com/it/u=2224311546,765801345&fm=253&fmt=auto&app=138&f=JPEG'}
           onClick={() => {
-            onGadgetChanged({ name: 'DebugGadget', entryUrl: '//localhost:7031' } as IGadgetInfo)
+            onGadgetChange({ name: 'DebugGadget', entryUrl: '//localhost:7031' } as IGadgetInfo)
           }}
         />
-        <Typography.Text style={{ color: 'gray' }} ellipsis={true}>{'请在右侧选择你需要的道具 →'}</Typography.Text>
+        <div style={{ color: 'gray' }}>{'请在右侧选择你需要的道具 →'}</div>
       </Space>
     }
 
     <InstallGadgetDialog
-      visible={isDlgVisible}
+      visible={DlgVisible}
       onSuccess={info => {
         localGadgetInfos.push(info)
         setLocalGadgetInfos([...localGadgetInfos])
       }}
       onCancel={() => {
-        setIsDlgVisible(false)
+        setDlgVisible(false)
       }} />
 
     <Popover
@@ -105,7 +106,7 @@ export default (
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginLeft: 4 }}>
           <span>四次元口袋</span>
           <div style={{ flex: 1 }} />
-          <Button type={'link'} onClick={() => setIsDlgVisible(true)}>
+          <Button type={'link'} onClick={() => setDlgVisible(true)}>
             ✨ 安装新的道具
           </Button>
         </div>
@@ -114,7 +115,7 @@ export default (
       placement="bottomRight"
       onOpenChange={(visible: boolean) => visible && queryGadgets()}
       content={
-        <GadgetsList loading={loading} gadgetInfos={gadgetInfos} onItemSelect={onGadgetChanged} />
+        <GadgetsList loading={loading} gadgetInfos={gadgetInfos} onItemSelect={onGadgetChange} />
       }
     >
       <Button style={{ margin: '0 12px' }} type={'primary'} icon={<SwapOutlined />}>

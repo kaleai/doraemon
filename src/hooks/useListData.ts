@@ -10,14 +10,14 @@ import { MicroApp } from 'qiankun/lib'
  *
  * @date 2023/7/11
  */
-export default (eventManager: MicroAppStateActions, curGadgetRef?: MicroApp) => {
+export default (eventManager: MicroAppStateActions, microApp?: MicroApp) => {
 
   const [listData, setListData] = useState<ListItemDataType[]>([])
 
   const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(()=>{
-    if (curGadgetRef) {
+    if (microApp) {
       setTimeout(() => {
         sendActionToGadget({
           action: 'SYS_INITIALIZATION',
@@ -25,7 +25,7 @@ export default (eventManager: MicroAppStateActions, curGadgetRef?: MicroApp) => 
         })
       }, 200)
     }
-  },[curGadgetRef])
+  },[microApp])
 
   /**
    * 给gadget发送action，让gadget进行处理
@@ -85,7 +85,7 @@ export default (eventManager: MicroAppStateActions, curGadgetRef?: MicroApp) => 
     setListData([...listData])
 
     // bind view to list item
-    viewPropsList.forEach(props => setTimeout(() => curGadgetRef?.update?.(props), 50))
+    viewPropsList.forEach(props => setTimeout(() => microApp?.update?.(props), 50))
   }
 
   return {

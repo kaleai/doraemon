@@ -8,10 +8,33 @@ import { IGadgetInfo } from '../component/GadgetDetail'
  *
  * 将对象保存在localStorage中
  */
+export const LocalHelper = {
+  set: (key: string, obj: Record<any, any> | string): void => {
+    if (obj && obj !== 'undefined') {
+      localStorage.setItem(key, typeof obj === 'string' ? obj : JSON.stringify(obj))
+    }
+  },
+  delete: (key: string): void => {
+    localStorage.removeItem(key)
+  },
+  get: <T>(key: string): T | undefined => {
+    const res = localStorage.getItem(key)
+    if (res && res !== 'undefined') {
+      return res.startsWith('{') ? JSON.parse(res) : res
+    } else {
+      return undefined
+    }
+  },
+}
+
 export const saveObjToLocal = (key: string, obj: Record<any, any> | string): void => {
   if (obj && obj !== 'undefined') {
-    localStorage.setItem(key, JSON.stringify(obj))
+    localStorage.setItem(key, typeof obj === 'string' ? obj : JSON.stringify(obj))
   }
+}
+
+export const removeObj = (key: string) => {
+  localStorage.removeItem(key)
 }
 
 /**
@@ -20,7 +43,7 @@ export const saveObjToLocal = (key: string, obj: Record<any, any> | string): voi
 export function loadObjFormLocal<T>(key: string): T | undefined {
   const res = localStorage.getItem(key)
   if (res && res !== 'undefined') {
-    return JSON.parse(res) as T
+    return res.startsWith('{') ? JSON.parse(res) : res
   } else {
     return undefined
   }
@@ -118,7 +141,7 @@ export const ConversationDBHelper = {
       upgrade(database) {
         const objectStore = database.createObjectStore(ConversationDBHelper.TABLE_NAME, { keyPath: 'id', autoIncrement: false })
         objectStore.createIndex('name', 'name', { unique: false })
-        objectStore.createIndex('content', 'content', { unique: false })
+        objectStore.createIndex('record', 'record', { unique: false })
         objectStore.createIndex('gadget', 'gadget', { unique: false })
         objectStore.createIndex('time', 'time', { unique: true })
       },
@@ -142,7 +165,7 @@ export const ConversationDBHelper = {
         db.add(ConversationDBHelper.TABLE_NAME, {
           id: data.id,
           name: data.name,
-          content: data.content,
+          record: data.record,
           time: new Date(),
           gadget,
         }).then(() => db.close())
@@ -156,10 +179,11 @@ export const ConversationDBHelper = {
     return res
   },
 
-  update: async (id: string, conversation: any, gadget?: IGadgetInfo) => {
-    const db = await openDB(ConversationDBHelper.DB_NAME, 1)
-    await db.put(ConversationDBHelper.TABLE_NAME, { ...conversation, gadget }, id)
-    db.close()
+  update: (id: string, conversation: any, gadget?: IGadgetInfo) => {
+    openDB(ConversationDBHelper.DB_NAME, 1).then(async db => {
+      await db.put(ConversationDBHelper.TABLE_NAME, { ...conversation, gadget }, id)
+      db.close()
+    })
   },
 
   queryAll: async (): Promise<IConversationInfo[]> => {

@@ -4,13 +4,18 @@ import { KEY } from './constant'
 import 'antd/dist/reset.css'
 import './index.css'
 import App from './App'
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from '@vercel/analytics/react'
 import axios from 'axios'
-import { ConversationDBHelper } from './utils'
+import { ConversationDBHelper, LocalHelper } from './utils'
 
+/**
+ * 得到url的query string
+ */
 const queries = new URLSearchParams(window.location.search)
 
-// 处理回调并发送信息给接收方
+/*
+ * 处理回调并发送信息给接收方
+ */
 const callback = queries.get('callback')
 if (callback && callback !== 'undefined') {
   const broadcast = new BroadcastChannel('Doraemon')
@@ -18,49 +23,54 @@ if (callback && callback !== 'undefined') {
   window.close()
 }
 
-// 持久化配置文件
-// @ts-ignore
-const defGlobalCfgUrl: string = document.getElementsByTagName('meta')['global-config'].content
-localStorage.setItem(KEY.DEF_GLOBAL_CONFIG, defGlobalCfgUrl)
-
-const newCfgUrl = queries.get('config')
-const oldCfgUrl = localStorage.getItem(KEY.GLOBAL_CONFIG)
-
-if (newCfgUrl && newCfgUrl !== 'undefined') {
-  if (newCfgUrl !== oldCfgUrl) {
-    if (window.confirm('新配置将会覆盖老的，会触发应用重新初始化，是否确认')) {
-      localStorage.setItem(KEY.GLOBAL_CONFIG, newCfgUrl)
-      localStorage.removeItem(KEY.GADGETS_ID_MAP)
-    }
-  } else {
-    localStorage.setItem(KEY.GLOBAL_CONFIG, newCfgUrl)
-  }
-} else {
-  if (!oldCfgUrl) {
-    // 如果之前没有配置文件，则设置默认的配置文件
-    localStorage.setItem(KEY.GLOBAL_CONFIG, defGlobalCfgUrl)
-  }
-}
-
+/**
+ * 初始化数据库
+ */
 ConversationDBHelper.init()
 
-const configUrl = localStorage.getItem(KEY.GLOBAL_CONFIG) as string
-axios(configUrl).then(res => {
-  if (res.status === 200) {
-    window.document.title = res.data.title
+const meta = document.getElementsByTagName('meta')
+// @ts-ignore
+const defCfgUrl = meta['global-config'].content
+
+/**
+ * 得到配置文件
+ */
+const getConfigUrl = (): string => {
+  const newUrl = queries.get('config')
+  const oldUrl = LocalHelper.get(KEY.GLOBAL_CONFIG)
+
+  if (newUrl && newUrl !== 'undefined') {
+    if (newUrl !== oldUrl && window.confirm('新配置将会覆盖老的，会重新初始化，是否确认用新的配置？')) {
+      LocalHelper.set(KEY.GLOBAL_CONFIG, newUrl)
+      LocalHelper.delete(KEY.GADGETS_ID_MAP)
+    }
+  } else if (!oldUrl) { // 如果之前没有配置文件，则设置默认的配置文件
+    LocalHelper.set(KEY.GLOBAL_CONFIG, defCfgUrl)
+  }
+
+  return LocalHelper.get(KEY.GLOBAL_CONFIG) as string
+}
+
+/**
+ * 下载配置文件，json形式
+ */
+axios(getConfigUrl()).then(({ status, data: cfg }) => {
+  if (status === 200) {
+    window.document.title = cfg.title
+
     ReactDOM.render(
       <React.StrictMode>
-        <App globalConfig={res.data}/>
-        <Analytics/>
+        <App globalConfig={cfg} />
+        <Analytics />
       </React.StrictMode>,
       document.getElementById('root'),
     )
   }
 }).catch(err => {
   console.error(err)
-  if (window.confirm('配置文件下载异常，是否切换回默认的配置文件')) {
-    const defGlobalCfgUrl = localStorage.getItem(KEY.DEF_GLOBAL_CONFIG)
-    defGlobalCfgUrl && localStorage.setItem(KEY.GLOBAL_CONFIG, defGlobalCfgUrl)
+
+  if (window.confirm('远端配置下载异常，是否切换到默认配置？')) {
+    LocalHelper.set(KEY.GLOBAL_CONFIG, defCfgUrl)
     window.location.replace(window.location.origin)
   } else {
     alert(err.toString())
