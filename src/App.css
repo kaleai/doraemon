@@ -6,19 +6,14 @@
   flex-direction: column;
 }
 
-.Side {
-  width: 230px;
-  overflow: auto;
-  height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0
-}
-
 .layout {
   background-image: linear-gradient(to right, #F8FBFF,#F6F5FF);
-  margin-left: 230px;
+}
+
+.header {
+  padding: 0;
+  background: white;
+  height: 50px;
 }
 
 .mainContent {

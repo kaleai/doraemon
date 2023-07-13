@@ -19,4 +19,8 @@ export enum KEY {
 
 export enum ID {
   GADGET_CONTENT = 'gadget-content-id',
+
+  HISTORY_RECORD = 'history-record-id',
+
+  HISTORY_DIVIDER_ID = 'history-divider-id'
 }

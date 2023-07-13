@@ -68,7 +68,7 @@ export default ({ dataSource, onClickSuggestAction, onReceiveFeedback: sendFeedb
     rowKey={item => item.id}
     locale={{
       emptyText:
-        <Space className={'fullHeight'} style={{ marginTop: 100 }} direction={'vertical'} size={'large'}>
+        <Space id={'empty-area-id'} className={'fullHeight'} style={{ marginTop: 100 }} direction={'vertical'} size={'large'}>
           <Avatar size={100} src={'https://cdn-icons-png.flaticon.com/512/7486/7486754.png'} shape={'square'} />
           <span style={{ color: 'gray', fontWeight: 'bold' }}>空空如也~ 您可以在右上角切换你需要的功能</span>
         </Space>

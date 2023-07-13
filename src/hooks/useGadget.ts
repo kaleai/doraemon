@@ -18,7 +18,7 @@ let gadget: MicroApp
 
 export default (
   globalConfig: IGlobalConfig,
-  curGadgetInfo: IGadgetInfo | undefined,
+  gadgetInfo: IGadgetInfo | undefined,
   localGadgetInfoList: IGadgetInfo[],
   onReceiveActionHandleResult: (data: ActionHandleResultType) => void,
   onGadgetChange: (info: IGadgetInfo, microApp: MicroApp) => void) => {
@@ -73,7 +73,7 @@ export default (
   }, [doQueryGadget])
 
   useEffect(() => {
-    if (!curGadgetInfo) {
+    if (!gadgetInfo) {
       return
     }
 
@@ -81,10 +81,10 @@ export default (
     gadget?.unmount() // 卸载之前的gadget
 
     // 安装新的gadget
-    const newGadget = installGadgetApp(curGadgetInfo.name, curGadgetInfo.entryUrl)
-    newGadget.mountPromise.then(() => onGadgetChange(curGadgetInfo, gadget))
+    const newGadget = installGadgetApp(gadgetInfo.name, gadgetInfo.entryUrl)
+    newGadget.mountPromise.then(() => onGadgetChange(gadgetInfo, gadget))
     newGadget.loadPromise.then(() => setLoading(false))
-  }, [curGadgetInfo])
+  }, [gadgetInfo])
 
   const installGadgetApp = (name: string, entryUrl: string): MicroApp => {
     if (!gadgetsIdMap[name]) {

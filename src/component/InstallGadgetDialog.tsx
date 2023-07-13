@@ -10,12 +10,12 @@ import { useState } from 'react'
 interface IProps {
   visible: boolean
 
-  onSuccess: (info: IGadgetInfo) => void
+  onInstalled: (info: IGadgetInfo) => void
 
   onCancel: () => void
 }
 
-export default ({ visible, onSuccess, onCancel }: IProps) => {
+export default ({ visible, onInstalled, onCancel }: IProps) => {
 
   const [gadgetUrl, setGadgetUrl] = useState<string>()
 
@@ -26,7 +26,7 @@ export default ({ visible, onSuccess, onCancel }: IProps) => {
     open={visible}
     zIndex={1060}
     footer={
-      gadgetInfo ? <Button type={'primary'} onClick={() => onSuccess(gadgetInfo)}>安装</Button> : null
+      gadgetInfo ? <Button type={'primary'} onClick={() => onInstalled(gadgetInfo)}>安装</Button> : null
     }
     onCancel={onCancel}
   >

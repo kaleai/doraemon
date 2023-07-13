@@ -4,19 +4,20 @@ import { initGlobalState, MicroAppStateActions } from 'qiankun'
 import { ActionHandleResultType, ActionInfoType, IViewElementProps, ViewElementInfoType } from '../../gadget-template/Interface'
 import md5 from 'js-md5'
 import { MicroApp } from 'qiankun/lib'
+import { ID } from '../constant'
 
 /**
  * @author kale
  *
  * @date 2023/7/11
  */
-export default (eventManager: MicroAppStateActions, microApp?: MicroApp) => {
+export default (eventManager: MicroAppStateActions, microApp?: MicroApp, conversationId?: string) => {
 
   const [listData, setListData] = useState<ListItemDataType[]>([])
 
   const [loading, setLoading] = useState<boolean>(false)
 
-  useEffect(()=>{
+  useEffect(() => {
     if (microApp) {
       setTimeout(() => {
         sendActionToGadget({
@@ -25,7 +26,15 @@ export default (eventManager: MicroAppStateActions, microApp?: MicroApp) => {
         })
       }, 200)
     }
-  },[microApp])
+  }, [microApp])
+
+  useEffect(()=>{
+    setListData([])
+    const elementById = document.getElementById(ID.HISTORY_RECORD)
+    if (elementById) {
+      elementById.innerHTML = ''
+    }
+  },[conversationId])
 
   /**
    * 给gadget发送action，让gadget进行处理

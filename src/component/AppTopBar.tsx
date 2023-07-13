@@ -1,16 +1,17 @@
 import { Avatar, Popover, Space } from 'antd'
 import { MicroApp } from 'qiankun/es/interfaces'
-import { Button, Typography } from 'antd'
+import { Button } from 'antd'
 import { ActionHandleResultType } from '../../gadget-template/Interface'
 import { MenuFoldOutlined, MenuUnfoldOutlined, SwapOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
 import { IGadgetInfo } from './GadgetDetail'
 import { IGlobalConfig } from '../interface'
-import { dom2json } from '../utils'
 import useGadget from '../hooks/useGadget'
 import GadgetsList from './GadgetsList'
 import InstallGadgetDialog from './InstallGadgetDialog'
 import { addGlobalUncaughtErrorHandler, removeGlobalUncaughtErrorHandler } from 'qiankun'
+
+const DEF_GADGET_ICON = 'https://img0.baidu.com/it/u=2224311546,765801345&fm=253&fmt=auto&app=138&f=JPEG'
 
 /**
  * @author Jack Tony
@@ -60,40 +61,34 @@ export default (
   }, [])
 
   return <div
-    style={{ height: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-    {/* 展开/收起的按钮 */}
-    <Button
-      style={{ width: 40, height: 40, margin: 8 }}
-      type="text"
-      icon={isCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-      onClick={() => onClickCollapse()}
-    />
+    className={'fullHeight'}
+    style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+    <Space style={{ flex: 1, marginLeft: 12 }} size={12} align={'center'}>
+      {/* 展开/收起的按钮 */}
+      <Button
+        style={{ width: 40, height: 40 }} type="text"
+        icon={isCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+        onClick={onClickCollapse}
+      />
 
-    {/* 道具icon + 名字 + 描述 */}
-    {gadgetInfo ?
-      <Space style={{ flex: 1 }} size={'middle'}>
-        <Avatar size={36} shape={'square'} src={gadgetInfo.icon} />
-        <Space direction={'vertical'} size={3}>
-          <a style={{ fontWeight: 500, fontSize: 15 }} href={gadgetInfo.homepage}>{gadgetInfo.name}</a>
-          <span style={{ fontSize: 12, color: 'gray' }}>{gadgetInfo.description}</span>
-        </Space>
-      </Space>
-      :
-      <Space style={{ flex: 1 }} align="baseline">
-        <Avatar
-          shape={'square'} size={'default'}
-          src={'https://img0.baidu.com/it/u=2224311546,765801345&fm=253&fmt=auto&app=138&f=JPEG'}
-          onClick={() => {
-            onGadgetChange({ name: 'DebugGadget', entryUrl: '//localhost:7031' } as IGadgetInfo)
-          }}
-        />
+      {/* 道具的icon */}
+      <Avatar size={36} shape={'square'} src={gadgetInfo?.icon ?? DEF_GADGET_ICON} onClick={() => {
+        if (!gadgetInfo) {
+          onGadgetChange({ name: 'DebugGadget', entryUrl: '//localhost:7031' } as IGadgetInfo)
+        }
+      }} />
+
+      {/* 名称 */}
+      {gadgetInfo ?
+        <a style={{ fontWeight: 500 }} href={gadgetInfo.homepage}>{gadgetInfo.name}</a>
+        :
         <div style={{ color: 'gray' }}>{'请在右侧选择你需要的道具 →'}</div>
-      </Space>
-    }
+      }
+    </Space>
 
     <InstallGadgetDialog
       visible={DlgVisible}
-      onSuccess={info => {
+      onInstalled={info => {
         localGadgetInfos.push(info)
         setLocalGadgetInfos([...localGadgetInfos])
       }}

@@ -159,15 +159,15 @@ export const ConversationDBHelper = {
       })
   },
 
-  add: (data: IConversationInfo, gadget?: IGadgetInfo): void => {
+  add: (data: IConversationInfo): void => {
     openDB(ConversationDBHelper.DB_NAME, 1)
       .then(db => {
         db.add(ConversationDBHelper.TABLE_NAME, {
           id: data.id,
           name: data.name,
           record: data.record,
+          gadget: data.gadget,
           time: new Date(),
-          gadget,
         }).then(() => db.close())
       })
   },
@@ -179,10 +179,23 @@ export const ConversationDBHelper = {
     return res
   },
 
-  update: (id: string, conversation: any, gadget?: IGadgetInfo) => {
-    openDB(ConversationDBHelper.DB_NAME, 1).then(async db => {
-      await db.put(ConversationDBHelper.TABLE_NAME, { ...conversation, gadget }, id)
-      db.close()
+  updateHistory: (id: string, historyRecords: any) => {
+    ConversationDBHelper.find(id).then(info => {
+      info.record = historyRecords
+      openDB(ConversationDBHelper.DB_NAME, 1).then(async db => {
+        await db.put(ConversationDBHelper.TABLE_NAME, info)
+        db.close()
+      })
+    })
+  },
+
+  updateGadget: (id: string, gadgetInfo: IGadgetInfo) => {
+    ConversationDBHelper.find(id).then(info => {
+      info.gadget = gadgetInfo
+      openDB(ConversationDBHelper.DB_NAME, 1).then(async db => {
+        await db.put(ConversationDBHelper.TABLE_NAME, info)
+        db.close()
+      })
     })
   },
 

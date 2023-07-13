@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { MicroApp } from 'qiankun/es/interfaces'
-import { ConfigProvider, Divider, Layout } from 'antd'
+import { Button, ConfigProvider, Divider, Layout } from 'antd'
 import AppTopBar from './component/AppTopBar'
 import SidebarContent from './component/SideBarArea'
 import Settings from './component/SettingsOverlay'
@@ -13,11 +13,17 @@ import useListData from './hooks/useListData'
 import { ID } from './constant'
 
 import './App.css'
+import { Buffer } from 'buffer'
+
+const SideBarWidth = 230
 
 const { Header, Sider, Content } = Layout
 
 const App = ({ globalConfig }: { globalConfig: IGlobalConfig }) => {
 
+  /**
+   * qiankun微应用的事件发送器
+   */
   const eventManager: MicroAppStateActions = initGlobalState({})
 
   /**
@@ -48,19 +54,19 @@ const App = ({ globalConfig }: { globalConfig: IGlobalConfig }) => {
   /**
    * 会话ID
    */
-  const [conversationId, setConversationId] = useState<string | undefined | null>()
+  const [conversationId, setConversationId] = useState<string | undefined>()
 
   /**
    * 主内容区域的信息
    */
-  const { loading, listData, sendActionToGadget, onReceiveHandleResult } = useListData(eventManager, microApp)
+  const { loading, listData, sendActionToGadget, onReceiveHandleResult } = useListData(eventManager, microApp, conversationId)
 
   useEffect(() => {
     const onAppWillBeExit = (event: any) => {
       event.preventDefault() // 阻止默认事件
 
       // 将当前的会话置空
-      changeConversation(null, conversationId)
+      changeConversation(undefined, conversationId)
 
       return (event.returnValue = 'Are you sure you want to exit?')
     }
@@ -71,23 +77,28 @@ const App = ({ globalConfig }: { globalConfig: IGlobalConfig }) => {
     }
   }, [])
 
-  const changeConversation = (curId: string | null, prevId?: string | null) => {
-    microApp?.unmount()
-
+  const changeConversation = (curId: string | undefined, prevId: string | undefined) => {
     if (prevId) {
+      // 保存之前的记录
       const historyRecords = dom2json(ID.GADGET_CONTENT)
-      ConversationDBHelper.update(prevId, historyRecords, gadgetInfo)
+      ConversationDBHelper.updateHistory(prevId, historyRecords)
     }
 
-    setConversationId(curId)
-
-    ConversationDBHelper.find(curId ?? '').then(res => {
-      console.log('db-res', res)
-      if (res) {
-        setGadgetInfo(res.gadget)
-        setHistoryRecord(res.record)
-      }
-    })
+    /*if (microApp) {
+      microApp.unmount().then(() => {
+        setConversationId(curId)
+        ConversationDBHelper.find(curId ?? '').then(res => {
+          // setGadgetInfo(res?.gadget)
+          setHistoryRecord(res?.record)
+        })
+      })
+    } else {*/
+      setConversationId(curId)
+      ConversationDBHelper.find(curId ?? '').then(res => {
+        setGadgetInfo(res?.gadget)
+        setHistoryRecord(res?.record)
+      })
+    // }
   }
 
   return (
@@ -102,17 +113,9 @@ const App = ({ globalConfig }: { globalConfig: IGlobalConfig }) => {
           }}
         />
 
-        <Layout prefix={'App'} hasSider>
+        <Layout>
           <Sider
-            width={230} breakpoint="lg" collapsedWidth="0"
-            style={{
-              overflow: 'auto',
-              height: '100vh',
-              position: 'fixed',
-              left: 0,
-              top: 0,
-              bottom: 0,
-            }}
+            width={SideBarWidth} breakpoint="lg" collapsedWidth="0"
             collapsible collapsed={collapsed} trigger={null}
           >
             <SidebarContent
@@ -126,7 +129,7 @@ const App = ({ globalConfig }: { globalConfig: IGlobalConfig }) => {
           </Sider>
 
           <Layout className={'layout'} style={{ display: showSettings ? 'none' : undefined }}>
-            <Header style={{ padding: 0, backgroundColor: 'white' }}>
+            <Header className={'header'}>
               <AppTopBar
                 globalConfig={globalConfig}
                 onReceiveActionHandleResult={onReceiveHandleResult}
@@ -136,6 +139,7 @@ const App = ({ globalConfig }: { globalConfig: IGlobalConfig }) => {
 
                 gadgetInfo={gadgetInfo}
                 onGadgetChange={(info, microApp) => {
+                  ConversationDBHelper.updateGadget(conversationId as string, info)
                   setGadgetInfo(info)
                   setMicroApp(microApp)
                 }}
@@ -143,14 +147,22 @@ const App = ({ globalConfig }: { globalConfig: IGlobalConfig }) => {
               <Divider style={{ margin: 0 }} />
             </Header>
 
-            <Content style={{ overflow: 'initial', padding:12 }}>
+            <Content style={{ overflow: 'initial', padding: 12 }}>
+              <Button onClick={() => {
+                // 将当前的会话置空
+                changeConversation(undefined, conversationId)
+              }}>
+                save
+              </Button>
               <MainContent
+                eventManager={eventManager}
                 loading={loading}
                 history={historyRecord}
                 listData={listData}
                 onClickSuggest={sendActionToGadget}
               />
             </Content>
+
           </Layout>
         </Layout>
       </ConfigProvider>
