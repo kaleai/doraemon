@@ -22,5 +22,4 @@ export enum ID {
 
   HISTORY_RECORD = 'history-record-id',
 
-  HISTORY_DIVIDER_ID = 'history-divider-id'
 }

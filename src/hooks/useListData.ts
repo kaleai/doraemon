@@ -1,16 +1,38 @@
 import { useEffect, useState } from 'react'
-import { ItemType, ListItemDataType } from '../component/ListView'
-import { initGlobalState, MicroAppStateActions } from 'qiankun'
-import { ActionHandleResultType, ActionInfoType, IViewElementProps, ViewElementInfoType } from '../../gadget-template/Interface'
+import { MicroAppStateActions } from 'qiankun'
+import {
+  ActionHandleResultType,
+  ActionInfoType, ISysChatBox, ISysErrorInfo, ISysMarkdown,
+  IViewElementProps,
+  SuggestActionType,
+  ViewElementInfoType,
+} from '../../gadget-template/Interface'
 import md5 from 'js-md5'
 import { MicroApp } from 'qiankun/lib'
-import { ID } from '../constant'
 
 /**
  * @author kale
  *
  * @date 2023/7/11
  */
+export type ListItemDataType = {
+  id: string, type: ItemType, data: { sessionUUId?: string, } |
+    { suggestActions?: SuggestActionType[] } |
+    ISysChatBox |
+    ISysErrorInfo |
+    ISysMarkdown
+}
+
+export enum ItemType {
+  GADGET = 'GADGET',
+  FEEDBACK = 'SYS_FEEDBACK',
+  SUGGESTION = 'SYS_SUGGESTION',
+  DIVIDER = 'SYS_DIVIDER',
+  CHAT_BOX = 'SYS_CHAT_BOX',
+  MARKDOWN = 'SYS_MARKDOWN',
+  ERROR = 'SYS_ERROR'
+}
+
 export default (eventManager: MicroAppStateActions, microApp?: MicroApp, conversationId?: string) => {
 
   const [listData, setListData] = useState<ListItemDataType[]>([])
@@ -30,10 +52,6 @@ export default (eventManager: MicroAppStateActions, microApp?: MicroApp, convers
 
   useEffect(()=>{
     setListData([])
-    const elementById = document.getElementById(ID.HISTORY_RECORD)
-    if (elementById) {
-      elementById.innerHTML = ''
-    }
   },[conversationId])
 
   /**

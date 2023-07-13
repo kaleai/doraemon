@@ -1,4 +1,3 @@
-import React, { useEffect, useRef } from 'react'
 import { Avatar, Button, List, Space } from 'antd'
 import { DislikeTwoTone, LikeTwoTone, MessageOutlined } from '@ant-design/icons'
 import { SuggestActionType, ActionInfoType, ISysChatBox, ISysErrorInfo, ISysMarkdown } from '../../gadget-template/Interface'
@@ -6,30 +5,13 @@ import ErrorPanel from './common/ErrorPanel'
 import ChatBox from './common/ChatBox'
 import MarkdownView from './common/MarkdownView'
 import './index.css'
+import { ItemType, ListItemDataType } from '../hooks/useListData'
 
 /**
  * @author Jack Tony
  *
  * @date 2023/5/15
  */
-export type ListItemDataType = {
-  id: string, type: ItemType, data: { sessionUUId?: string, } |
-    { suggestActions?: SuggestActionType[] } |
-    ISysChatBox |
-    ISysErrorInfo |
-    ISysMarkdown
-}
-
-export enum ItemType {
-  GADGET = 'GADGET',
-  FEEDBACK = 'SYS_FEEDBACK',
-  SUGGESTION = 'SYS_SUGGESTION',
-  DIVIDER = 'SYS_DIVIDER',
-  CHAT_BOX = 'SYS_CHAT_BOX',
-  MARKDOWN = 'SYS_MARKDOWN',
-  ERROR = 'SYS_ERROR'
-}
-
 export interface IProps {
   dataSource: ListItemDataType[]
 
@@ -40,40 +22,12 @@ export interface IProps {
 
 export default ({ dataSource, onClickSuggestAction, onReceiveFeedback: sendFeedback }: IProps) => {
 
-  const ref = useRef(null)
-
-  const handleResize = () => {
-    window.requestIdleCallback(() => {
-      // 在浏览器空闲时更新样式
-      if (ref.current) {
-      }
-    })
-  }
-
-  useEffect(() => {
-    const resizeObserver = new ResizeObserver(handleResize)
-    if (ref.current) {
-      // @ts-ignore
-      resizeObserver.observe(ref.current)
-    }
-    return () => {
-      resizeObserver.disconnect()
-    }
-  }, [])
-
   return <List
     itemLayout="vertical"
     dataSource={dataSource}
     split={false}
     rowKey={item => item.id}
-    locale={{
-      emptyText:
-        <Space id={'empty-area-id'} className={'fullHeight'} style={{ marginTop: 100 }} direction={'vertical'} size={'large'}>
-          <Avatar size={100} src={'https://cdn-icons-png.flaticon.com/512/7486/7486754.png'} shape={'square'} />
-          <span style={{ color: 'gray', fontWeight: 'bold' }}>空空如也~ 您可以在右上角切换你需要的功能</span>
-        </Space>
-      ,
-    }}
+    locale={{ emptyText: <></> }}
     renderItem={(item: ListItemDataType, index) => {
       // @ts-ignore
       const { sessionUUId, suggestActions, placeholder, errorInfo, content } = item.data

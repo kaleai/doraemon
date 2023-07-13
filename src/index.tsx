@@ -23,11 +23,6 @@ if (callback && callback !== 'undefined') {
   window.close()
 }
 
-/**
- * 初始化数据库
- */
-ConversationDBHelper.init()
-
 const meta = document.getElementsByTagName('meta')
 // @ts-ignore
 const defCfgUrl = meta['global-config'].content
@@ -54,25 +49,33 @@ const getConfigUrl = (): string => {
 /**
  * 下载配置文件，json形式
  */
-axios(getConfigUrl()).then(({ status, data: cfg }) => {
-  if (status === 200) {
-    window.document.title = cfg.title
+/**
+ * 初始化数据库
+ */
+ConversationDBHelper.init()
+  .then(() => {
+    return axios(getConfigUrl())
+  })
+  .then(({ status, data: cfg }) => {
+    if (status === 200) {
+      window.document.title = cfg.title
 
-    ReactDOM.render(
-      <React.StrictMode>
-        <App globalConfig={cfg} />
-        <Analytics />
-      </React.StrictMode>,
-      document.getElementById('root'),
-    )
-  }
-}).catch(err => {
-  console.error(err)
+      ReactDOM.render(
+        <React.StrictMode>
+          <App globalConfig={cfg} />
+          <Analytics />
+        </React.StrictMode>,
+        document.getElementById('root'),
+      )
+    }
+  })
+  .catch(err => {
+    console.error(err)
 
-  if (window.confirm('远端配置下载异常，是否切换到默认配置？')) {
-    LocalHelper.set(KEY.GLOBAL_CONFIG, defCfgUrl)
-    window.location.replace(window.location.origin)
-  } else {
-    alert(err.toString())
-  }
-})
+    if (window.confirm('远端配置下载异常，是否切换到默认配置？')) {
+      LocalHelper.set(KEY.GLOBAL_CONFIG, defCfgUrl)
+      window.location.replace(window.location.origin)
+    } else {
+      alert(err.toString())
+    }
+  })

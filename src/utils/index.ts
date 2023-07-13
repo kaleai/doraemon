@@ -1,5 +1,5 @@
 import { openDB } from 'idb'
-import { IConversationInfo } from '../component/SideBarArea'
+import { IConversationInfo } from '../component/SideBarPanel'
 import { IGadgetInfo } from '../component/GadgetDetail'
 
 /**
@@ -20,33 +20,11 @@ export const LocalHelper = {
   get: <T>(key: string): T | undefined => {
     const res = localStorage.getItem(key)
     if (res && res !== 'undefined') {
-      return res.startsWith('{') ? JSON.parse(res) : res
+      return res.startsWith('{') || res.startsWith('[') ? JSON.parse(res) : res
     } else {
       return undefined
     }
   },
-}
-
-export const saveObjToLocal = (key: string, obj: Record<any, any> | string): void => {
-  if (obj && obj !== 'undefined') {
-    localStorage.setItem(key, typeof obj === 'string' ? obj : JSON.stringify(obj))
-  }
-}
-
-export const removeObj = (key: string) => {
-  localStorage.removeItem(key)
-}
-
-/**
- * 将对象从localStorage中读取
- */
-export function loadObjFormLocal<T>(key: string): T | undefined {
-  const res = localStorage.getItem(key)
-  if (res && res !== 'undefined') {
-    return res.startsWith('{') ? JSON.parse(res) : res
-  } else {
-    return undefined
-  }
 }
 
 export function dom2json(id: string) {
@@ -136,8 +114,8 @@ export const ConversationDBHelper = {
 
   TABLE_NAME: 'conversation',
 
-  init: () => {
-    openDB(ConversationDBHelper.DB_NAME, 1, {
+  init: async () => {
+    return openDB(ConversationDBHelper.DB_NAME, 1, {
       upgrade(database) {
         const objectStore = database.createObjectStore(ConversationDBHelper.TABLE_NAME, { keyPath: 'id', autoIncrement: false })
         objectStore.createIndex('name', 'name', { unique: false })

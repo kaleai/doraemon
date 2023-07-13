@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid'
 import { ActionHandleResultType, InstallProps } from '../../gadget-template/Interface'
 import { loadMicroApp } from 'qiankun'
 import { IGadgetInfo, queryGadgetInfo } from '../component/GadgetDetail'
-import { dom2json, loadObjFormLocal } from '../utils'
+import { LocalHelper } from '../utils'
 import { MicroApp } from 'qiankun/es/interfaces'
 import { message } from 'antd'
 import { IGlobalConfig } from '../interface'
@@ -33,7 +33,7 @@ export default (
 
   useEffect(() => {
     // 加载gadget与id的映射配置表
-    const mapObj = loadObjFormLocal<Record<string, string>>(KEY.GADGETS_ID_MAP)
+    const mapObj = LocalHelper.get<Record<string, string>>(KEY.GADGETS_ID_MAP)
     if (mapObj) {
       setGadgetsIdMap(mapObj)
       localStorage.removeItem(KEY.GADGETS_ID_MAP) // 加载完毕后删除本地配置表
@@ -49,7 +49,7 @@ export default (
   useEffect(() => {
     setLoading(true)
     // 得到本地私有的gadget列表
-    const list = loadObjFormLocal<IGadgetInfo>(KEY.LOCAL_GADGET_LIST)
+    const list = LocalHelper.get<IGadgetInfo>(KEY.LOCAL_GADGET_LIST)
     const localGadgetInfoList = list ?? []
 
     // 加载远端的gadget列表
