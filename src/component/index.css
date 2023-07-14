@@ -57,3 +57,7 @@
     z-index: 9999;
     pointer-events: none
 }
+
+.doraemon-list-empty-text {
+    display: none;
+}
